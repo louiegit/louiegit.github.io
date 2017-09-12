@@ -1,0 +1,869 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next gemini use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.2" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="设计模式,架构," />
+
+
+
+
+
+  <link rel="alternate" href="/atom.xml" title="ANLY'S BLOG" type="application/atom+xml" />
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.1.2" />
+
+
+
+
+
+
+<meta name="description" content="看个故事互联网寒冬来袭, 小光越来越觉得码农这个行当不太好混了. 年关将至, 思乡之情也是倍切. 心底一横, 要不直接回老家做点小买卖得了~ 说做就做, 小光辞了工作, 回到老家武汉, 做起了卖热干面的行当.小光秉着科学开店, 合理经营的心思, 走访老店, 探索人流, 最终把店开在了软件园旁边.">
+<meta name="keywords" content="设计模式,架构">
+<meta property="og:type" content="article">
+<meta property="og:title" content="卖热干面的启发---Builder模式">
+<meta property="og:url" content="http://blog.lmj.wiki/2016/11/13/design-pattern/builder/index.html">
+<meta property="og:site_name" content="ANLY&#39;S BLOG">
+<meta property="og:description" content="看个故事互联网寒冬来袭, 小光越来越觉得码农这个行当不太好混了. 年关将至, 思乡之情也是倍切. 心底一横, 要不直接回老家做点小买卖得了~ 说做就做, 小光辞了工作, 回到老家武汉, 做起了卖热干面的行当.小光秉着科学开店, 合理经营的心思, 走访老店, 探索人流, 最终把店开在了软件园旁边.">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="http://blog.lmj.wiki/img/14790963831859.jpg">
+<meta property="og:image" content="http://blog.lmj.wiki/img/builder.jpg">
+<meta property="og:image" content="http://blog.lmj.wiki/img/builder-2-1.jpg">
+<meta property="og:updated_time" content="2017-09-12T15:16:05.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="卖热干面的启发---Builder模式">
+<meta name="twitter:description" content="看个故事互联网寒冬来袭, 小光越来越觉得码农这个行当不太好混了. 年关将至, 思乡之情也是倍切. 心底一横, 要不直接回老家做点小买卖得了~ 说做就做, 小光辞了工作, 回到老家武汉, 做起了卖热干面的行当.小光秉着科学开店, 合理经营的心思, 走访老店, 探索人流, 最终把店开在了软件园旁边.">
+<meta name="twitter:image" content="http://blog.lmj.wiki/img/14790963831859.jpg">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Gemini',
+    version: '5.1.2',
+    sidebar: {"position":"right","display":"post","offset":12,"offset_float":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://blog.lmj.wiki/2016/11/13/design-pattern/builder/"/>
+
+
+
+
+
+  <title>卖热干面的启发---Builder模式 | ANLY'S BLOG</title>
+  
+
+
+
+
+
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?3e4bf02bc6c59d846f194a8afc04ecfc";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-right page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">ANLY'S BLOG</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">看看书, 写写字; 捣鼓捣鼓小技术.</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            关于
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://blog.lmj.wiki/2016/11/13/design-pattern/builder/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="anly_jun">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/img/avatar.jpeg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="ANLY'S BLOG">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">卖热干面的启发---Builder模式</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2016-11-13T23:25:00+08:00">
+                2016-11-13
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/设计模式/" itemprop="url" rel="index">
+                    <span itemprop="name">设计模式</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2016/11/13/design-pattern/builder/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count ds-thread-count" data-thread-key="2016/11/13/design-pattern/builder/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h2 id="看个故事"><a href="#看个故事" class="headerlink" title="看个故事"></a>看个故事</h2><p>互联网寒冬来袭, 小光越来越觉得码农这个行当不太好混了. 年关将至, 思乡之情也是倍切. 心底一横, 要不直接回老家做点小买卖得了~</p>
+<p>说做就做, 小光辞了工作, 回到老家武汉, 做起了卖<strong>热干面</strong>的行当.<br>小光秉着科学开店, 合理经营的心思, 走访老店, 探索人流, 最终把店开在了软件园旁边. </p>
+<a id="more"></a>
+<p>经过仔细他发现, 每个人点热干面时, 要的配料还各不相同, 有的要葱花, 有的不要葱花要香菜, 有的不要辣, 有的要加酸菜……<br>小光心想, 这可难不倒我, 你要什么不要什么一次性告诉我, 不就得了. 很快, 热干面程序出炉:</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">HotDryNoodles</span> </span>&#123;</div><div class="line"></div><div class="line">    <span class="keyword">private</span> <span class="keyword">boolean</span> addShallot;</div><div class="line">    <span class="keyword">private</span> <span class="keyword">boolean</span> addParsley;</div><div class="line">    <span class="keyword">private</span> <span class="keyword">boolean</span> addChili;</div><div class="line">    <span class="keyword">private</span> <span class="keyword">boolean</span> addSauerkraut;</div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="title">HotDryNoodles</span><span class="params">(<span class="keyword">boolean</span> shallot, <span class="keyword">boolean</span> parsley, <span class="keyword">boolean</span> chili, <span class="keyword">boolean</span> sauerkraut)</span> </span>&#123;</div><div class="line">        <span class="keyword">this</span>.addShallot = shallot;</div><div class="line">        <span class="keyword">this</span>.addParsley = parsley;</div><div class="line">        <span class="keyword">this</span>.addChili = chili;</div><div class="line">        <span class="keyword">this</span>.addSauerkraut = sauerkraut;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="meta">@Override</span></div><div class="line">    <span class="function"><span class="keyword">public</span> String <span class="title">toString</span><span class="params">()</span> </span>&#123;</div><div class="line"></div><div class="line">        StringBuilder builder = <span class="keyword">new</span> StringBuilder(<span class="string">"A bowl of hot-dry noodles has:"</span>);</div><div class="line"></div><div class="line">        <span class="keyword">if</span> (<span class="keyword">this</span>.addShallot) &#123;</div><div class="line">            builder.append(<span class="string">"葱花."</span>);</div><div class="line">        &#125;</div><div class="line"></div><div class="line">        <span class="keyword">if</span> (<span class="keyword">this</span>.addParsley) &#123;</div><div class="line">            builder.append(<span class="string">"香菜."</span>);</div><div class="line">        &#125;</div><div class="line"></div><div class="line">        <span class="keyword">if</span> (<span class="keyword">this</span>.addChili) &#123;</div><div class="line">            builder.append(<span class="string">"辣椒."</span>);</div><div class="line">        &#125;</div><div class="line"></div><div class="line">        <span class="keyword">if</span> (<span class="keyword">this</span>.addSauerkraut) &#123;</div><div class="line">            builder.append(<span class="string">"酸菜."</span>);</div><div class="line">        &#125;</div><div class="line"></div><div class="line">        <span class="keyword">return</span> builder.toString();</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<blockquote>
+<p>注意: 构造函数的参数是有顺序的(葱花.香菜.辣椒.酸菜).</p>
+</blockquote>
+<p>你还别说, 大武汉的码农们还真挺爱吃热干面, 一会生意就上门了:</p>
+<p><strong>A</strong>: 老板, 热干面一份, 加葱, 加香菜, 放点酸菜.<br><strong>B</strong>: 老板, 热干面, 加葱, 放点酸菜.</p>
+<p>小光, 一声”好嘞”, 立马开工:</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">XiaoGuang</span> </span>&#123;</div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</div><div class="line"></div><div class="line">        <span class="comment">// A</span></div><div class="line">        HotDryNoodles noodlesA = <span class="keyword">new</span> HotDryNoodles(<span class="keyword">true</span>, <span class="keyword">true</span>, <span class="keyword">false</span>, <span class="keyword">true</span>);</div><div class="line">        System.out.println(<span class="string">"Customer A wants: "</span> + noodlesA);</div><div class="line"></div><div class="line">        <span class="comment">// B</span></div><div class="line">        HotDryNoodles noodlesB = <span class="keyword">new</span> HotDryNoodles(<span class="keyword">true</span>, <span class="keyword">false</span>, <span class="keyword">false</span>, <span class="keyword">true</span>);</div><div class="line">        System.out.println(<span class="string">"Customer B wants: "</span> + noodlesB);</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>很快出炉:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">Customer A wants: A bowl of hot-dry noodles has:葱花.香菜.酸菜.</div><div class="line">Customer B wants: A bowl of hot-dry noodles has:葱花.酸菜.</div></pre></td></tr></table></figure>
+<p>完美~</p>
+<p>这时, 来了一哥们儿: 老板, 一碗热干面, 加辣椒, 不放葱.<br>小光吭哧吭哧忙活上了, 结果一端出来, 人哥们儿不乐意了, 怎么就放葱了啊, 还没有放辣椒~~<br>原来是小光搞错了顺序(参数顺序)~ (也怪这哥们不按套路出牌啊)</p>
+<p>没有办法, 重做一份咯~ (为了用户体验)</p>
+<p>收摊之后, 小光是痛定思痛啊, 现在的工序的确很容易出问题啊:</p>
+<ul>
+<li>目前的(参数)顺序是固定的, 客户要求各异, 根本不按套路来, 就很容易出错.</li>
+<li>目前的(参数)个数是固定的, 大多数客户都选择默认, 只额外提一两个要求.</li>
+</ul>
+<p>小光思考着怎么改进, 突然灵光一现:</p>
+<blockquote>
+<p>这个不就是<strong>构建对象时有大量可选参数的问题</strong>吗?<br>我可以使用<strong>Builder模式</strong>来解决这个问题啊. 原来编程无处不在, 小光暗思.</p>
+</blockquote>
+<p>然后就开始动手改造工序了:</p>
+<ul>
+<li>他买了张桌子, 用来作为配料台(Builder)</li>
+<li>把配料(葱花.香菜.辣椒.酸菜)从他的热干面(HotDryNoodlesWithBuilder)构造中移到配料台放着了.</li>
+<li>让客户自己选择添加什么配料, 自己从配料台上选择添加.</li>
+</ul>
+<p>那么, 添加配料的过程编程自取了:<br><img src="/img/14790963831859.jpg" alt=""></p>
+<p>如此一来, 他不仅仅释放了自己的劳动力, 也不用费力去记客户到底要哪些不要哪些的, 把基本的面做好, 放在调料台, 让用户自己添加吧~~</p>
+<p>改造后的热干面工序:</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div><div class="line">64</div><div class="line">65</div><div class="line">66</div><div class="line">67</div><div class="line">68</div><div class="line">69</div><div class="line">70</div><div class="line">71</div><div class="line">72</div><div class="line">73</div><div class="line">74</div><div class="line">75</div><div class="line">76</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">HotDryNoodlesWithBuilder</span> </span>&#123;</div><div class="line"></div><div class="line">    <span class="keyword">private</span> <span class="keyword">boolean</span> addShallot;</div><div class="line">    <span class="keyword">private</span> <span class="keyword">boolean</span> addParsley;</div><div class="line">    <span class="keyword">private</span> <span class="keyword">boolean</span> addChili;</div><div class="line">    <span class="keyword">private</span> <span class="keyword">boolean</span> addSauerkraut;</div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="title">HotDryNoodlesWithBuilder</span><span class="params">(Builder builder)</span> </span>&#123;</div><div class="line">        <span class="keyword">this</span>.addShallot = builder.addShallot;</div><div class="line">        <span class="keyword">this</span>.addParsley = builder.addParsley;</div><div class="line">        <span class="keyword">this</span>.addChili = builder.addChili;</div><div class="line">        <span class="keyword">this</span>.addSauerkraut = builder.addSauerkraut;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="meta">@Override</span></div><div class="line">    <span class="function"><span class="keyword">public</span> String <span class="title">toString</span><span class="params">()</span> </span>&#123;</div><div class="line"></div><div class="line">        StringBuilder builder = <span class="keyword">new</span> StringBuilder(<span class="string">"A bowl of hot-dry noodles has:"</span>);</div><div class="line"></div><div class="line">        <span class="keyword">if</span> (<span class="keyword">this</span>.addShallot) &#123;</div><div class="line">            builder.append(<span class="string">"葱花."</span>);</div><div class="line">        &#125;</div><div class="line"></div><div class="line">        <span class="keyword">if</span> (<span class="keyword">this</span>.addParsley) &#123;</div><div class="line">            builder.append(<span class="string">"香菜."</span>);</div><div class="line">        &#125;</div><div class="line"></div><div class="line">        <span class="keyword">if</span> (<span class="keyword">this</span>.addChili) &#123;</div><div class="line">            builder.append(<span class="string">"辣椒."</span>);</div><div class="line">        &#125;</div><div class="line"></div><div class="line">        <span class="keyword">if</span> (<span class="keyword">this</span>.addSauerkraut) &#123;</div><div class="line">            builder.append(<span class="string">"酸菜."</span>);</div><div class="line">        &#125;</div><div class="line"></div><div class="line">        <span class="keyword">return</span> builder.toString();</div><div class="line">    &#125;</div><div class="line"></div><div class="line"></div><div class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="class"><span class="keyword">class</span> <span class="title">Builder</span> </span>&#123;</div><div class="line"></div><div class="line">        <span class="keyword">private</span> <span class="keyword">boolean</span> addShallot;</div><div class="line">        <span class="keyword">private</span> <span class="keyword">boolean</span> addParsley;</div><div class="line">        <span class="keyword">private</span> <span class="keyword">boolean</span> addChili;</div><div class="line">        <span class="keyword">private</span> <span class="keyword">boolean</span> addSauerkraut;</div><div class="line"></div><div class="line">        <span class="function"><span class="keyword">public</span> <span class="title">Builder</span><span class="params">()</span> </span>&#123;</div><div class="line"></div><div class="line">        &#125;</div><div class="line"></div><div class="line">        <span class="function"><span class="keyword">public</span> Builder <span class="title">withShallot</span><span class="params">()</span> </span>&#123;</div><div class="line">            <span class="keyword">this</span>.addShallot = <span class="keyword">true</span>;</div><div class="line">            <span class="keyword">return</span> <span class="keyword">this</span>;</div><div class="line">        &#125;</div><div class="line"></div><div class="line">        <span class="function"><span class="keyword">public</span> Builder <span class="title">withParsley</span><span class="params">()</span> </span>&#123;</div><div class="line">            <span class="keyword">this</span>.addParsley = <span class="keyword">true</span>;</div><div class="line">            <span class="keyword">return</span> <span class="keyword">this</span>;</div><div class="line">        &#125;</div><div class="line"></div><div class="line">        <span class="function"><span class="keyword">public</span> Builder <span class="title">withChili</span><span class="params">()</span> </span>&#123;</div><div class="line">            <span class="keyword">this</span>.addChili = <span class="keyword">true</span>;</div><div class="line">            <span class="keyword">return</span> <span class="keyword">this</span>;</div><div class="line">        &#125;</div><div class="line"></div><div class="line">        <span class="function"><span class="keyword">public</span> Builder <span class="title">withSauerkraut</span><span class="params">()</span> </span>&#123;</div><div class="line">            <span class="keyword">this</span>.addSauerkraut = <span class="keyword">true</span>;</div><div class="line">            <span class="keyword">return</span> <span class="keyword">this</span>;</div><div class="line">        &#125;</div><div class="line"></div><div class="line">        <span class="function"><span class="keyword">public</span> HotDryNoodlesWithBuilder <span class="title">build</span><span class="params">()</span> </span>&#123;</div><div class="line">            <span class="keyword">return</span> <span class="keyword">new</span> HotDryNoodlesWithBuilder(<span class="keyword">this</span>);</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>来看看用户怎么用的:</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">XiaoGuang</span> </span>&#123;</div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</div><div class="line"></div><div class="line">        <span class="comment">// with builder</span></div><div class="line">        HotDryNoodlesWithBuilder noodlesC = <span class="keyword">new</span> HotDryNoodlesWithBuilder.Builder()</div><div class="line">                .withChili()</div><div class="line">                .withParsley()</div><div class="line">                .build();</div><div class="line">        System.out.println(<span class="string">"Customer C wants: "</span> + noodlesC);</div><div class="line"></div><div class="line">        HotDryNoodlesWithBuilder noodlesD = <span class="keyword">new</span> HotDryNoodlesWithBuilder.Builder()</div><div class="line">                .withChili()</div><div class="line">                .withParsley()</div><div class="line">                .withSauerkraut()</div><div class="line">                .withShallot()</div><div class="line">                .build();</div><div class="line">        System.out.println(<span class="string">"Customer D wants: "</span> + noodlesD);</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>结果不能太满意:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">Customer C wants: A bowl of hot-dry noodles has:香菜.辣椒.</div><div class="line">Customer D wants: A bowl of hot-dry noodles has:葱花.香菜.辣椒.酸菜.</div></pre></td></tr></table></figure>
+<p>再也没有用户抱怨说小光搞错了, <strong>想要什么自己加, 顺序也无所谓了.</strong> 小光也有更多的时间服务更多的客户了…<br>看着来来往往的吃客, 小光憧憬着: 眼看就可以开分店, 连锁店, 上市, 当董事长, 迎娶白富美, 走上人生巅峰了, 哈哈哈哈哈.</p>
+<h2 id="故事之后"><a href="#故事之后" class="headerlink" title="故事之后"></a>故事之后</h2><p>让我们重温下GoF设计模式中的Builder模式:</p>
+<p><img src="/img/builder.jpg" alt="builde"></p>
+<blockquote>
+<p>Buidler模式, 是一种创建型的设计模式.<br>通常用来将一个<strong>复杂的对象</strong>的构造过程分离, 让使用者可以根据需要选择创建过程.<br>另外, 当这个复杂的对象的构造包含很多<strong>可选参数</strong>时, 那Builder模式可以说是不二之选了.</p>
+</blockquote>
+<p>从这个故事中, 我们可以看到, 当热干面的配料参数太多时, 我们很难去控制, 一旦弄错了参数顺序, 客户就无法接受~</p>
+<p>再来看下本故事中改造后的工序对应Builder模式的关系:<br><img src="/img/builder-2-1.jpg" alt="builder-2"></p>
+<blockquote>
+<p>一般来说, Builder常常作为实际产品的<strong>静态内部类</strong>来实现(提高内聚性).<br>故而Product,Director, Builder常常是在一个类文件中, 例如本例中的HotDryNoodlesWithBuilder.java.<br>这里为了更好的对应Builder模式的类图关系, 将HotDryNoodlesWithBuilder画了两个~.</p>
+</blockquote>
+<h2 id="扩展阅读"><a href="#扩展阅读" class="headerlink" title="扩展阅读"></a>扩展阅读</h2><p>作为Java/Android开发者, 如果你想设计一个通用的库, Builder模式几乎肯定是会用到的, 我们需要提供良好的<strong>入口/接口</strong>来使用者可以<strong>弹性地</strong>构造他们需要的对象.</p>
+<p>像一些优秀的开源库, 例如Glide, OkHttp等都在构造Glide, OkHttpClient时用到Builder模式, 例如OkHttpClient的创建, 如下节选OkHttpClient.java的代码:</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">OkHttpClient</span> <span class="keyword">implements</span> <span class="title">Cloneable</span>, <span class="title">Call</span>.<span class="title">Factory</span> </span>&#123;</div><div class="line">  <span class="function"><span class="keyword">public</span> <span class="title">OkHttpClient</span><span class="params">()</span> </span>&#123;</div><div class="line">    <span class="keyword">this</span>(<span class="keyword">new</span> Builder());</div><div class="line">  &#125;</div><div class="line"></div><div class="line">  <span class="function"><span class="keyword">private</span> <span class="title">OkHttpClient</span><span class="params">(Builder builder)</span> </span>&#123;</div><div class="line">    <span class="keyword">this</span>.dispatcher = builder.dispatcher;</div><div class="line">    <span class="keyword">this</span>.proxy = builder.proxy;</div><div class="line">    <span class="keyword">this</span>.protocols = builder.protocols;</div><div class="line">    <span class="keyword">this</span>.connectionSpecs = builder.connectionSpecs;</div><div class="line">    <span class="keyword">this</span>.interceptors = Util.immutableList(builder.interceptors);</div><div class="line">    <span class="keyword">this</span>.networkInterceptors = Util.immutableList(builder.networkInterceptors);</div><div class="line">    <span class="keyword">this</span>.proxySelector = builder.proxySelector;</div><div class="line">    <span class="keyword">this</span>.cookieJar = builder.cookieJar;</div><div class="line">    <span class="keyword">this</span>.cache = builder.cache;</div><div class="line">    <span class="keyword">this</span>.internalCache = builder.internalCache;</div><div class="line">    <span class="keyword">this</span>.socketFactory = builder.socketFactory;</div><div class="line">    </div><div class="line">    <span class="comment">// more code...</span></div><div class="line">  &#125;</div><div class="line">  </div><div class="line">  <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="class"><span class="keyword">class</span> <span class="title">Builder</span> </span>&#123;</div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="title">Builder</span><span class="params">()</span> </span>&#123;</div><div class="line">      ...</div><div class="line">    &#125;</div><div class="line"></div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">public</span> Builder <span class="title">cache</span><span class="params">(Cache cache)</span> </span>&#123;</div><div class="line">      ...</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">public</span> Builder <span class="title">dispatcher</span><span class="params">(Dispatcher dispatcher)</span> </span>&#123;</div><div class="line">      ...</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">public</span> Builder <span class="title">protocols</span><span class="params">(List&lt;Protocol&gt; protocols)</span> </span>&#123;</div><div class="line">       ...</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">public</span> List&lt;Interceptor&gt; <span class="title">networkInterceptors</span><span class="params">()</span> </span>&#123;</div><div class="line">      ...</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">public</span> Builder <span class="title">addNetworkInterceptor</span><span class="params">(Interceptor interceptor)</span> </span>&#123;</div><div class="line">      ...</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">public</span> OkHttpClient <span class="title">build</span><span class="params">()</span> </span>&#123;</div><div class="line">      <span class="keyword">return</span> <span class="keyword">new</span> OkHttpClient(<span class="keyword">this</span>);</div><div class="line">    &#125;</div><div class="line">  &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>是不是和小光设计的HotDryNoodlesWithBuilder很像…</p>
+<p>生活还将继续, 小光继续奋斗着, 憧憬自己的人生巅峰梦~</p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/设计模式/" rel="tag"># 设计模式</a>
+          
+            <a href="/tags/架构/" rel="tag"># 架构</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2016/11/06/app-opti/app_opt_summary/" rel="next" title="App性能优化系列结语篇">
+                <i class="fa fa-chevron-left"></i> App性能优化系列结语篇
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2016/11/14/design-pattern/simple_factory/" rel="prev" title="小光热干面提供饮料了---简单工厂">
+                小光热干面提供饮料了---简单工厂 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+        <div class="ds-share flat" data-thread-key="2016/11/13/design-pattern/builder/"
+     data-title="卖热干面的启发---Builder模式"
+     data-content=""
+     data-url="http://blog.lmj.wiki/2016/11/13/design-pattern/builder/">
+  <div class="ds-share-inline">
+    <ul  class="ds-share-icons-16">
+
+      <li data-toggle="ds-share-icons-more"><a class="ds-more" href="javascript:void(0);">分享到：</a></li>
+      <li><a class="ds-weibo" href="javascript:void(0);" data-service="weibo">微博</a></li>
+      <li><a class="ds-qzone" href="javascript:void(0);" data-service="qzone">QQ空间</a></li>
+      <li><a class="ds-qqt" href="javascript:void(0);" data-service="qqt">腾讯微博</a></li>
+      <li><a class="ds-wechat" href="javascript:void(0);" data-service="wechat">微信</a></li>
+
+    </ul>
+    <div class="ds-share-icons-more">
+    </div>
+  </div>
+</div>
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+      <div class="ds-thread" data-thread-key="2016/11/13/design-pattern/builder/"
+           data-title="卖热干面的启发---Builder模式" data-url="http://blog.lmj.wiki/2016/11/13/design-pattern/builder/">
+      </div>
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          
+            <img class="site-author-image" itemprop="image"
+              src="/img/avatar.jpeg"
+              alt="anly_jun" />
+          
+            <p class="site-author-name" itemprop="name">anly_jun</p>
+            <p class="site-description motion-element" itemprop="description">Android, iOS, Mobile Dev/Test, Web, Python</p>
+        </div>
+
+        <nav class="site-state motion-element">
+
+          
+            <div class="site-state-item site-state-posts">
+            
+              <a href="/archives">
+            
+                <span class="site-state-item-count">55</span>
+                <span class="site-state-item-name">日志</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-categories">
+              <a href="/categories/index.html">
+                <span class="site-state-item-count">6</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-tags">
+              <a href="/tags/index.html">
+                <span class="site-state-item-count">20</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+          <div class="feed-link motion-element">
+            <a href="/atom.xml" rel="alternate">
+              <i class="fa fa-rss"></i>
+              RSS
+            </a>
+          </div>
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#看个故事"><span class="nav-number">1.</span> <span class="nav-text">看个故事</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#故事之后"><span class="nav-number">2.</span> <span class="nav-text">故事之后</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#扩展阅读"><span class="nav-number">3.</span> <span class="nav-text">扩展阅读</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2017</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">anly_jun</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+  <span class="post-meta-divider">|</span>
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">NexT.Gemini</a> v5.1.2</div>
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.2"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.2"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.2"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.2"></script>
+
+
+
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.2"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.2"></script>
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.2"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.2"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.2"></script>
+
+
+
+  
+
+  
+    
+  
+
+  <script type="text/javascript">
+    var duoshuoQuery = {short_name:"anlyjun"};
+    (function() {
+      var ds = document.createElement('script');
+      ds.type = 'text/javascript';ds.async = true;
+      ds.id = 'duoshuo-script';
+      ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+      ds.charset = 'UTF-8';
+      (document.getElementsByTagName('head')[0]
+      || document.getElementsByTagName('body')[0]).appendChild(ds);
+    })();
+  </script>
+
+  
+    
+    
+    <script src="/lib/ua-parser-js/dist/ua-parser.min.js?v=0.7.9"></script>
+    <script src="/js/src/hook-duoshuo.js"></script>
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

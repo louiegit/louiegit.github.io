@@ -1,0 +1,417 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  
+  <url>
+    <loc>http://blog.lmj.wiki/2016/11/22/design-pattern/decorator/</loc>
+    
+    <lastmod>2017-09-12T15:16:05.000Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://blog.lmj.wiki/2016/06/02/algorithm/bubble_sort/</loc>
+    
+    <lastmod>2017-09-12T15:16:05.000Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://blog.lmj.wiki/2016/08/24/android/adb/</loc>
+    
+    <lastmod>2017-09-12T15:16:05.000Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://blog.lmj.wiki/2016/07/26/android/android-app-skill-map/</loc>
+    
+    <lastmod>2017-09-12T15:16:05.000Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://blog.lmj.wiki/2015/12/15/android/android-code-rules/</loc>
+    
+    <lastmod>2017-09-12T15:16:05.000Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://blog.lmj.wiki/2015/11/14/android/android-env/</loc>
+    
+    <lastmod>2017-09-12T15:16:05.000Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://blog.lmj.wiki/2016/07/13/android/app-refactor/</loc>
+    
+    <lastmod>2017-09-12T15:16:05.000Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://blog.lmj.wiki/2016/08/23/android/app_startup/</loc>
+    
+    <lastmod>2017-09-12T15:16:05.000Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://blog.lmj.wiki/2016/08/02/android/context/</loc>
+    
+    <lastmod>2017-09-12T15:16:05.000Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://blog.lmj.wiki/2015/12/31/android/retrofit2-log/</loc>
+    
+    <lastmod>2017-09-12T15:16:05.000Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://blog.lmj.wiki/2016/08/18/app-opti/app_opt/</loc>
+    
+    <lastmod>2017-09-12T15:16:05.000Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://blog.lmj.wiki/2016/08/26/app-opti/app_opt_app_startup1/</loc>
+    
+    <lastmod>2017-09-12T15:16:05.000Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://blog.lmj.wiki/2016/09/06/app-opti/app_opt_anr/</loc>
+    
+    <lastmod>2017-09-12T15:16:05.000Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://blog.lmj.wiki/2016/08/29/app-opti/app_opt_app_startup2/</loc>
+    
+    <lastmod>2017-09-12T15:16:05.000Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://blog.lmj.wiki/2016/09/25/app-opti/app_opt_battery/</loc>
+    
+    <lastmod>2017-09-12T15:16:05.000Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://blog.lmj.wiki/2016/09/01/app-opti/app_opt_layout/</loc>
+    
+    <lastmod>2017-09-12T15:16:05.000Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://blog.lmj.wiki/2016/10/25/app-opti/app_opt_mat/</loc>
+    
+    <lastmod>2017-09-12T15:16:05.000Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://blog.lmj.wiki/2016/09/21/app-opti/app_opt_mem_0/</loc>
+    
+    <lastmod>2017-09-12T15:16:05.000Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://blog.lmj.wiki/2016/10/19/app-opti/app_opt_mem_android/</loc>
+    
+    <lastmod>2017-09-12T15:16:05.000Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://blog.lmj.wiki/2016/10/11/app-opti/app_opt_mem_gc/</loc>
+    
+    <lastmod>2017-09-12T15:16:05.000Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://blog.lmj.wiki/2016/10/31/app-opti/app_opt_mem_leak/</loc>
+    
+    <lastmod>2017-09-12T15:16:05.000Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://blog.lmj.wiki/2016/11/04/app-opti/app_opt_mem_summary/</loc>
+    
+    <lastmod>2017-09-12T15:16:05.000Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://blog.lmj.wiki/2016/10/06/app-opti/app_opt_network/</loc>
+    
+    <lastmod>2017-09-12T15:16:05.000Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://blog.lmj.wiki/2016/09/18/app-opti/app_opt_smooth/</loc>
+    
+    <lastmod>2017-09-12T15:16:05.000Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://blog.lmj.wiki/2016/11/06/app-opti/app_opt_summary/</loc>
+    
+    <lastmod>2017-09-12T15:16:05.000Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://blog.lmj.wiki/2016/08/19/app-opti/app_opt_tools/</loc>
+    
+    <lastmod>2017-09-12T15:16:05.000Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://blog.lmj.wiki/2016/12/15/design-pattern/abstract_factory/</loc>
+    
+    <lastmod>2017-09-12T15:16:05.000Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://blog.lmj.wiki/2016/11/13/design-pattern/builder/</loc>
+    
+    <lastmod>2017-09-12T15:16:05.000Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://blog.lmj.wiki/2017/01/18/design-pattern/composite/</loc>
+    
+    <lastmod>2017-09-12T15:16:05.000Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://blog.lmj.wiki/2016/05/31/algorithm/merge_sort/</loc>
+    
+    <lastmod>2017-09-12T15:16:05.000Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://blog.lmj.wiki/2017/02/22/design-pattern/chain/</loc>
+    
+    <lastmod>2017-09-12T15:16:05.000Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://blog.lmj.wiki/2016/11/16/design-pattern/factory_method/</loc>
+    
+    <lastmod>2017-09-12T15:16:05.000Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://blog.lmj.wiki/2016/12/04/design-pattern/prototype/</loc>
+    
+    <lastmod>2017-09-12T15:16:05.000Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://blog.lmj.wiki/2016/11/28/design-pattern/proxy/</loc>
+    
+    <lastmod>2017-09-12T15:16:05.000Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://blog.lmj.wiki/2016/11/14/design-pattern/simple_factory/</loc>
+    
+    <lastmod>2017-09-12T15:16:05.000Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://blog.lmj.wiki/2016/12/20/design-pattern/singleton/</loc>
+    
+    <lastmod>2017-09-12T15:16:05.000Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://blog.lmj.wiki/2016/11/21/design-pattern/strategy/</loc>
+    
+    <lastmod>2017-09-12T15:16:05.000Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://blog.lmj.wiki/2016/12/22/design-pattern/template_method/</loc>
+    
+    <lastmod>2017-09-12T15:16:05.000Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://blog.lmj.wiki/2013/04/18/docs/Activity/</loc>
+    
+    <lastmod>2017-09-12T15:16:05.000Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://blog.lmj.wiki/2013/05/04/docs/Bound%20Service/</loc>
+    
+    <lastmod>2017-09-12T15:16:05.000Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://blog.lmj.wiki/2013/06/25/docs/Processes%20and%20Threads/</loc>
+    
+    <lastmod>2017-09-12T15:16:05.000Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://blog.lmj.wiki/2013/06/21/docs/Content%20Provider/</loc>
+    
+    <lastmod>2017-09-12T15:16:05.000Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://blog.lmj.wiki/2013/05/28/docs/Tasks%20and%20Back%20Stack/</loc>
+    
+    <lastmod>2017-09-12T15:16:05.000Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://blog.lmj.wiki/2013/04/21/docs/Service/</loc>
+    
+    <lastmod>2017-09-12T15:16:05.000Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://blog.lmj.wiki/2016/07/22/mvp/mvp1/</loc>
+    
+    <lastmod>2017-09-12T15:16:05.000Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://blog.lmj.wiki/2016/07/22/mvp/mvp2/</loc>
+    
+    <lastmod>2017-09-12T15:16:05.000Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://blog.lmj.wiki/2016/07/22/mvp/mvp3/</loc>
+    
+    <lastmod>2017-09-12T15:16:05.000Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://blog.lmj.wiki/2016/08/15/mvp/mvp4/</loc>
+    
+    <lastmod>2017-09-12T15:16:05.000Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://blog.lmj.wiki/2016/09/15/pm/github_update_2016-09-15/</loc>
+    
+    <lastmod>2017-09-12T15:16:05.000Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://blog.lmj.wiki/2016/08/03/pm/product-dev-flow/</loc>
+    
+    <lastmod>2017-09-12T15:16:05.000Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://blog.lmj.wiki/2017/09/07/others/%E5%86%85%E6%8E%A8%E8%81%8C%E4%BD%8D/</loc>
+    
+    <lastmod>2017-09-12T15:16:05.000Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://blog.lmj.wiki/2015/11/22/tools/Git-alais/</loc>
+    
+    <lastmod>2017-09-12T15:16:05.000Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://blog.lmj.wiki/2015/11/19/tools/gerrit/</loc>
+    
+    <lastmod>2017-09-12T15:16:05.000Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://blog.lmj.wiki/2016/01/05/tools/mac_dev_env/</loc>
+    
+    <lastmod>2017-09-12T15:16:05.000Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://blog.lmj.wiki/2015/11/22/tools/git-review/</loc>
+    
+    <lastmod>2017-09-12T15:16:05.000Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://blog.lmj.wiki/about/index.html</loc>
+    
+    <lastmod>2017-09-12T15:16:05.000Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://blog.lmj.wiki/categories/index.html</loc>
+    
+    <lastmod>2017-09-12T15:16:05.000Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://blog.lmj.wiki/reading/index.html</loc>
+    
+    <lastmod>2017-09-12T15:16:05.000Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://blog.lmj.wiki/tags/index.html</loc>
+    
+    <lastmod>2017-09-12T15:16:05.000Z</lastmod>
+    
+  </url>
+  
+</urlset>

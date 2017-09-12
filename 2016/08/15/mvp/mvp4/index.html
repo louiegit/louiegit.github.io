@@ -1,0 +1,889 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next gemini use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.2" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="Android,架构,MVP," />
+
+
+
+
+
+  <link rel="alternate" href="/atom.xml" title="ANLY'S BLOG" type="application/atom+xml" />
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.1.2" />
+
+
+
+
+
+
+<meta name="description" content="系列文章:1-准备工作2-搭建项目框架3-功能实现4-加入网络缓存 经过前面的几项工作, 项目框架和功能开发规范已经差不过出来了. 接下来要做的就说迭代功能, 和完善细节了. 今天我们要做的是给我们的网络请求加入缓存机制. 类似于一般的阅读类App, 缓存机制一般如下:   有网时根据设置的Cache Control时间来判断是使用缓存还是重新做网络请求. 无网络环境下直接使用缓存, 保证阅读体验">
+<meta name="keywords" content="Android,架构,MVP">
+<meta property="og:type" content="article">
+<meta property="og:title" content="MVP架构实现的Github客户端(4-加入网络缓存)">
+<meta property="og:url" content="http://blog.lmj.wiki/2016/08/15/mvp/mvp4/index.html">
+<meta property="og:site_name" content="ANLY&#39;S BLOG">
+<meta property="og:description" content="系列文章:1-准备工作2-搭建项目框架3-功能实现4-加入网络缓存 经过前面的几项工作, 项目框架和功能开发规范已经差不过出来了. 接下来要做的就说迭代功能, 和完善细节了. 今天我们要做的是给我们的网络请求加入缓存机制. 类似于一般的阅读类App, 缓存机制一般如下:   有网时根据设置的Cache Control时间来判断是使用缓存还是重新做网络请求. 无网络环境下直接使用缓存, 保证阅读体验">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="http://oat9lzupi.bkt.clouddn.com/2016-08-15-14711905709322.png">
+<meta property="og:image" content="http://oat9lzupi.bkt.clouddn.com/2016-08-15-14711909481333.jpg">
+<meta property="og:updated_time" content="2017-09-12T15:16:05.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="MVP架构实现的Github客户端(4-加入网络缓存)">
+<meta name="twitter:description" content="系列文章:1-准备工作2-搭建项目框架3-功能实现4-加入网络缓存 经过前面的几项工作, 项目框架和功能开发规范已经差不过出来了. 接下来要做的就说迭代功能, 和完善细节了. 今天我们要做的是给我们的网络请求加入缓存机制. 类似于一般的阅读类App, 缓存机制一般如下:   有网时根据设置的Cache Control时间来判断是使用缓存还是重新做网络请求. 无网络环境下直接使用缓存, 保证阅读体验">
+<meta name="twitter:image" content="http://oat9lzupi.bkt.clouddn.com/2016-08-15-14711905709322.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Gemini',
+    version: '5.1.2',
+    sidebar: {"position":"right","display":"post","offset":12,"offset_float":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://blog.lmj.wiki/2016/08/15/mvp/mvp4/"/>
+
+
+
+
+
+  <title>MVP架构实现的Github客户端(4-加入网络缓存) | ANLY'S BLOG</title>
+  
+
+
+
+
+
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?3e4bf02bc6c59d846f194a8afc04ecfc";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-right page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">ANLY'S BLOG</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">看看书, 写写字; 捣鼓捣鼓小技术.</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            关于
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://blog.lmj.wiki/2016/08/15/mvp/mvp4/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="anly_jun">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/img/avatar.jpeg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="ANLY'S BLOG">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">MVP架构实现的Github客户端(4-加入网络缓存)</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2016-08-15T00:29:00+08:00">
+                2016-08-15
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Android/" itemprop="url" rel="index">
+                    <span itemprop="name">Android</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2016/08/15/mvp/mvp4/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count ds-thread-count" data-thread-key="2016/08/15/mvp/mvp4/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>系列文章:<br><a href="http://www.jianshu.com/p/13175ff425ee" target="_blank" rel="external">1-准备工作</a><br><a href="http://www.jianshu.com/p/69a9bbca1ef3" target="_blank" rel="external">2-搭建项目框架</a><br><a href="http://www.jianshu.com/p/a1d8add4fb29" target="_blank" rel="external">3-功能实现</a><br><a href="">4-加入网络缓存</a></p>
+<p>经过前面的几项工作, 项目框架和功能开发规范已经差不过出来了. 接下来要做的就说迭代功能, 和完善细节了.</p>
+<p>今天我们要做的是给我们的网络请求加入缓存机制. 类似于一般的阅读类App, 缓存机制一般如下:</p>
+<blockquote>
+<ol>
+<li>有网时根据设置的Cache Control时间来判断是使用缓存还是重新做网络请求.</li>
+<li>无网络环境下直接使用缓存, 保证阅读体验.</li>
+</ol>
+</blockquote>
+<a id="more"></a>
+<h2 id="1-为什么要加缓存"><a href="#1-为什么要加缓存" class="headerlink" title="1, 为什么要加缓存"></a>1, 为什么要加缓存</h2><p>缓存之所以必要, 最重要的是能给用户以良好的体验.<br>另外网络数据缓存也是App网络流量优化, 电量优化的一个必要手段.</p>
+<h2 id="2-好了-废话还是少说-直接开始"><a href="#2-好了-废话还是少说-直接开始" class="headerlink" title="2, 好了, 废话还是少说, 直接开始"></a>2, 好了, 废话还是少说, 直接开始</h2><p>要做到缓存仅需要三步:</p>
+<ol>
+<li>请求客户端配置缓存目录.</li>
+<li>Request中须带有Cache-Control的header, 以便请求时决定是否使用缓存.</li>
+<li>Response中须带有Cache-Control的header, 以告知Client端该响应是否可以缓存, 以及缓存时效.</li>
+</ol>
+<h3 id="2-1-配置OkHttp的缓存目录"><a href="#2-1-配置OkHttp的缓存目录" class="headerlink" title="2.1 配置OkHttp的缓存目录"></a>2.1 配置OkHttp的缓存目录</h3><ul>
+<li>设置Cache Dir</li>
+</ul>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">long</span> CACHE_SIZE = <span class="number">1024</span> * <span class="number">1024</span> * <span class="number">50</span>;</div><div class="line"></div><div class="line"><span class="meta">@Override</span></div><div class="line"><span class="keyword">public</span> OkHttpClient.<span class="function">Builder <span class="title">customize</span><span class="params">(OkHttpClient.Builder builder)</span> </span>&#123;</div><div class="line">   <span class="comment">// set cache dir</span></div><div class="line">   File cacheFile = <span class="keyword">new</span> File(mContext.getCacheDir(), <span class="string">"github_repo"</span>);</div><div class="line">   Cache cache = <span class="keyword">new</span> Cache(cacheFile, CACHE_SIZE);</div><div class="line">   builder.cache(cache);</div><div class="line"></div><div class="line">   ...</div><div class="line">   </div><div class="line">   <span class="keyword">return</span> builder;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<h3 id="2-2-配置Retrofit-Request接口的”Cache-Control”-Header"><a href="#2-2-配置Retrofit-Request接口的”Cache-Control”-Header" class="headerlink" title="2.2 配置Retrofit Request接口的”Cache-Control” Header"></a>2.2 配置Retrofit Request接口的”Cache-Control” Header</h3><p>顾名思义, “Cache-Control”请求头就是用来控制缓存的. 它有一些属性值来指定缓存的属性, 诸如公共属性, 是否可缓存以及缓存的有效期等.</p>
+<blockquote>
+<p>关于”Cache-Control”的详细解释和使用请自行google…在此略过.<br>个人也有计划写一些关于HTTP协议相关的基础知识, 会聊到Cache-Control, 敬请期待.</p>
+</blockquote>
+<p>以获取Github Trending这个接口为例:</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line"><span class="meta">@Headers</span>(<span class="string">"Cache-Control: public, max-age=180"</span>)</div><div class="line"><span class="meta">@GET</span>(<span class="string">"trending?languages[]=java&amp;languages[]=swift&amp;languages[]=objective-c&amp;languages[]=bash&amp;languages[]=python&amp;languages[]=html"</span>)</div><div class="line"><span class="function">Observable&lt;TrendingResultResp&gt; <span class="title">getTrendingRepos</span><span class="params">()</span></span>;</div></pre></td></tr></table></figure>
+<ul>
+<li>public 指示响应可被任何缓存区缓存</li>
+<li>max-age=180 指示该请求的缓存的有效期为3分钟(以秒为单位).</li>
+</ul>
+<h3 id="2-3-配置Response中的”Cache-Control”-Header"><a href="#2-3-配置Response中的”Cache-Control”-Header" class="headerlink" title="2.3 配置Response中的”Cache-Control” Header"></a>2.3 配置Response中的”Cache-Control” Header</h3><p>众所周知, Response是由服务器控制的, 我们如何加入”Cache-Control”头呢? 方法有二:</p>
+<ol>
+<li>说服服务器的开发人员按照你的需求在response中加入Cache-Control.</li>
+<li>使用我们接下来要说的OkHttp的<strong>拦截器interceptor</strong>.</li>
+</ol>
+<p>大多数情况下, 服务器可能并不受我们控制. 服务器开发人员开发多个系统, 对端的缓存需求不熟悉, 又或是服务器接口并不是我们自己开发的, 例如本系列做的这个<a href="https://github.com/mingjunli/GithubApp" target="_blank" rel="external">GithubApp</a>.</p>
+<p>所幸, OkHttp提供了interceptor来让我们对request, response进行拦截处理, 加入我们想要的请求头等.</p>
+<p>如下是本例使用的Cache Interceptor:</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">private</span> <span class="keyword">final</span> Interceptor mCacheControlInterceptor = <span class="keyword">new</span> Interceptor() &#123;</div><div class="line">   <span class="meta">@Override</span></div><div class="line">   <span class="function"><span class="keyword">public</span> Response <span class="title">intercept</span><span class="params">(Chain chain)</span> <span class="keyword">throws</span> IOException </span>&#123;</div><div class="line">       Request request = chain.request();</div><div class="line">       <span class="keyword">if</span> (!NetworkUtil.isNetworkAvailable(mContext)) &#123;</div><div class="line">           request = request.newBuilder()</div><div class="line">                   .cacheControl(CacheControl.FORCE_CACHE)</div><div class="line">                   .build();</div><div class="line">       &#125;</div><div class="line"></div><div class="line">       Response originalResponse = chain.proceed(request);</div><div class="line"></div><div class="line">       <span class="keyword">if</span> (NetworkUtil.isNetworkAvailable(mContext)) &#123;</div><div class="line"></div><div class="line">           String cacheControl = request.cacheControl().toString();</div><div class="line"></div><div class="line">           <span class="keyword">return</span> originalResponse.newBuilder()</div><div class="line">                   .header(<span class="string">"Cache-Control"</span>, cacheControl)</div><div class="line">                   .build();</div><div class="line">       &#125; <span class="keyword">else</span> &#123;</div><div class="line">           <span class="keyword">return</span> originalResponse.newBuilder()</div><div class="line">                   .header(<span class="string">"Cache-Control"</span>, CacheControl.FORCE_CACHE.toString())</div><div class="line">                   .build();</div><div class="line">       &#125;</div><div class="line">   &#125;</div><div class="line">&#125;;</div></pre></td></tr></table></figure>
+<p>如下拦截器, 做了:</p>
+<ol>
+<li>对于request, 当没有网络时, 使用CacheControl.FORCE_CACHE, 即使用缓存. (正常情况使用2.2配置的Cache-Control)</li>
+<li>对于response, 有网时, 加入和request一样的Cache-Control; </li>
+<li>对于response, 无网, 使用CacheControl.FORCE_CACHE(这种情况较为少见).</li>
+</ol>
+<p>做好了拦截器, 不要忘记加到OkHttpClient中:</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">builder.addNetworkInterceptor(mCacheControlInterceptor);</div></pre></td></tr></table></figure>
+<h2 id="3-严重提醒"><a href="#3-严重提醒" class="headerlink" title="3, 严重提醒"></a>3, 严重提醒</h2><blockquote>
+<p>严重注意, 在加入interceptor时:<br>使用的是addNetworkInterceptor, 而非addInterceptor.</p>
+</blockquote>
+<p>二者区别参见<a href="https://github.com/square/okhttp/wiki/Interceptors" target="_blank" rel="external">OkHttp wiki的Interceptor介绍</a>, 在此就借个图来用下:<br><img src="http://oat9lzupi.bkt.clouddn.com/2016-08-15-14711905709322.png" alt=""><br>正所谓一图千字, 可以很清楚的看到CACHE的层次了…具体的分析大家还是<a href="https://github.com/square/okhttp" target="_blank" rel="external">Read the fucking source code</a>吧:)</p>
+<p>这里就说明下为什么要使用addNetworkInterceptor吧.</p>
+<p>某些情况下, 服务器返回的response是会带有Cache-Control的, 如果这个Cache-Control的时效配置和你想要的不一致, 或是更甚者服务器传回类似这样的:<br><img src="http://oat9lzupi.bkt.clouddn.com/2016-08-15-14711909481333.jpg" alt=""><br>那么我们就悲剧了, no-cache, 意味着响应不会被缓存.</p>
+<ul>
+<li><p>当然, 如果服务器没有定制response的Cache-Control属性的话, 我们使用addInterceptor来添加拦截器, 还是可以给reponse加入Cache-Control并使其缓存的.</p>
+</li>
+<li><p>关于Interceptor和NetworkInterceptor的区别, 建议大家还是读源码…在此略过.</p>
+</li>
+<li><p>稳妥起见, 完全由客户端可控的话, 还是使用addNetworkInterceptor吧.</p>
+</li>
+</ul>
+<h2 id="4-结语"><a href="#4-结语" class="headerlink" title="4, 结语"></a>4, 结语</h2><p>回顾下, 加入网络缓存的几步:</p>
+<ol>
+<li>配置缓存目录</li>
+<li>配置request Cache-Control</li>
+<li>配置response Cache-Control</li>
+</ol>
+<p>虽说简单, 但是个中的确包含了很多知识点. Cache-Control属性的使用, 意义; OkHttp的拦截器; Retrofit的header配置等等.</p>
+<p>还是那句话, 更多的是希望大家能够在学到东西的同时, 了解更多其相关的原理, 或是学习方法.</p>
+<p><strong>知其然, 知其所以然.</strong></p>
+<p><a href="https://github.com/mingjunli/GithubApp" target="_blank" rel="external">本文例子, 完整代码</a></p>
+<blockquote>
+<p>转载请注明出处, 欢迎大家分享到朋友圈, 微博~</p>
+</blockquote>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/Android/" rel="tag"># Android</a>
+          
+            <a href="/tags/架构/" rel="tag"># 架构</a>
+          
+            <a href="/tags/MVP/" rel="tag"># MVP</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2016/08/03/pm/product-dev-flow/" rel="next" title="浅谈移动互联网产品App的研发流程">
+                <i class="fa fa-chevron-left"></i> 浅谈移动互联网产品App的研发流程
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2016/08/18/app-opti/app_opt/" rel="prev" title="Android App优化, 要怎么做?">
+                Android App优化, 要怎么做? <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+        <div class="ds-share flat" data-thread-key="2016/08/15/mvp/mvp4/"
+     data-title="MVP架构实现的Github客户端(4-加入网络缓存)"
+     data-content=""
+     data-url="http://blog.lmj.wiki/2016/08/15/mvp/mvp4/">
+  <div class="ds-share-inline">
+    <ul  class="ds-share-icons-16">
+
+      <li data-toggle="ds-share-icons-more"><a class="ds-more" href="javascript:void(0);">分享到：</a></li>
+      <li><a class="ds-weibo" href="javascript:void(0);" data-service="weibo">微博</a></li>
+      <li><a class="ds-qzone" href="javascript:void(0);" data-service="qzone">QQ空间</a></li>
+      <li><a class="ds-qqt" href="javascript:void(0);" data-service="qqt">腾讯微博</a></li>
+      <li><a class="ds-wechat" href="javascript:void(0);" data-service="wechat">微信</a></li>
+
+    </ul>
+    <div class="ds-share-icons-more">
+    </div>
+  </div>
+</div>
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+      <div class="ds-thread" data-thread-key="2016/08/15/mvp/mvp4/"
+           data-title="MVP架构实现的Github客户端(4-加入网络缓存)" data-url="http://blog.lmj.wiki/2016/08/15/mvp/mvp4/">
+      </div>
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          
+            <img class="site-author-image" itemprop="image"
+              src="/img/avatar.jpeg"
+              alt="anly_jun" />
+          
+            <p class="site-author-name" itemprop="name">anly_jun</p>
+            <p class="site-description motion-element" itemprop="description">Android, iOS, Mobile Dev/Test, Web, Python</p>
+        </div>
+
+        <nav class="site-state motion-element">
+
+          
+            <div class="site-state-item site-state-posts">
+            
+              <a href="/archives">
+            
+                <span class="site-state-item-count">55</span>
+                <span class="site-state-item-name">日志</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-categories">
+              <a href="/categories/index.html">
+                <span class="site-state-item-count">6</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-tags">
+              <a href="/tags/index.html">
+                <span class="site-state-item-count">20</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+          <div class="feed-link motion-element">
+            <a href="/atom.xml" rel="alternate">
+              <i class="fa fa-rss"></i>
+              RSS
+            </a>
+          </div>
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#1-为什么要加缓存"><span class="nav-number">1.</span> <span class="nav-text">1, 为什么要加缓存</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-好了-废话还是少说-直接开始"><span class="nav-number">2.</span> <span class="nav-text">2, 好了, 废话还是少说, 直接开始</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#2-1-配置OkHttp的缓存目录"><span class="nav-number">2.1.</span> <span class="nav-text">2.1 配置OkHttp的缓存目录</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-2-配置Retrofit-Request接口的”Cache-Control”-Header"><span class="nav-number">2.2.</span> <span class="nav-text">2.2 配置Retrofit Request接口的”Cache-Control” Header</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-3-配置Response中的”Cache-Control”-Header"><span class="nav-number">2.3.</span> <span class="nav-text">2.3 配置Response中的”Cache-Control” Header</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-严重提醒"><span class="nav-number">3.</span> <span class="nav-text">3, 严重提醒</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#4-结语"><span class="nav-number">4.</span> <span class="nav-text">4, 结语</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2017</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">anly_jun</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+  <span class="post-meta-divider">|</span>
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">NexT.Gemini</a> v5.1.2</div>
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.2"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.2"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.2"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.2"></script>
+
+
+
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.2"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.2"></script>
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.2"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.2"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.2"></script>
+
+
+
+  
+
+  
+    
+  
+
+  <script type="text/javascript">
+    var duoshuoQuery = {short_name:"anlyjun"};
+    (function() {
+      var ds = document.createElement('script');
+      ds.type = 'text/javascript';ds.async = true;
+      ds.id = 'duoshuo-script';
+      ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+      ds.charset = 'UTF-8';
+      (document.getElementsByTagName('head')[0]
+      || document.getElementsByTagName('body')[0]).appendChild(ds);
+    })();
+  </script>
+
+  
+    
+    
+    <script src="/lib/ua-parser-js/dist/ua-parser.min.js?v=0.7.9"></script>
+    <script src="/js/src/hook-duoshuo.js"></script>
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

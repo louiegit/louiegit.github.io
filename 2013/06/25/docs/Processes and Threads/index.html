@@ -1,0 +1,873 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next gemini use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.2" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="Android,翻译," />
+
+
+
+
+
+  <link rel="alternate" href="/atom.xml" title="ANLY'S BLOG" type="application/atom+xml" />
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.1.2" />
+
+
+
+
+
+
+<meta name="description" content="Processes and Threads当一个application组件启动时，系统会启动一个单线程的Linux进程来执行它。默认情况下，同一个application的所有组件都运行在相同的一个进程和线程（该线程我们通常称之为主线程“main thread”或UI线程“UI thread”）里。当然，你可以让你的application的组件运行在不同进程，也可以在任意进程中创建额外的线程。">
+<meta name="keywords" content="Android,翻译">
+<meta property="og:type" content="article">
+<meta property="og:title" content="[译]Processes and Threads">
+<meta property="og:url" content="http://blog.lmj.wiki/2013/06/25/docs/Processes and Threads/index.html">
+<meta property="og:site_name" content="ANLY&#39;S BLOG">
+<meta property="og:description" content="Processes and Threads当一个application组件启动时，系统会启动一个单线程的Linux进程来执行它。默认情况下，同一个application的所有组件都运行在相同的一个进程和线程（该线程我们通常称之为主线程“main thread”或UI线程“UI thread”）里。当然，你可以让你的application的组件运行在不同进程，也可以在任意进程中创建额外的线程。">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2017-09-12T15:16:05.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="[译]Processes and Threads">
+<meta name="twitter:description" content="Processes and Threads当一个application组件启动时，系统会启动一个单线程的Linux进程来执行它。默认情况下，同一个application的所有组件都运行在相同的一个进程和线程（该线程我们通常称之为主线程“main thread”或UI线程“UI thread”）里。当然，你可以让你的application的组件运行在不同进程，也可以在任意进程中创建额外的线程。">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Gemini',
+    version: '5.1.2',
+    sidebar: {"position":"right","display":"post","offset":12,"offset_float":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://blog.lmj.wiki/2013/06/25/docs/Processes and Threads/"/>
+
+
+
+
+
+  <title>[译]Processes and Threads | ANLY'S BLOG</title>
+  
+
+
+
+
+
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?3e4bf02bc6c59d846f194a8afc04ecfc";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-right page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">ANLY'S BLOG</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">看看书, 写写字; 捣鼓捣鼓小技术.</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            关于
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://blog.lmj.wiki/2013/06/25/docs/Processes and Threads/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="anly_jun">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/img/avatar.jpeg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="ANLY'S BLOG">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">[译]Processes and Threads</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2013-06-25T22:44:00+08:00">
+                2013-06-25
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Android/" itemprop="url" rel="index">
+                    <span itemprop="name">Android</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2013/06/25/docs/Processes and Threads/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count ds-thread-count" data-thread-key="2013/06/25/docs/Processes and Threads/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h2 id="Processes-and-Threads"><a href="#Processes-and-Threads" class="headerlink" title="Processes and Threads"></a>Processes and Threads</h2><p>当一个application组件启动时，系统会启动一个单线程的Linux进程来执行它。默认情况下，同一个application的所有组件都运行在相同的一个进程和线程（该线程我们通常称之为主线程“main thread”或UI线程“UI thread”）里。<br>当然，你可以让你的application的组件运行在不同进程，也可以在任意进程中创建额外的线程。</p>
+<a id="more"></a> 
+<h2 id="Processes"><a href="#Processes" class="headerlink" title="Processes"></a>Processes</h2><p>默认情况下，相同application的所有组件都运行在同一个进程中，而且大多数情况下，你也没有必要去修改此点。当然，当你确实需要指定不同组件运行在不同进程时，你可以在manifest文件中指定。<br>manifest文件声明<activity>, <service>, <receiver>, <provider>时，都有一个属性“android:process”来让你指定该组件所运行的进程。<br>你也可以为不同application的组件指定一个相同的进程，以便分享数据。<strong>不同的application分享同样的Linux user ID，且具有相当的签名。</strong></provider></receiver></service></activity></p>
+<p><application>标签也支持“android:process”属性，来设置改application的所有组件所运行的进程。</application></p>
+<p>当可用内存很小，且有更直接服务用户的进程请求内存时，Android系统可能会杀死进程。被杀死的进程里所有application组件将随之被销毁(destroyed)。当这些组件再次运行时该进程会重新启动。<br>Android系统会根据进程的相对重要关系来决定杀死哪些进程。例如，保留那些不可见activity的进程相比于保留可见activityde进程更容易被杀死。总来的说，决定杀死哪个进程，取决于该进程中所运行的组件状态。规则稍后将在以下章节讨论。</p>
+<h3 id="Process-lifecycle"><a href="#Process-lifecycle" class="headerlink" title="Process lifecycle"></a>Process lifecycle</h3><p>Android系统尽可能的去维护每个application的进程，但是最终总会为了新的、更重要的进程而删除、杀死旧的进程。系统根据进程的<strong>重要级别（importance hierarchy）</strong>来决定哪些进程应该被杀死，哪些应该保留。<br>系统将重要级别分成五个等级，根据重要性排列如下：</p>
+<ol>
+<li>Foreground process（前台进程）<br>用户正在操作的组件所在进程。以下几种情况的进程将被视为前台进程：</li>
+</ol>
+<ul>
+<li>用户正在交互的activity（该activity的onResume方法已被调用）所运行的进程。</li>
+<li>用户正在交互的activity绑定的service所运行的进程。</li>
+<li>前台service（调用了startForeground的service，具体参见<a href="service">Service</a>）所运行的进程.</li>
+<li>正在执行生命周期回调（onCreate、onStart、onDestroy）的service所运行的进程。</li>
+<li>正在执行onReceive的<a href="">BroadcastReceiver</a>所运行的进程。<br>通常，在一定时间内只有很少的一部分进程是前台进程。他们在极端情况下才会被杀死—–内存低到前台进程都无法正常运行的情况。</li>
+</ul>
+<ol>
+<li>Visible process（可见进程）<br>不包含任何前台组件，但是还是可以影响用户所见的进程。有以下两者之一的进程被视为可见进程：</li>
+</ol>
+<ul>
+<li>包含的activity不在前台，但是还是可见（onPause被执行，onStop未执行）。比如前台dialog覆盖下的activity。</li>
+<li>可见activity绑定的service运行的进程。</li>
+<li>可是进程也被认为是极端重要的，除非是为了保证前台进程的运行才会被杀死。</li>
+</ul>
+<ol>
+<li><p>Service process（服务进程）<br>运行一个通过startService()方法启动的service，且不属于以上两种类型的进程。虽然服务进程不绑定任何用户看到的，但是通常来说该service做的事情是用户关心的（例如在后台播放音乐或是下载文件等），所以系统会保证其运行除非没有足够内存来运行前台进程和可见进程。</p>
+</li>
+<li><p>Background process（后台进程）<br>保留一个当前不可见的activity（onStop被执行）的进程。这些进程不会直接影响用户体验，所以系统会随时回收它们来保证前台、可见、服务进程的运行。它们会被保存在一个LRU（least recently used）队列里，以此来保证最近被用户看到的activity所在的进程是最后被杀死的。<br>如果activity正确实现了其生命周期回调，且保存了它的当前状态，杀死这些进程并不会对用户造成可见影响，因为当用户返回该activity时，该activity会恢复其所有可见状态。具体参看<a href="activity">Activity</a>的保存恢复状态章节。</p>
+</li>
+<li><p>Empty process（空进程）<br>没有保留任何活动application组件的进程。保留此类进程的唯一理由是缓存目的，来提升下一次组件的启动速度。系统会经常性的杀死这些进程来在进程缓存和内核缓存的系统资源上做一个平衡。</p>
+</li>
+</ol>
+<p>Android系统根据进程的最高能力来决定其排名。例如运行着一个service和一个可见activity的进程会被认为是一个可见进程而非服务进程。<br>另外，一个进程的排名可能会因为其他进程的依赖而提高—一个为其他进程提供服务的进程排名不能低于其服务的进程。举个例子，A进程中的content provider服务于B进程中的client，又或是A进程中的service被B进程的组件绑定着，那么A进程至少应该被视为与B进程同等重要。<br>因为一个运行service的进程重要性比一个运行后台activity的进程高，activity中的长时间运行操作就应该启动一个service来做，而不是简单的创建一个工作线程（worker thread）—特别是如果该操作是可以脱离activity的。比方说，上传图片的activity应该启动一个service来做上传操作，这样即使用户离开了该activity，上传动作还可以在后台执行。使用service保证了该操作至少拥有了“服务进程”的级别，不管activity怎么样了。同样的理由，broadcast receiver中也应该启动service而非起线程来执行长时间的操作。</p>
+<h2 id="Threads"><a href="#Threads" class="headerlink" title="Threads"></a>Threads</h2><p>当application启动后，系统会创建一个线程来执行它，该线程称之为“main”主线程。该线程非常重要，它负责将事件分发给合适的用户UI控件，包括绘制事件。它还是你的application与UI控件（Android UI toolkit，from android.widget, android.view）交互的线程。如此，该主线程也通常被叫做UI线程。<br>系统不会为每个application组件创建单独的线程。所有运行在同一个进程下的application组件都实例化在UI线程。因此，响应系统回调的方法（例如onKeyDown，或者生命周期的回调）都是运行在该进程的UI线程。<br>例如，当用户点击屏幕上的一个按钮时，你的app的UI线程会分发此事件到该控件，该控件会转换为按压状态并发送一个请求到事件队列。UI线程会出列该请求并通知控件重绘。<br>当你的应用需要处理频繁的用户操作时，单线程模型是性能低下的。特别是，当所有的事情都运行在UI线程，执行一个长时间的操作例如网络请求或数据库查询就会阻塞整个UI。当UI线程被阻塞时，事件不会被分发，包括绘制事件。从用户角度，该app就挂死了。更糟的是，如果UI线程阻塞超过一段时间（现在是大约5秒），用户将会看到“application not response”的ANR对话框。<br>另外，Android的UI控件不是线程安全的，所以，不能在worker线程操作UI控件，只能在UI线程操作UI。<br>综上，有两个基本规则针对Android的单线程模型：</p>
+<ol>
+<li>不要阻塞UI线程。</li>
+<li>不要在非UI线程中操作UI控件。<h3 id="Worker-Threads"><a href="#Worker-Threads" class="headerlink" title="Worker Threads"></a>Worker Threads</h3>根据上述原则，至关重要的是不要阻塞你的UI线程。如果你的一些操作不是瞬时的，你应该让它们运行在一个单独的线程（“background”或“worker”线程）。<br>例如，如下代码在一个单独的线程下载网络图片并显示在ImageView中：</li>
+</ol>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">onClick</span><span class="params">(View v)</span> </span>&#123;</div><div class="line">    <span class="keyword">new</span> Thread(<span class="keyword">new</span> Runnable() &#123;</div><div class="line">        <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">run</span><span class="params">()</span> </span>&#123;</div><div class="line">            Bitmap b = loadImageFromNetwork(<span class="string">"http://example.com/image.png"</span>);</div><div class="line">            mImageView.setImageBitmap(b);</div><div class="line">        &#125;</div><div class="line">    &#125;).start();</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>初看，这代码可以很好的工作，创建了一个新的线程来执行网络下载操作。然而，它违背了第二个原则—不要再非UI线程操作UI控件。这可能产生不确定、意外的行为，且很难去追踪。<br>Android提供了一些从其他线程访问UI线程的方式来解决这个问题：</p>
+<ul>
+<li>Activity.runOnUiThread(Runnable)</li>
+<li>View.post(Runnable)</li>
+<li>View.postDelayed(Runnable, long)</li>
+</ul>
+<p>例如，我们可以用View.post(Runnable)来改写上述代码：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">onClick</span><span class="params">(View v)</span> </span>&#123;</div><div class="line">    <span class="keyword">new</span> Thread(<span class="keyword">new</span> Runnable() &#123;</div><div class="line">        <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">run</span><span class="params">()</span> </span>&#123;</div><div class="line">            <span class="keyword">final</span> Bitmap bitmap =</div><div class="line">                    loadImageFromNetwork(<span class="string">"http://example.com/image.png"</span>);</div><div class="line">            mImageView.post(<span class="keyword">new</span> Runnable() &#123;</div><div class="line">                <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">run</span><span class="params">()</span> </span>&#123;</div><div class="line">                    mImageView.setImageBitmap(bitmap);</div><div class="line">                &#125;</div><div class="line">            &#125;);</div><div class="line">        &#125;</div><div class="line">    &#125;).start();</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>现在，此实现线程安全了，网络请求在子线程中执行，ImageView在UI线程被维护。<br>然而，随着操作的复杂度增加，此类代码就会变得越来越复杂，越来越难以维护。为了处理与worker线程的复杂交互，你可以考虑在worker线程中使用Handler的消息分发来处理与UI线程的交互。另外有一个更好的方式，那就是继承AsyncTask来执行一些异步操作。</p>
+<h3 id="Using-AsyncTask"><a href="#Using-AsyncTask" class="headerlink" title="Using AsyncTask"></a>Using AsyncTask</h3><p>AsyncTask可以让你在UI线程中执行异步操作。它执行耗时操作在子线程，分发结果在UI线程。<br>使用AsyncTask，首先你得继承AsyncTask并实现其doInBackground()方法—运行在一个线程池的后台线程的方法。其次如果要更新UI，你还得实现onPostExecute()方法—分发从doInBackground得到的结果，且运行在UI线程。可以直接在UI线程中调用execute()方法来执行该任务：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">onClick</span><span class="params">(View v)</span> </span>&#123;</div><div class="line">    <span class="keyword">new</span> DownloadImageTask().execute(<span class="string">"http://example.com/image.png"</span>);</div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="keyword">private</span> <span class="class"><span class="keyword">class</span> <span class="title">DownloadImageTask</span> <span class="keyword">extends</span> <span class="title">AsyncTask</span>&lt;<span class="title">String</span>, <span class="title">Void</span>, <span class="title">Bitmap</span>&gt; </span>&#123;</div><div class="line">    <span class="comment">/** The system calls this to perform work in a worker thread and</span></div><div class="line"><span class="comment">      * delivers it the parameters given to AsyncTask.execute() */</span></div><div class="line">    <span class="function"><span class="keyword">protected</span> Bitmap <span class="title">doInBackground</span><span class="params">(String... urls)</span> </span>&#123;</div><div class="line">        <span class="keyword">return</span> loadImageFromNetwork(urls[<span class="number">0</span>]);</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="comment">/** The system calls this to perform work in the UI thread and delivers</span></div><div class="line"><span class="comment">      * the result from doInBackground() */</span></div><div class="line">    <span class="function"><span class="keyword">protected</span> <span class="keyword">void</span> <span class="title">onPostExecute</span><span class="params">(Bitmap result)</span> </span>&#123;</div><div class="line">        mImageView.setImageBitmap(result);</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>如下简单描述了AsyncTask的工作方式：</p>
+<ul>
+<li>你可以通过泛型来指定参数、进度值、返回结果的类型。</li>
+<li>doInBackground()方法自动在一个worker线程执行。</li>
+<li>onPreExecute(), onPostExecute() 和 onProgressUpdate()会在UI线程调用。</li>
+<li>doInBackground()的返回值会发送给onPostExecute()。</li>
+<li>在doInBackground()的任意时间，你都可以调用publishProgress()来触发onProgressUpdate()。</li>
+<li>你可以在任何时候，任意线程取消该任务。</li>
+</ul>
+<blockquote>
+<p>注意：你可能会遇到的一个问题是，当你的activity在意外重启（例如用户转屏）时，会销毁你的worker线程。</p>
+</blockquote>
+<h3 id="Thread-safe-methods"><a href="#Thread-safe-methods" class="headerlink" title="Thread-safe methods"></a>Thread-safe methods</h3><p>在某些情况下，你实现的方法可能不止被一个线程所调用，因此，你应该将你的方法写成是线程安全的。<br>主要是针对会被远程调用的方法—例如<a href="bound-service">bound service</a>里的方法。<br>当一个在IBinder实现的方法调用发生在与IBinder运行的同一进程中的时候，这个方法在调用者的线程中被执行。<br>然而，当这个调用发生在其他进程中时，这个方法在与IBinder相同的进程中，系统维护的线程池中的线程上被执行（它不运行在这个进程的UI线程上）。<br>例如，一个service的onBind()方法会被service进程的UI线程调用，方法实现在onBind()返回的对象上（例如，一个实现RPC方法的子类），此方法会被池中线程调用，因为一个service可以有多个客户端，多个线程池中的线程可以在相同时间使用同一个IBinder方法。IBinder方法因此必须被实现成线程安全的。<br>相似的，一个content provider可以收到其他进程发起的数据请求。尽管ContentResolver和ContentProvider隐藏了进程间通信的管理细节，ContentProvider响应那些请求的方法 - query(), insert(), delete(), update(),和getType()方法—被content provider的进程中的一个线程池的线程调用，而不是进程中的UI线程。因为这些方法可能会在任何时候被任何数量的线程调用，他们必须实现为线程安全的。</p>
+<h2 id="Interprocess-Communication"><a href="#Interprocess-Communication" class="headerlink" title="Interprocess Communication"></a>Interprocess Communication</h2><p>Android提供了一种进程间通信机制用来做远程过程调用（RPCs）。在这种机制中，被一个activity或是其他application组件调用的方法，执行在远程进程或返回结果给调用者。这需要分解这个方法调用以及它的数据到一个操作系统能理解的层面，把它们从一个本地进程和地址空间转换成一个远程进程和地址空间，然后再远程进程重新组装和执行。返回值反向传送回来。<br>Android提供了这些IPC处理的所有代码，你只需关注定义和实现RPC接口。<br>要执行IPC，你的应用必须使用bindService()绑定到一个<a href="service">service</a>上。</p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/Android/" rel="tag"># Android</a>
+          
+            <a href="/tags/翻译/" rel="tag"># 翻译</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2013/06/21/docs/Content Provider/" rel="next" title="[译]Content Provider">
+                <i class="fa fa-chevron-left"></i> [译]Content Provider
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2015/11/14/android/android-env/" rel="prev" title="搭建Android开发环境">
+                搭建Android开发环境 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+        <div class="ds-share flat" data-thread-key="2013/06/25/docs/Processes and Threads/"
+     data-title="[译]Processes and Threads"
+     data-content=""
+     data-url="http://blog.lmj.wiki/2013/06/25/docs/Processes and Threads/">
+  <div class="ds-share-inline">
+    <ul  class="ds-share-icons-16">
+
+      <li data-toggle="ds-share-icons-more"><a class="ds-more" href="javascript:void(0);">分享到：</a></li>
+      <li><a class="ds-weibo" href="javascript:void(0);" data-service="weibo">微博</a></li>
+      <li><a class="ds-qzone" href="javascript:void(0);" data-service="qzone">QQ空间</a></li>
+      <li><a class="ds-qqt" href="javascript:void(0);" data-service="qqt">腾讯微博</a></li>
+      <li><a class="ds-wechat" href="javascript:void(0);" data-service="wechat">微信</a></li>
+
+    </ul>
+    <div class="ds-share-icons-more">
+    </div>
+  </div>
+</div>
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+      <div class="ds-thread" data-thread-key="2013/06/25/docs/Processes and Threads/"
+           data-title="[译]Processes and Threads" data-url="http://blog.lmj.wiki/2013/06/25/docs/Processes and Threads/">
+      </div>
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          
+            <img class="site-author-image" itemprop="image"
+              src="/img/avatar.jpeg"
+              alt="anly_jun" />
+          
+            <p class="site-author-name" itemprop="name">anly_jun</p>
+            <p class="site-description motion-element" itemprop="description">Android, iOS, Mobile Dev/Test, Web, Python</p>
+        </div>
+
+        <nav class="site-state motion-element">
+
+          
+            <div class="site-state-item site-state-posts">
+            
+              <a href="/archives">
+            
+                <span class="site-state-item-count">55</span>
+                <span class="site-state-item-name">日志</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-categories">
+              <a href="/categories/index.html">
+                <span class="site-state-item-count">6</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-tags">
+              <a href="/tags/index.html">
+                <span class="site-state-item-count">20</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+          <div class="feed-link motion-element">
+            <a href="/atom.xml" rel="alternate">
+              <i class="fa fa-rss"></i>
+              RSS
+            </a>
+          </div>
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#Processes-and-Threads"><span class="nav-number">1.</span> <span class="nav-text">Processes and Threads</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Processes"><span class="nav-number">2.</span> <span class="nav-text">Processes</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Process-lifecycle"><span class="nav-number">2.1.</span> <span class="nav-text">Process lifecycle</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Threads"><span class="nav-number">3.</span> <span class="nav-text">Threads</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Worker-Threads"><span class="nav-number">3.1.</span> <span class="nav-text">Worker Threads</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Using-AsyncTask"><span class="nav-number">3.2.</span> <span class="nav-text">Using AsyncTask</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Thread-safe-methods"><span class="nav-number">3.3.</span> <span class="nav-text">Thread-safe methods</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Interprocess-Communication"><span class="nav-number">4.</span> <span class="nav-text">Interprocess Communication</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2017</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">anly_jun</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+  <span class="post-meta-divider">|</span>
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">NexT.Gemini</a> v5.1.2</div>
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.2"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.2"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.2"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.2"></script>
+
+
+
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.2"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.2"></script>
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.2"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.2"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.2"></script>
+
+
+
+  
+
+  
+    
+  
+
+  <script type="text/javascript">
+    var duoshuoQuery = {short_name:"anlyjun"};
+    (function() {
+      var ds = document.createElement('script');
+      ds.type = 'text/javascript';ds.async = true;
+      ds.id = 'duoshuo-script';
+      ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+      ds.charset = 'UTF-8';
+      (document.getElementsByTagName('head')[0]
+      || document.getElementsByTagName('body')[0]).appendChild(ds);
+    })();
+  </script>
+
+  
+    
+    
+    <script src="/lib/ua-parser-js/dist/ua-parser.min.js?v=0.7.9"></script>
+    <script src="/js/src/hook-duoshuo.js"></script>
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

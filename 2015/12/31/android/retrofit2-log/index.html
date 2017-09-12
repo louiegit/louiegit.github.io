@@ -1,0 +1,837 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next gemini use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.2" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="Android,Retrofit," />
+
+
+
+
+
+  <link rel="alternate" href="/atom.xml" title="ANLY'S BLOG" type="application/atom+xml" />
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.1.2" />
+
+
+
+
+
+
+<meta name="description" content="背景最近公司项目App改版，大家把之前一期时用到的一些优秀的开源库重新捋了一下。 Retrofit作为Java以及Android的Rest Client实现，帮助我们封装了大量的繁琐实现，让我们可以像调用接口一样做HTTP请求，使代码更加简洁而具有可读性。然而，高度的抽象封装也让我们不太容易更深入的了解我们的HTTP请求过程，对于刚接触的同学来说，学习成本较高，且不太利于在调试过程中定位问题。">
+<meta name="keywords" content="Android,Retrofit">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Retrofit的Log输出">
+<meta property="og:url" content="http://blog.lmj.wiki/2015/12/31/android/retrofit2-log/index.html">
+<meta property="og:site_name" content="ANLY&#39;S BLOG">
+<meta property="og:description" content="背景最近公司项目App改版，大家把之前一期时用到的一些优秀的开源库重新捋了一下。 Retrofit作为Java以及Android的Rest Client实现，帮助我们封装了大量的繁琐实现，让我们可以像调用接口一样做HTTP请求，使代码更加简洁而具有可读性。然而，高度的抽象封装也让我们不太容易更深入的了解我们的HTTP请求过程，对于刚接触的同学来说，学习成本较高，且不太利于在调试过程中定位问题。">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="http://blog.lmj.wiki/img/16-26-00.jpg">
+<meta property="og:image" content="http://blog.lmj.wiki/img/interceptors@2x.png">
+<meta property="og:updated_time" content="2017-09-12T15:16:05.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Retrofit的Log输出">
+<meta name="twitter:description" content="背景最近公司项目App改版，大家把之前一期时用到的一些优秀的开源库重新捋了一下。 Retrofit作为Java以及Android的Rest Client实现，帮助我们封装了大量的繁琐实现，让我们可以像调用接口一样做HTTP请求，使代码更加简洁而具有可读性。然而，高度的抽象封装也让我们不太容易更深入的了解我们的HTTP请求过程，对于刚接触的同学来说，学习成本较高，且不太利于在调试过程中定位问题。">
+<meta name="twitter:image" content="http://blog.lmj.wiki/img/16-26-00.jpg">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Gemini',
+    version: '5.1.2',
+    sidebar: {"position":"right","display":"post","offset":12,"offset_float":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://blog.lmj.wiki/2015/12/31/android/retrofit2-log/"/>
+
+
+
+
+
+  <title>Retrofit的Log输出 | ANLY'S BLOG</title>
+  
+
+
+
+
+
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?3e4bf02bc6c59d846f194a8afc04ecfc";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-right page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">ANLY'S BLOG</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">看看书, 写写字; 捣鼓捣鼓小技术.</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            关于
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://blog.lmj.wiki/2015/12/31/android/retrofit2-log/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="anly_jun">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/img/avatar.jpeg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="ANLY'S BLOG">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">Retrofit的Log输出</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2015-12-31T15:34:00+08:00">
+                2015-12-31
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Android/" itemprop="url" rel="index">
+                    <span itemprop="name">Android</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2015/12/31/android/retrofit2-log/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count ds-thread-count" data-thread-key="2015/12/31/android/retrofit2-log/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h2 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h2><p>最近公司项目App改版，大家把之前一期时用到的一些优秀的开源库重新捋了一下。</p>
+<p>Retrofit作为Java以及Android的Rest Client实现，帮助我们封装了大量的繁琐实现，让我们可以像调用接口一样做HTTP请求，使代码更加简洁而具有可读性。然而，高度的抽象封装也让我们不太容易更深入的了解我们的HTTP请求过程，对于刚接触的同学来说，学习成本较高，且不太利于在调试过程中定位问题。</p>
+<a id="more"></a>
+<p>在Retrofit 1.x的版本中，我们可以通过如下<strong>setLogLevel</strong>接口来让：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">new</span> RestAdapter.Builder()</div><div class="line">    .setLogLevel(RestAdapter.LogLevel.FULL)</div></pre></td></tr></table></figure>
+<h2 id="问题"><a href="#问题" class="headerlink" title="问题"></a>问题</h2><p>本次改版中，我们将Retrofit替换成了2.0版本，却发现已经没有了这样类似的接口，让同学们很困惑，感觉调试很不便。<br>然而这是为什么呢，为什么Retrofit会剔除Log这个调试利器呢？</p>
+<h2 id="分析"><a href="#分析" class="headerlink" title="分析"></a>分析</h2><p>这需要从这次升级说起，具体升级说明请参看<a href="https://realm.io/cn/news/droidcon-jake-wharton-simple-http-retrofit-2/" target="_blank" rel="external">Jake大神的演讲</a>。</p>
+<p>我觉得Retrofit的此次大版本升级更专注了其作为Rest Client的职能，关注与Rest架构中Client端的事情。Http的相关工作都完全交由Square自家开发的OkHttp完成，且不再可定制HttpClient。<br>可以简单的理解其目标的层次结构如下：</p>
+<p><img src="/img/16-26-00.jpg" alt="16-26-00"></p>
+<p>不难理解，Retrofit升级后作为一个完全而单一Rest Client实现，是一个上层架构实现，简单来说只是一个帮助我们以Rest架构做Http请求的实现，本就不应该由其输出Http的相关Log了。<br>那么我们怎么输出Http的相关Log呢？根据上图，我们只能寄希望于OkHttp了。</p>
+<h2 id="OkHttp的Interceptors"><a href="#OkHttp的Interceptors" class="headerlink" title="OkHttp的Interceptors"></a>OkHttp的Interceptors</h2><p>回答这个问题之前，我们先来看下OkHttp中的Interceptors。Interceptor，顾名思义，拦截器，可以帮助我们拦截所有的request，response，已对其进行监视、重写、重试等。例如我们可以通过Interceptor来给我们所有的request加上相同的header，对所有的response做重写处理，例如加上Cache-Control等。<br>关于Interceptor的原理以及其实现方式，在此我们就不展开了，官网扯的一张图，大家先看着，有时间我们单独扒一扒这块的实现，对我们的编程理念也是很有帮助的：</p>
+<p><img src="/img/interceptors@2x.png" alt="interceptors@2x"></p>
+<p>说到着，同学们可能就明白了，既然我们可以拦截到request和response，当然我们也可以很轻易的Log出它们了。这不就达到了我们打印Http请求和响应的目的了吗。</p>
+<h2 id="HttpLoggingInterceptor"><a href="#HttpLoggingInterceptor" class="headerlink" title="HttpLoggingInterceptor"></a>HttpLoggingInterceptor</h2><p>牛逼如Square肯定也不会忽视我们这个常用的需求，已经帮我们实现好了一个Log Interceptor，感谢开源，感谢Square。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"><span class="comment">// 具体实现可以查看源码</span></div><div class="line">HttpLoggingInterceptor implements Interceptor</div></pre></td></tr></table></figure>
+<p>类似于Retrofit 1.x的Log Level, HttpLoggingInterceptor也提供了几种Level：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">public</span> <span class="keyword">enum</span> Level &#123;</div><div class="line">    <span class="comment">/** No logs. */</span></div><div class="line">    NONE,</div><div class="line">    <span class="comment">/**</span></div><div class="line"><span class="comment">     * Logs request and response lines.</span></div><div class="line"><span class="comment">     * &lt;p&gt;</span></div><div class="line"><span class="comment">     * Example:</span></div><div class="line"><span class="comment">     * &lt;pre&gt;&#123;<span class="doctag">@code</span></span></div><div class="line"><span class="comment">     * --&gt; POST /greeting HTTP/1.1 (3-byte body)</span></div><div class="line"><span class="comment">     *</span></div><div class="line"><span class="comment">     * &lt;-- HTTP/1.1 200 OK (22ms, 6-byte body)</span></div><div class="line"><span class="comment">     * &#125;&lt;/pre&gt;</span></div><div class="line"><span class="comment">     */</span></div><div class="line">    BASIC,</div><div class="line">    <span class="comment">/**</span></div><div class="line"><span class="comment">     * Logs request and response lines and their respective headers.</span></div><div class="line"><span class="comment">     * &lt;p&gt;</span></div><div class="line"><span class="comment">     * Example:</span></div><div class="line"><span class="comment">     * &lt;pre&gt;&#123;<span class="doctag">@code</span></span></div><div class="line"><span class="comment">     * --&gt; POST /greeting HTTP/1.1</span></div><div class="line"><span class="comment">     * Host: example.com</span></div><div class="line"><span class="comment">     * Content-Type: plain/text</span></div><div class="line"><span class="comment">     * Content-Length: 3</span></div><div class="line"><span class="comment">     * --&gt; END POST</span></div><div class="line"><span class="comment">     *</span></div><div class="line"><span class="comment">     * &lt;-- HTTP/1.1 200 OK (22ms)</span></div><div class="line"><span class="comment">     * Content-Type: plain/text</span></div><div class="line"><span class="comment">     * Content-Length: 6</span></div><div class="line"><span class="comment">     * &lt;-- END HTTP</span></div><div class="line"><span class="comment">     * &#125;&lt;/pre&gt;</span></div><div class="line"><span class="comment">     */</span></div><div class="line">    HEADERS,</div><div class="line">    <span class="comment">/**</span></div><div class="line"><span class="comment">     * Logs request and response lines and their respective headers and bodies (if present).</span></div><div class="line"><span class="comment">     * &lt;p&gt;</span></div><div class="line"><span class="comment">     * Example:</span></div><div class="line"><span class="comment">     * &lt;pre&gt;&#123;<span class="doctag">@code</span></span></div><div class="line"><span class="comment">     * --&gt; POST /greeting HTTP/1.1</span></div><div class="line"><span class="comment">     * Host: example.com</span></div><div class="line"><span class="comment">     * Content-Type: plain/text</span></div><div class="line"><span class="comment">     * Content-Length: 3</span></div><div class="line"><span class="comment">     *</span></div><div class="line"><span class="comment">     * Hi?</span></div><div class="line"><span class="comment">     * --&gt; END GET</span></div><div class="line"><span class="comment">     *</span></div><div class="line"><span class="comment">     * &lt;-- HTTP/1.1 200 OK (22ms)</span></div><div class="line"><span class="comment">     * Content-Type: plain/text</span></div><div class="line"><span class="comment">     * Content-Length: 6</span></div><div class="line"><span class="comment">     *</span></div><div class="line"><span class="comment">     * Hello!</span></div><div class="line"><span class="comment">     * &lt;-- END HTTP</span></div><div class="line"><span class="comment">     * &#125;&lt;/pre&gt;</span></div><div class="line"><span class="comment">     */</span></div><div class="line">    BODY</div><div class="line">  &#125;</div></pre></td></tr></table></figure>
+<p>  对于我们的调试需求来说，一般使用BODY级别就可以了。</p>
+<h2 id="解决"><a href="#解决" class="headerlink" title="解决"></a>解决</h2><p>综上，我们的解决方案也就出来了，正常来说直接使用OkHttp提供的HttpLoggingInterceptor就可以了，当然如果你有一些自定义的log输出方式，也可以继承HttpLoggingInterceptor，或实现Interceptor自定义了。<br>  附上代码：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">if</span> (BuildConfig.DEBUG) &#123;</div><div class="line">    HttpLoggingInterceptor loggingInterceptor = <span class="keyword">new</span> HttpLoggingInterceptor();</div><div class="line">    loggingInterceptor.setLevel(HttpLoggingInterceptor.Level.BODY);</div><div class="line">    <span class="comment">// client means OkHttpClient</span></div><div class="line">    client.interceptors().add(loggingInterceptor);</div><div class="line">&#125;</div><div class="line">``` </div><div class="line"></div><div class="line">当然为了使用HttpLoggingInterceptor，因为其包含在OkHttp的一个单独库okhttp-logging-interceptor中，惯例，我们需要在Application的build.gradle中<span class="keyword">import</span>此库：</div><div class="line"></div><div class="line">```java</div><div class="line"><span class="comment">// OkHttp logging interceptor</span></div><div class="line"><span class="comment">// https://github.com/square/okhttp/wiki/Interceptors</span></div><div class="line">compile <span class="string">'com.squareup.okhttp:logging-interceptor:2.7.0'</span></div></pre></td></tr></table></figure>
+<blockquote>
+<p>注意：OkHttp的Interceptor必须是OkHttp 2.2及以上可用，且与Retrofit &lt;= 1.8, Picasso &lt;= 2.4不可兼容使用。</p>
+</blockquote>
+<h2 id="结语"><a href="#结语" class="headerlink" title="结语"></a>结语</h2><p>这本是一个很小的需求，但是能引导我们更深入去了解开源库的具体实现，以及其发展完善的方向。了解其实现才可能更好的使用，也让我们可以在自己的编码上考虑得更多，更完美。</p>
+<p>正所谓知其然知其所以然，共勉之。</p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/Android/" rel="tag"># Android</a>
+          
+            <a href="/tags/Retrofit/" rel="tag"># Retrofit</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2015/12/15/android/android-code-rules/" rel="next" title="Android App开发规范">
+                <i class="fa fa-chevron-left"></i> Android App开发规范
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2016/01/05/tools/mac_dev_env/" rel="prev" title="我的Mac常用应用与配置">
+                我的Mac常用应用与配置 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+        <div class="ds-share flat" data-thread-key="2015/12/31/android/retrofit2-log/"
+     data-title="Retrofit的Log输出"
+     data-content=""
+     data-url="http://blog.lmj.wiki/2015/12/31/android/retrofit2-log/">
+  <div class="ds-share-inline">
+    <ul  class="ds-share-icons-16">
+
+      <li data-toggle="ds-share-icons-more"><a class="ds-more" href="javascript:void(0);">分享到：</a></li>
+      <li><a class="ds-weibo" href="javascript:void(0);" data-service="weibo">微博</a></li>
+      <li><a class="ds-qzone" href="javascript:void(0);" data-service="qzone">QQ空间</a></li>
+      <li><a class="ds-qqt" href="javascript:void(0);" data-service="qqt">腾讯微博</a></li>
+      <li><a class="ds-wechat" href="javascript:void(0);" data-service="wechat">微信</a></li>
+
+    </ul>
+    <div class="ds-share-icons-more">
+    </div>
+  </div>
+</div>
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+      <div class="ds-thread" data-thread-key="2015/12/31/android/retrofit2-log/"
+           data-title="Retrofit的Log输出" data-url="http://blog.lmj.wiki/2015/12/31/android/retrofit2-log/">
+      </div>
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          
+            <img class="site-author-image" itemprop="image"
+              src="/img/avatar.jpeg"
+              alt="anly_jun" />
+          
+            <p class="site-author-name" itemprop="name">anly_jun</p>
+            <p class="site-description motion-element" itemprop="description">Android, iOS, Mobile Dev/Test, Web, Python</p>
+        </div>
+
+        <nav class="site-state motion-element">
+
+          
+            <div class="site-state-item site-state-posts">
+            
+              <a href="/archives">
+            
+                <span class="site-state-item-count">55</span>
+                <span class="site-state-item-name">日志</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-categories">
+              <a href="/categories/index.html">
+                <span class="site-state-item-count">6</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-tags">
+              <a href="/tags/index.html">
+                <span class="site-state-item-count">20</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+          <div class="feed-link motion-element">
+            <a href="/atom.xml" rel="alternate">
+              <i class="fa fa-rss"></i>
+              RSS
+            </a>
+          </div>
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#背景"><span class="nav-number">1.</span> <span class="nav-text">背景</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#问题"><span class="nav-number">2.</span> <span class="nav-text">问题</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#分析"><span class="nav-number">3.</span> <span class="nav-text">分析</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#OkHttp的Interceptors"><span class="nav-number">4.</span> <span class="nav-text">OkHttp的Interceptors</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#HttpLoggingInterceptor"><span class="nav-number">5.</span> <span class="nav-text">HttpLoggingInterceptor</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#解决"><span class="nav-number">6.</span> <span class="nav-text">解决</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#结语"><span class="nav-number">7.</span> <span class="nav-text">结语</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2017</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">anly_jun</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+  <span class="post-meta-divider">|</span>
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">NexT.Gemini</a> v5.1.2</div>
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.2"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.2"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.2"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.2"></script>
+
+
+
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.2"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.2"></script>
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.2"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.2"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.2"></script>
+
+
+
+  
+
+  
+    
+  
+
+  <script type="text/javascript">
+    var duoshuoQuery = {short_name:"anlyjun"};
+    (function() {
+      var ds = document.createElement('script');
+      ds.type = 'text/javascript';ds.async = true;
+      ds.id = 'duoshuo-script';
+      ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+      ds.charset = 'UTF-8';
+      (document.getElementsByTagName('head')[0]
+      || document.getElementsByTagName('body')[0]).appendChild(ds);
+    })();
+  </script>
+
+  
+    
+    
+    <script src="/lib/ua-parser-js/dist/ua-parser.min.js?v=0.7.9"></script>
+    <script src="/js/src/hook-duoshuo.js"></script>
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

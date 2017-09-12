@@ -1,0 +1,902 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next gemini use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.2" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="Android,翻译," />
+
+
+
+
+
+  <link rel="alternate" href="/atom.xml" title="ANLY'S BLOG" type="application/atom+xml" />
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.1.2" />
+
+
+
+
+
+
+<meta name="description" content="Bound ServiceBound Service在C-S中属于服务端（server）。Bound Service允许其他组件（比如Activity）来bind它，发送请求，接收响应，甚至通过IPC。Bound Service通常仅在为其他组件服务时才存活，且不会在后台无限运行。 此文档告诉你如何创建一个Bound Service，包括如何通过其他组件来bind此Service。当然，你也可以参">
+<meta name="keywords" content="Android,翻译">
+<meta property="og:type" content="article">
+<meta property="og:title" content="[译]Bound Service">
+<meta property="og:url" content="http://blog.lmj.wiki/2013/05/04/docs/Bound Service/index.html">
+<meta property="og:site_name" content="ANLY&#39;S BLOG">
+<meta property="og:description" content="Bound ServiceBound Service在C-S中属于服务端（server）。Bound Service允许其他组件（比如Activity）来bind它，发送请求，接收响应，甚至通过IPC。Bound Service通常仅在为其他组件服务时才存活，且不会在后台无限运行。 此文档告诉你如何创建一个Bound Service，包括如何通过其他组件来bind此Service。当然，你也可以参">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="http://blog.lmj.wiki/img/service_binding_tree_lifecycle.png">
+<meta property="og:updated_time" content="2017-09-12T15:16:05.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="[译]Bound Service">
+<meta name="twitter:description" content="Bound ServiceBound Service在C-S中属于服务端（server）。Bound Service允许其他组件（比如Activity）来bind它，发送请求，接收响应，甚至通过IPC。Bound Service通常仅在为其他组件服务时才存活，且不会在后台无限运行。 此文档告诉你如何创建一个Bound Service，包括如何通过其他组件来bind此Service。当然，你也可以参">
+<meta name="twitter:image" content="http://blog.lmj.wiki/img/service_binding_tree_lifecycle.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Gemini',
+    version: '5.1.2',
+    sidebar: {"position":"right","display":"post","offset":12,"offset_float":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://blog.lmj.wiki/2013/05/04/docs/Bound Service/"/>
+
+
+
+
+
+  <title>[译]Bound Service | ANLY'S BLOG</title>
+  
+
+
+
+
+
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?3e4bf02bc6c59d846f194a8afc04ecfc";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-right page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">ANLY'S BLOG</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">看看书, 写写字; 捣鼓捣鼓小技术.</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            关于
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://blog.lmj.wiki/2013/05/04/docs/Bound Service/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="anly_jun">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/img/avatar.jpeg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="ANLY'S BLOG">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">[译]Bound Service</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2013-05-04T12:31:00+08:00">
+                2013-05-04
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Android/" itemprop="url" rel="index">
+                    <span itemprop="name">Android</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2013/05/04/docs/Bound Service/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count ds-thread-count" data-thread-key="2013/05/04/docs/Bound Service/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h2 id="Bound-Service"><a href="#Bound-Service" class="headerlink" title="Bound Service"></a>Bound Service</h2><p>Bound Service在C-S中属于服务端（server）。Bound Service允许其他组件（比如Activity）来bind它，发送请求，接收响应，甚至通过IPC。Bound Service通常仅在为其他组件服务时才存活，且不会在后台无限运行。</p>
+<p>此文档告诉你如何创建一个Bound Service，包括如何通过其他组件来bind此Service。当然，你也可以参看<a href="service">Services文档</a>来获得更多信息。</p>
+<a id="more"></a> 
+<h3 id="The-Basics"><a href="#The-Basics" class="headerlink" title="The Basics"></a>The Basics</h3><p>Bound Service是一个Service的实现，允许其他Application去bind并与之交互。你必须实现onBind方法来提供Service的bind。此onBind方法会返回一个IBinder对象（定义client与你的Service交互的接口）。</p>
+<p>Client可以调用bindService来bind一个Service。如果这么做了，client必须实现提供一个ServiceConnection的实现，用来监听与Service的连接。bindService会直接无结果返回，但是当Android系统创建Service与Client的连接时，会调用ServiceConnection中的onServiceConnected方法，分发IBinder使Client可以用来与Service交互。</p>
+<p>多个Client可以同时与一个Service保持连接。然而，系统仅会在第一个Client bind时调用你的Service的onBind方法去获取IBinder，系统会分发同样的IBinder给其他bind的Client，而不再调用onBind。</p>
+<p>当最后一个Client从Service unbind后，系统会销毁此Service（除非此Service是通过startService启动的）。</p>
+<p>当你实现一个Bound Service，重要的部分是你要实现一个IBinder的接口来给onBind返回。有几种方式可以实现这个IBinder接口，下面的章节将会讨论到。</p>
+<h3 id="Creating-a-Bound-Service"><a href="#Creating-a-Bound-Service" class="headerlink" title="Creating a Bound Service"></a>Creating a Bound Service</h3><p>创建一个Bound Service时，必须提供一个IBinder来供client用来与Service交互。以下有三种定义接口的方式：</p>
+<ul>
+<li><p>Extending the Binder class<br>如果你的Service是你的Application私有的，且与Client运行在相同的process（通常是这样的），你应该通过继承Binder来实现你的接口，Client接收到此Binder后可以使用它直接访问这个Binder实现甚至是Service的public方法。<br>如果你的Service仅仅是为你自己的Application提供后台工作，此方式是建议使用的。仅当你的Service要被其他Application使用或是跨进程的时候才不使用这种方式。</p>
+</li>
+<li><p>Using a Messenger<br>如果你需要你的接口工作在不同的process，你可以使用Messenger来为Service创建接口。通过这种方式，Service定义一个Handler来响应不同类型的Message对象。此Handler是Messenger的基础，可以与Client共享一个IBinder，允许Client使用Message对象发送命令给Service。另外，Client可以定义自己的Messenger，这样Service就可以回馈Message。<br>这是一个简单的执行IPC的方式，因为Messenger会在一个简单的线程里排列所有请求，所以你没有必要设计你的Service的线程安全。</p>
+</li>
+<li><p>Using AIDL<br>AIDL（Android接口定义语言）所要做的事是将对象分解成基本类型使系统可以识别并marshall（整编）通过IPC跨进程传送。在前一种方式中（使用Messenger），事实上底层结构也是基于AIDL的。如上所述，Messenger使用一个简单线程来排列client的请求，所以Service一次只能接受一个请求。然而，如果你想要Service能同时处理多个请求，你可以直接使用AIDL。这种情况下，你的Service必须建立线程安全来处理多线程。<br>要直接使用AIDL，你必须创建一个.aidl文件来定义一个编程接口。Android SDK工具使用此文件来生成一个抽象类来实现此接口并处理IPC，你可以在你Service中继承此抽象类。</p>
+</li>
+</ul>
+<blockquote>
+<p>注意：大多数应用不需要使用AIDL来创建Bound Service，因为这样会要求有多线程处理能力并且会导致更加复杂的实现。因此，AIDL不适用与大多数Application，此文档不讨论如何在你的Service中使用它，如果你确实需要使用，可以参见AIDL文档。</p>
+</blockquote>
+<h2 id="Extending-the-Binder-class"><a href="#Extending-the-Binder-class" class="headerlink" title="Extending the Binder class"></a>Extending the Binder class</h2><p>如果你的Service仅仅在你自己的Application中使用且不用跨进程工作，你可以实现自己的Binder类提供给你的Client直接访问Service的public方法。</p>
+<p>注意：仅在client和Service在同一Application和process时使用这种方式（这是最常见的）。例如，音乐播放器的Activity需要与自己的播放音乐的后台Service bind的时候，这个就可以使用。</p>
+<p>如何创建:</p>
+<ol>
+<li>在你的Service中，创建一个Binder的实例：<br>a)    包含Client可以调用的public方法<br>b)    返回当前Service的实例，拥有Client可以调用的public方法<br>c)    或者返回一个Service中其他类的实例（拥有Client可以调用的public方法）</li>
+<li>在onBind回调方法中返回此Binder实例。</li>
+<li>在Client端，在onServiceConnected回调中接收此Binder，使用同的public方法调用使用Bound Service。</li>
+</ol>
+<blockquote>
+<p>注意：Service和Client必须是同一个Application是因为这样的话Client可以转换返回的结果和正确的调用API。Service和Client也必须是同一个process，因为这个方式不会执行跨进程的重组（marshall）。</p>
+</blockquote>
+<p>如下实例：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">LocalService</span> <span class="keyword">extends</span> <span class="title">Service</span> </span>&#123;</div><div class="line">    <span class="comment">// Binder given to clients</span></div><div class="line">    <span class="keyword">private</span> <span class="keyword">final</span> IBinder mBinder = <span class="keyword">new</span> LocalBinder();</div><div class="line">    <span class="comment">// Random number generator</span></div><div class="line">    <span class="keyword">private</span> <span class="keyword">final</span> Random mGenerator = <span class="keyword">new</span> Random();</div><div class="line"></div><div class="line">    <span class="comment">/**</span></div><div class="line"><span class="comment">     * Class used for the client Binder.  Because we know this service always</span></div><div class="line"><span class="comment">     * runs in the same process as its clients, we don't need to deal with IPC.</span></div><div class="line"><span class="comment">     */</span></div><div class="line">    <span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">LocalBinder</span> <span class="keyword">extends</span> <span class="title">Binder</span> </span>&#123;</div><div class="line">        <span class="function">LocalService <span class="title">getService</span><span class="params">()</span> </span>&#123;</div><div class="line">            <span class="comment">// Return this instance of LocalService so clients can call public methods</span></div><div class="line">            <span class="keyword">return</span> LocalService.<span class="keyword">this</span>;</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="meta">@Override</span></div><div class="line">    <span class="function"><span class="keyword">public</span> IBinder <span class="title">onBind</span><span class="params">(Intent intent)</span> </span>&#123;</div><div class="line">        <span class="keyword">return</span> mBinder;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="comment">/** method for clients */</span></div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">int</span> <span class="title">getRandomNumber</span><span class="params">()</span> </span>&#123;</div><div class="line">      <span class="keyword">return</span> mGenerator.nextInt(<span class="number">100</span>);</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>LocalBinder提供一个getService方法来让client获取当前LocalService的实例，允许client调用Service的public方法。比如client可以调用Service的getRandomNumber方法。<br>如下有一个Activity bind此Service并调用getRandomNumber方法，当按钮点击时：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">BindingActivity</span> <span class="keyword">extends</span> <span class="title">Activity</span> </span>&#123;</div><div class="line">    LocalService mService;</div><div class="line">    <span class="keyword">boolean</span> mBound = <span class="keyword">false</span>;</div><div class="line"></div><div class="line">    <span class="meta">@Override</span></div><div class="line">    <span class="function"><span class="keyword">protected</span> <span class="keyword">void</span> <span class="title">onCreate</span><span class="params">(Bundle savedInstanceState)</span> </span>&#123;</div><div class="line">        <span class="keyword">super</span>.onCreate(savedInstanceState);</div><div class="line">        setContentView(R.layout.main);</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="meta">@Override</span></div><div class="line">    <span class="function"><span class="keyword">protected</span> <span class="keyword">void</span> <span class="title">onStart</span><span class="params">()</span> </span>&#123;</div><div class="line">        <span class="keyword">super</span>.onStart();</div><div class="line">        <span class="comment">// Bind to LocalService</span></div><div class="line">        Intent intent = <span class="keyword">new</span> Intent(<span class="keyword">this</span>, LocalService.class);</div><div class="line">        bindService(intent, mConnection, Context.BIND_AUTO_CREATE);</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="meta">@Override</span></div><div class="line">    <span class="function"><span class="keyword">protected</span> <span class="keyword">void</span> <span class="title">onStop</span><span class="params">()</span> </span>&#123;</div><div class="line">        <span class="keyword">super</span>.onStop();</div><div class="line">        <span class="comment">// Unbind from the service</span></div><div class="line">        <span class="keyword">if</span> (mBound) &#123;</div><div class="line">            unbindService(mConnection);</div><div class="line">            mBound = <span class="keyword">false</span>;</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="comment">/** Called when a button is clicked (the button in the layout file attaches to</span></div><div class="line"><span class="comment">      * this method with the android:onClick attribute) */</span></div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">onButtonClick</span><span class="params">(View v)</span> </span>&#123;</div><div class="line">        <span class="keyword">if</span> (mBound) &#123;</div><div class="line">            <span class="comment">// Call a method from the LocalService.</span></div><div class="line">            <span class="comment">// However, if this call were something that might hang, then this request should</span></div><div class="line">            <span class="comment">// occur in a separate thread to avoid slowing down the activity performance.</span></div><div class="line">            <span class="keyword">int</span> num = mService.getRandomNumber();</div><div class="line">            Toast.makeText(<span class="keyword">this</span>, <span class="string">"number: "</span> + num, Toast.LENGTH_SHORT).show();</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="comment">/** Defines callbacks for service binding, passed to bindService() */</span></div><div class="line">    <span class="keyword">private</span> ServiceConnection mConnection = <span class="keyword">new</span> ServiceConnection() &#123;</div><div class="line"></div><div class="line">        <span class="meta">@Override</span></div><div class="line">        <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">onServiceConnected</span><span class="params">(ComponentName className,</span></span></div><div class="line"><span class="function"><span class="params">                IBinder service)</span> </span>&#123;</div><div class="line">            <span class="comment">// We've bound to LocalService, cast the IBinder and get LocalService instance</span></div><div class="line">            LocalBinder binder = (LocalBinder) service;</div><div class="line">            mService = binder.getService();</div><div class="line">            mBound = <span class="keyword">true</span>;</div><div class="line">        &#125;</div><div class="line"></div><div class="line">        <span class="meta">@Override</span></div><div class="line">        <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">onServiceDisconnected</span><span class="params">(ComponentName arg0)</span> </span>&#123;</div><div class="line">            mBound = <span class="keyword">false</span>;</div><div class="line">        &#125;</div><div class="line">    &#125;;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>上述例子展示了Client如何bind到Service，使用ServiceConnection的实现及其onServiceConnected回调。下一章节会详细说明这一bind过程。</p>
+<blockquote>
+<p>注意：例子代码没有明确从Service中unbind，但是所有client应该在合适的时间（例如Activity的onPause等）unbind。</p>
+</blockquote>
+<h2 id="Using-a-Messenger"><a href="#Using-a-Messenger" class="headerlink" title="Using a Messenger"></a>Using a Messenger</h2><p>如果你需要你的Service与远程进程（remote process）交互，你可以使用Messenger为你的Service提供一个接口。此方式允许你跨进程（IPC）而不需要使用AIDL。</p>
+<p>使用Messenger时有以下要点:</p>
+<ul>
+<li>Service实现一个Handler来接收client的每一个调用</li>
+<li>使用Handler创建一个Messenger对象（与此Handler关联）</li>
+<li>Messenger创建一个IBinder供Service的onBind方法返回</li>
+<li>Client使用此IBinder实例化Messenger（Client用来发送Message给Service）</li>
+<li>Service在它的Handler的handleMessage方法中接收每个Message</li>
+</ul>
+<p>这种方式，Service没有供Client调用的方法，而是通过Client发送message给Service的Handler处理。</p>
+<p>参见如下例子：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">MessengerService</span> <span class="keyword">extends</span> <span class="title">Service</span> </span>&#123;</div><div class="line">    <span class="comment">/** Command to the service to display a message */</span></div><div class="line">    <span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">int</span> MSG_SAY_HELLO = <span class="number">1</span>;</div><div class="line"></div><div class="line">    <span class="comment">/**</span></div><div class="line"><span class="comment">     * Handler of incoming messages from clients.</span></div><div class="line"><span class="comment">     */</span></div><div class="line">    <span class="class"><span class="keyword">class</span> <span class="title">IncomingHandler</span> <span class="keyword">extends</span> <span class="title">Handler</span> </span>&#123;</div><div class="line">        <span class="meta">@Override</span></div><div class="line">        <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">handleMessage</span><span class="params">(Message msg)</span> </span>&#123;</div><div class="line">            <span class="keyword">switch</span> (msg.what) &#123;</div><div class="line">                <span class="keyword">case</span> MSG_SAY_HELLO:</div><div class="line">                    Toast.makeText(getApplicationContext(), <span class="string">"hello!"</span>, Toast.LENGTH_SHORT).show();</div><div class="line">                    <span class="keyword">break</span>;</div><div class="line">                <span class="keyword">default</span>:</div><div class="line">                    <span class="keyword">super</span>.handleMessage(msg);</div><div class="line">            &#125;</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="comment">/**</span></div><div class="line"><span class="comment">     * Target we publish for clients to send messages to IncomingHandler.</span></div><div class="line"><span class="comment">     */</span></div><div class="line">    <span class="keyword">final</span> Messenger mMessenger = <span class="keyword">new</span> Messenger(<span class="keyword">new</span> IncomingHandler());</div><div class="line"></div><div class="line">    <span class="comment">/**</span></div><div class="line"><span class="comment">     * When binding to the service, we return an interface to our messenger</span></div><div class="line"><span class="comment">     * for sending messages to the service.</span></div><div class="line"><span class="comment">     */</span></div><div class="line">    <span class="meta">@Override</span></div><div class="line">    <span class="function"><span class="keyword">public</span> IBinder <span class="title">onBind</span><span class="params">(Intent intent)</span> </span>&#123;</div><div class="line">        Toast.makeText(getApplicationContext(), <span class="string">"binding"</span>, Toast.LENGTH_SHORT).show();</div><div class="line">        <span class="keyword">return</span> mMessenger.getBinder();</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>注意Handler中的handleMessage，在此Service接收Message并基于what成员来决定怎么做。</p>
+<p>Client所有要做是就是基于Service返回的IBinder创建一个Messenger并使用send方法发送Message。例如：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div><div class="line">64</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">ActivityMessenger</span> <span class="keyword">extends</span> <span class="title">Activity</span> </span>&#123;</div><div class="line">    <span class="comment">/** Messenger for communicating with the service. */</span></div><div class="line">    Messenger mService = <span class="keyword">null</span>;</div><div class="line"></div><div class="line">    <span class="comment">/** Flag indicating whether we have called bind on the service. */</span></div><div class="line">    <span class="keyword">boolean</span> mBound;</div><div class="line"></div><div class="line">    <span class="comment">/**</span></div><div class="line"><span class="comment">     * Class for interacting with the main interface of the service.</span></div><div class="line"><span class="comment">     */</span></div><div class="line">    <span class="keyword">private</span> ServiceConnection mConnection = <span class="keyword">new</span> ServiceConnection() &#123;</div><div class="line">        <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">onServiceConnected</span><span class="params">(ComponentName className, IBinder service)</span> </span>&#123;</div><div class="line">            <span class="comment">// This is called when the connection with the service has been</span></div><div class="line">            <span class="comment">// established, giving us the object we can use to</span></div><div class="line">            <span class="comment">// interact with the service.  We are communicating with the</span></div><div class="line">            <span class="comment">// service using a Messenger, so here we get a client-side</span></div><div class="line">            <span class="comment">// representation of that from the raw IBinder object.</span></div><div class="line">            mService = <span class="keyword">new</span> Messenger(service);</div><div class="line">            mBound = <span class="keyword">true</span>;</div><div class="line">        &#125;</div><div class="line"></div><div class="line">        <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">onServiceDisconnected</span><span class="params">(ComponentName className)</span> </span>&#123;</div><div class="line">            <span class="comment">// This is called when the connection with the service has been</span></div><div class="line">            <span class="comment">// unexpectedly disconnected -- that is, its process crashed.</span></div><div class="line">            mService = <span class="keyword">null</span>;</div><div class="line">            mBound = <span class="keyword">false</span>;</div><div class="line">        &#125;</div><div class="line">    &#125;;</div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">sayHello</span><span class="params">(View v)</span> </span>&#123;</div><div class="line">        <span class="keyword">if</span> (!mBound) <span class="keyword">return</span>;</div><div class="line">        <span class="comment">// Create and send a message to the service, using a supported 'what' value</span></div><div class="line">        Message msg = Message.obtain(<span class="keyword">null</span>, MessengerService.MSG_SAY_HELLO, <span class="number">0</span>, <span class="number">0</span>);</div><div class="line">        <span class="keyword">try</span> &#123;</div><div class="line">            mService.send(msg);</div><div class="line">        &#125; <span class="keyword">catch</span> (RemoteException e) &#123;</div><div class="line">            e.printStackTrace();</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="meta">@Override</span></div><div class="line">    <span class="function"><span class="keyword">protected</span> <span class="keyword">void</span> <span class="title">onCreate</span><span class="params">(Bundle savedInstanceState)</span> </span>&#123;</div><div class="line">        <span class="keyword">super</span>.onCreate(savedInstanceState);</div><div class="line">        setContentView(R.layout.main);</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="meta">@Override</span></div><div class="line">    <span class="function"><span class="keyword">protected</span> <span class="keyword">void</span> <span class="title">onStart</span><span class="params">()</span> </span>&#123;</div><div class="line">        <span class="keyword">super</span>.onStart();</div><div class="line">        <span class="comment">// Bind to the service</span></div><div class="line">        bindService(<span class="keyword">new</span> Intent(<span class="keyword">this</span>, MessengerService.class), mConnection,</div><div class="line">            Context.BIND_AUTO_CREATE);</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="meta">@Override</span></div><div class="line">    <span class="function"><span class="keyword">protected</span> <span class="keyword">void</span> <span class="title">onStop</span><span class="params">()</span> </span>&#123;</div><div class="line">        <span class="keyword">super</span>.onStop();</div><div class="line">        <span class="comment">// Unbind from the service</span></div><div class="line">        <span class="keyword">if</span> (mBound) &#123;</div><div class="line">            unbindService(mConnection);</div><div class="line">            mBound = <span class="keyword">false</span>;</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>实例中没有展示Service如何给Client回应。如果你想要Service予以回应，你需要在你的Client也创建一个Messenger。放Client接收到onServiceConnected回调，调用send方法发送一个replyTo参数为Client的Messenger的Message给Service。</p>
+<h2 id="Binding-to-a-Service"><a href="#Binding-to-a-Service" class="headerlink" title="Binding to a Service"></a>Binding to a Service</h2><p>Application组件（Client）调用bindService来bind一个Service，之后Android系统会调用Service的onBind方法，返回一个与Service交互的IBinder。</p>
+<p>这个bind是异步的。bindService会直接返回而不会给Client返回IBinder。要接收这个IBinder，Client必须创建一个ServiceConnection实例并传送给bindService方法。ServiceConnection有一个回调方法，系统会调用它来分发此IBinder。</p>
+<p><strong>注意：只有Activity，Content Provider和Service才可以bind一个Service，Broadcast Receiver不能bind Service。</strong></p>
+<p>为了在你的Client绑定一个Service，你必须：</p>
+<ol>
+<li>实现ServiceConnection<br>你的实现必须override两个回调：<br><em>onServiceConnected</em><br>系统调用它来分发Service的onBind方法返回的IBinder。<br><em>onServiceDisconnected</em><br>系统在Service的连接意外丢失（例如Service崩溃或是被kill）时调用此方法。当Client与Service unbind时不会调用。</li>
+<li>调用bindService并传入此ServiceConnection的实现</li>
+<li>当系统调用onServiceConnected回调时，你可以使用接口中的方法调用Service</li>
+<li>调用unbindService来与Service断开连接</li>
+</ol>
+<p>如果你的Client销毁了，它会与Service unbind，但是你必须总是自己unbind，当你与Service交互完成或是你的Activity处于pause状态的时候，这样Service就可以在不使用的时候关闭（合适的时间bind，unbind在下面会讨论）。</p>
+<p>在上述Extending the Binder class的例子中，都必须将返回的IBinder转型为LocalBinder，从而得到LocalService实例：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div></pre></td><td class="code"><pre><div class="line">LocalService mService;</div><div class="line"><span class="keyword">private</span> ServiceConnection mConnection = <span class="keyword">new</span> ServiceConnection() &#123;</div><div class="line">    <span class="comment">// Called when the connection with the service is established</span></div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">onServiceConnected</span><span class="params">(ComponentName className, IBinder service)</span> </span>&#123;</div><div class="line">        <span class="comment">// Because we have bound to an explicit</span></div><div class="line">        <span class="comment">// service that is running in our own process, we can</span></div><div class="line">        <span class="comment">// cast its IBinder to a concrete class and directly access it.</span></div><div class="line">        LocalBinder binder = (LocalBinder) service;</div><div class="line">        mService = binder.getService();</div><div class="line">        mBound = <span class="keyword">true</span>;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="comment">// Called when the connection with the service disconnects unexpectedly</span></div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">onServiceDisconnected</span><span class="params">(ComponentName className)</span> </span>&#123;</div><div class="line">        Log.e(TAG, <span class="string">"onServiceDisconnected"</span>);</div><div class="line">        mBound = <span class="keyword">false</span>;</div><div class="line">    &#125;</div><div class="line">&#125;;</div></pre></td></tr></table></figure>
+<p>Client可以将此ServiceConnection传给bindService来bind一个Service。如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">Intent intent = <span class="keyword">new</span> Intent(<span class="keyword">this</span>, LocalService.class);</div><div class="line">bindService(intent, mConnection, Context.BIND_AUTO_CREATE);</div></pre></td></tr></table></figure>
+<ul>
+<li>bindService的第一个参数是一个Intent，显式指明了要bind的Service的class name（此Intent也可以是隐式的）</li>
+<li>第二个参数就是ServiceConnection对象</li>
+<li>第三个参数是一个flag，标识bind的选项。通常使用BIND_AUTO_CERATE来指明如果Service还未存活的话则创建该Service。其他可用的选项包括BIND_DEBUG_UNBIND，BIND_NOT_FOREGROUND或是0。</li>
+</ul>
+<h2 id="Additional-notes"><a href="#Additional-notes" class="headerlink" title="Additional notes"></a>Additional notes</h2><p>Bind一个Service时有一些重要的注意事项：</p>
+<ul>
+<li>你应该总是捕捉DeadObjectException异常，此异常会在连接被破坏时抛出。这是远程方法（remote method）抛出的唯一异常。</li>
+<li>Objects are reference counted across processes. （理解：跨进程对象引用计数）。</li>
+<li>你通常应该成对使用bind和unbind对应你的client端生命周期的“bring-up”和“tear-down”时刻。例如：</li>
+<li>如果你仅仅是在你的Activity可见时与Service交互，你应该在onStart中bind而在onStop中unbind。</li>
+<li>如果你想你的Activity就算是stop在后台的情况仍能接收到响应，你可以在onCreate中bind而在onDestroy中unbind。要当心的是这意味着你的Activity的整个生命周期都要用到Service（即使在后台），所以如果此Service运行在另外的process，当你增加了此process的负担时，此Service会变得更可能被系统kill掉。</li>
+</ul>
+<blockquote>
+<p>注意：你通常不应该在你的Activity的onResume和onPause中进行bind和unbind，因为这两个回调在每次生命周期转换中都会发生，你应该确保这种处理（bind和unbind）发生在转换最少的时候。同样，如果你的Application中多个Activity绑定了同一个Service并且在其中两个Activity之间有一个状态转换，在当前Activity unbind（onPause中）之后，下一个Activity bind（onResume中）之前，此Service可能被销毁而重新创建。</p>
+</blockquote>
+<h2 id="Managing-the-Lifecycle-of-a-Bound-Service"><a href="#Managing-the-Lifecycle-of-a-Bound-Service" class="headerlink" title="Managing the Lifecycle of a Bound Service"></a>Managing the Lifecycle of a Bound Service</h2><p>当Service从所有Client unbind之后，Android系统会销毁它（除非它也通过onStartCommand启动）。所以一个纯的Bound Service，你不需要去管理其生命周期，系统会根据它bind的client来管理它的生命周期。</p>
+<p>然而，如果你选择实现onStartCommand回调，你就必须显式的stop该Service，因为该Service现在被认为是Started Service。这种情况下，Service会一直运行直到Service调用stopSelf或是其他组件调用stopService来stop它，不管它是否与其他Client bind。</p>
+<p>另外，如果你的Service是Started且接受bind，当系统调用你的onUnbind回调时，你可以返回一个true，这样在下次Client来bind它时你将接收onRebind而非onBind。onRebind返回一个void，但是Client依旧会在onServiceConnected中接收到一个IBinder。下图展示了此类型Service的生命周期：</p>
+<p><img src="/img/service_binding_tree_lifecycle.png" alt="service_binding_tree_lifecycle"></p>
+<p>图解：Started 且允许Bind的Service的生命周期。</p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/Android/" rel="tag"># Android</a>
+          
+            <a href="/tags/翻译/" rel="tag"># 翻译</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2013/04/21/docs/Service/" rel="next" title="[译]Service">
+                <i class="fa fa-chevron-left"></i> [译]Service
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2013/05/28/docs/Tasks and Back Stack/" rel="prev" title="[译]Tasks and Back Stack">
+                [译]Tasks and Back Stack <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+        <div class="ds-share flat" data-thread-key="2013/05/04/docs/Bound Service/"
+     data-title="[译]Bound Service"
+     data-content=""
+     data-url="http://blog.lmj.wiki/2013/05/04/docs/Bound Service/">
+  <div class="ds-share-inline">
+    <ul  class="ds-share-icons-16">
+
+      <li data-toggle="ds-share-icons-more"><a class="ds-more" href="javascript:void(0);">分享到：</a></li>
+      <li><a class="ds-weibo" href="javascript:void(0);" data-service="weibo">微博</a></li>
+      <li><a class="ds-qzone" href="javascript:void(0);" data-service="qzone">QQ空间</a></li>
+      <li><a class="ds-qqt" href="javascript:void(0);" data-service="qqt">腾讯微博</a></li>
+      <li><a class="ds-wechat" href="javascript:void(0);" data-service="wechat">微信</a></li>
+
+    </ul>
+    <div class="ds-share-icons-more">
+    </div>
+  </div>
+</div>
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+      <div class="ds-thread" data-thread-key="2013/05/04/docs/Bound Service/"
+           data-title="[译]Bound Service" data-url="http://blog.lmj.wiki/2013/05/04/docs/Bound Service/">
+      </div>
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          
+            <img class="site-author-image" itemprop="image"
+              src="/img/avatar.jpeg"
+              alt="anly_jun" />
+          
+            <p class="site-author-name" itemprop="name">anly_jun</p>
+            <p class="site-description motion-element" itemprop="description">Android, iOS, Mobile Dev/Test, Web, Python</p>
+        </div>
+
+        <nav class="site-state motion-element">
+
+          
+            <div class="site-state-item site-state-posts">
+            
+              <a href="/archives">
+            
+                <span class="site-state-item-count">55</span>
+                <span class="site-state-item-name">日志</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-categories">
+              <a href="/categories/index.html">
+                <span class="site-state-item-count">6</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-tags">
+              <a href="/tags/index.html">
+                <span class="site-state-item-count">20</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+          <div class="feed-link motion-element">
+            <a href="/atom.xml" rel="alternate">
+              <i class="fa fa-rss"></i>
+              RSS
+            </a>
+          </div>
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#Bound-Service"><span class="nav-number">1.</span> <span class="nav-text">Bound Service</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#The-Basics"><span class="nav-number">1.1.</span> <span class="nav-text">The Basics</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Creating-a-Bound-Service"><span class="nav-number">1.2.</span> <span class="nav-text">Creating a Bound Service</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Extending-the-Binder-class"><span class="nav-number">2.</span> <span class="nav-text">Extending the Binder class</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Using-a-Messenger"><span class="nav-number">3.</span> <span class="nav-text">Using a Messenger</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Binding-to-a-Service"><span class="nav-number">4.</span> <span class="nav-text">Binding to a Service</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Additional-notes"><span class="nav-number">5.</span> <span class="nav-text">Additional notes</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Managing-the-Lifecycle-of-a-Bound-Service"><span class="nav-number">6.</span> <span class="nav-text">Managing the Lifecycle of a Bound Service</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2017</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">anly_jun</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+  <span class="post-meta-divider">|</span>
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">NexT.Gemini</a> v5.1.2</div>
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.2"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.2"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.2"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.2"></script>
+
+
+
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.2"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.2"></script>
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.2"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.2"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.2"></script>
+
+
+
+  
+
+  
+    
+  
+
+  <script type="text/javascript">
+    var duoshuoQuery = {short_name:"anlyjun"};
+    (function() {
+      var ds = document.createElement('script');
+      ds.type = 'text/javascript';ds.async = true;
+      ds.id = 'duoshuo-script';
+      ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+      ds.charset = 'UTF-8';
+      (document.getElementsByTagName('head')[0]
+      || document.getElementsByTagName('body')[0]).appendChild(ds);
+    })();
+  </script>
+
+  
+    
+    
+    <script src="/lib/ua-parser-js/dist/ua-parser.min.js?v=0.7.9"></script>
+    <script src="/js/src/hook-duoshuo.js"></script>
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

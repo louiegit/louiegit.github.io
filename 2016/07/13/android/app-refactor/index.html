@@ -1,0 +1,901 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next gemini use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.2" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="Android,重构," />
+
+
+
+
+
+  <link rel="alternate" href="/atom.xml" title="ANLY'S BLOG" type="application/atom+xml" />
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.1.2" />
+
+
+
+
+
+
+<meta name="description" content="关于App重构的几个方面最近跟一个朋友聊到关于App架构的问题, 其中就聊到一个App, 开发了很长时间, 一开始没有去想框架的事儿, 迭代过程中, 由于时间紧, 任务重, 人员更替等原因, 也没能保证代码质量, 很多设计原则被抛之脑后, 代码质量逐步下降, 以致难于阅读, 难于维护. 进而导致迭代困难, 而形成恶性循环. 从而引申出如何重构App代码的话题, 谈点个人理解:">
+<meta name="keywords" content="Android,重构">
+<meta property="og:type" content="article">
+<meta property="og:title" content="关于App重构的几个方面">
+<meta property="og:url" content="http://blog.lmj.wiki/2016/07/13/android/app-refactor/index.html">
+<meta property="og:site_name" content="ANLY&#39;S BLOG">
+<meta property="og:description" content="关于App重构的几个方面最近跟一个朋友聊到关于App架构的问题, 其中就聊到一个App, 开发了很长时间, 一开始没有去想框架的事儿, 迭代过程中, 由于时间紧, 任务重, 人员更替等原因, 也没能保证代码质量, 很多设计原则被抛之脑后, 代码质量逐步下降, 以致难于阅读, 难于维护. 进而导致迭代困难, 而形成恶性循环. 从而引申出如何重构App代码的话题, 谈点个人理解:">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="http://blog.lmj.wiki/img/Re-Architecture%2012%20Rules.png">
+<meta property="og:updated_time" content="2017-09-12T15:16:05.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="关于App重构的几个方面">
+<meta name="twitter:description" content="关于App重构的几个方面最近跟一个朋友聊到关于App架构的问题, 其中就聊到一个App, 开发了很长时间, 一开始没有去想框架的事儿, 迭代过程中, 由于时间紧, 任务重, 人员更替等原因, 也没能保证代码质量, 很多设计原则被抛之脑后, 代码质量逐步下降, 以致难于阅读, 难于维护. 进而导致迭代困难, 而形成恶性循环. 从而引申出如何重构App代码的话题, 谈点个人理解:">
+<meta name="twitter:image" content="http://blog.lmj.wiki/img/Re-Architecture%2012%20Rules.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Gemini',
+    version: '5.1.2',
+    sidebar: {"position":"right","display":"post","offset":12,"offset_float":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://blog.lmj.wiki/2016/07/13/android/app-refactor/"/>
+
+
+
+
+
+  <title>关于App重构的几个方面 | ANLY'S BLOG</title>
+  
+
+
+
+
+
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?3e4bf02bc6c59d846f194a8afc04ecfc";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-right page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">ANLY'S BLOG</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">看看书, 写写字; 捣鼓捣鼓小技术.</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            关于
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://blog.lmj.wiki/2016/07/13/android/app-refactor/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="anly_jun">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/img/avatar.jpeg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="ANLY'S BLOG">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">关于App重构的几个方面</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2016-07-13T15:17:00+08:00">
+                2016-07-13
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Android/" itemprop="url" rel="index">
+                    <span itemprop="name">Android</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2016/07/13/android/app-refactor/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count ds-thread-count" data-thread-key="2016/07/13/android/app-refactor/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h1 id="关于App重构的几个方面"><a href="#关于App重构的几个方面" class="headerlink" title="关于App重构的几个方面"></a>关于App重构的几个方面</h1><p>最近跟一个朋友聊到关于App架构的问题, 其中就聊到一个App, 开发了很长时间, 一开始没有去想框架的事儿, 迭代过程中, 由于时间紧, 任务重, 人员更替等原因, 也没能保证代码质量, 很多设计原则被抛之脑后, 代码质量逐步下降, 以致难于阅读, 难于维护. 进而导致迭代困难, 而形成恶性循环.</p>
+<p>从而引申出如何重构App代码的话题, 谈点个人理解:</p>
+<a id="more"></a>
+<h3 id="什么情况下需要重构"><a href="#什么情况下需要重构" class="headerlink" title="什么情况下需要重构"></a>什么情况下需要重构</h3><h4 id="1-结构错乱"><a href="#1-结构错乱" class="headerlink" title="1, 结构错乱"></a>1, 结构错乱</h4><ul>
+<li>代码无法分出层次, 无法分清业务线.</li>
+<li>各个业务模块间/层次间的代码互相夹杂.</li>
+<li>由于多人协作导致的多种架构(MVP/MVVM/MVC等)并存.</li>
+<li>规范性问题, 导致各个模块内的代码形式互相不一致, 风格迥异.</li>
+</ul>
+<h4 id="2-可读性差"><a href="#2-可读性差" class="headerlink" title="2, 可读性差"></a>2, 可读性差</h4><ul>
+<li>超长函数, 超大类</li>
+<li>代码的格式不规范或不一致.</li>
+<li>冗余代码, 无用代码, 重复代码.</li>
+<li>过于高明, 使用一些不常用的小技巧而且没有相关注释.</li>
+<li>滥用继承, 接口实现等, 导致难以跟踪.</li>
+</ul>
+<h4 id="3-不能很好的适应产品的发展"><a href="#3-不能很好的适应产品的发展" class="headerlink" title="3, 不能很好的适应产品的发展"></a>3, 不能很好的适应产品的发展</h4><ul>
+<li>维护困难, 前一发动全身.</li>
+<li>不具备扩展灵活性, 无法很快引入系统版本更新时新特性. </li>
+<li>不具备可变更性, 产品添加新功能或修改需求时需要修改大量的代码.</li>
+</ul>
+<h3 id="重构的目标"><a href="#重构的目标" class="headerlink" title="重构的目标"></a>重构的目标</h3><p>重构的目的就是要提高代码质量, 而高质量的代码指标个人认为有如下几点, 当然其实也是老生常谈的几点.</p>
+<p>排名分先后:</p>
+<h4 id="1-可读性"><a href="#1-可读性" class="headerlink" title="1, 可读性"></a>1, 可读性</h4><ul>
+<li>规范一致性.</li>
+<li>结构, 层次明了.</li>
+<li>命名有含义, 注释要清晰.</li>
+<li>逻辑简短, 没有长篇大幅的代码块.</li>
+<li>方法提取, 类继承关系合理.</li>
+<li>不滥用设计模式.</li>
+</ul>
+<blockquote>
+<p>聪明是可读性的敌人.</p>
+</blockquote>
+<h4 id="2-可维护性"><a href="#2-可维护性" class="headerlink" title="2, 可维护性"></a>2, 可维护性</h4><ul>
+<li>杜绝魔鬼数字/字符串/尺寸值/颜色值等</li>
+<li>代码复用, 以便维护.</li>
+<li>不写死, 预测可能的变化(但不要提前设计).</li>
+</ul>
+<h4 id="3-可扩展性"><a href="#3-可扩展性" class="headerlink" title="3, 可扩展性"></a>3, 可扩展性</h4><ul>
+<li>良好的分层结构, MVx模式运用.</li>
+<li>通过一些设计模式的使用来提高可扩展性.</li>
+</ul>
+<blockquote>
+<p>开闭原则: 修改关闭, 扩展开放.</p>
+</blockquote>
+<h3 id="如何重构"><a href="#如何重构" class="headerlink" title="如何重构"></a>如何重构</h3><p>首先让我们重温下”重构”的含义:</p>
+<blockquote>
+<p>&lt;&lt;重构 — 改善既有代码的设计&gt;&gt; 这本大神作品强烈建议大家翻阅下~ 里面对重构的定义, 以及如何从一个个小的Bad Smell开始重构等都有详细的描述.</p>
+</blockquote>
+<p>那么作为一个进行已久的Android工程, 我们应该如何重构呢?<br>其实这是一个对症下药的问题, 针对为什么要重构提出的几个代码问题, 重构也可以分成以下几步:</p>
+<h4 id="1-架构选择-结构调整"><a href="#1-架构选择-结构调整" class="headerlink" title="1, 架构选择, 结构调整"></a>1, 架构选择, 结构调整</h4><ul>
+<li><p>根据App的业务场景(展示型, 交互型, 后台工具型…)选择合适的架构.</p>
+<ol>
+<li>并不是说一定要选用一个架构, 比如说后台工具型的App, 可能界面不多, 也服务器的交互也少, 基本是由Service组成, 可能直接用Android原生的结构就可以.</li>
+<li>界面较多, 且与服务器交互较多的建议选用MVP架构. 可以通过P来做数据处理, 将数据源M与展示层V解耦, 便于替换数据源或是改变UI.</li>
+</ol>
+</li>
+<li><p>根据选用的架构以及业务模块分包</p>
+</li>
+</ul>
+<h4 id="2-技术-开源库选定"><a href="#2-技术-开源库选定" class="headerlink" title="2, 技术/开源库选定"></a>2, 技术/开源库选定</h4><ul>
+<li>ListView/RecyclerView的选择, Fragment/Activity的选择等.</li>
+<li>根据业务特点和选择的架构, 选用相关技术/开源库支持或对当前使用的进行整理.</li>
+<li>例如HTTP请求库, 缓存库, 图片加载库等等.</li>
+</ul>
+<h4 id="3-确定规范"><a href="#3-确定规范" class="headerlink" title="3, 确定规范"></a>3, 确定规范</h4><ul>
+<li>制定编码规范, 可以根据Google推荐的Java编码规范, 适当定制.例如<a href="http://lmj.wiki/post/android/kai-fa-gui-fan" target="_blank" rel="external">我的项目中的基本规范</a>.</li>
+<li>制定代码提交规范, git flow管理流程规范等.</li>
+</ul>
+<h4 id="4-自底而上-由小至大"><a href="#4-自底而上-由小至大" class="headerlink" title="4, 自底而上, 由小至大"></a>4, 自底而上, 由小至大</h4><ul>
+<li>从底部开始, 也就是常说的Model层,数据层开始, 因为这部分相对独立, 可以通过提供接口与UI层隔离.</li>
+<li>不要一下就大面积重构, 需要逐个小的case进行重构验证, 保证当前运行.</li>
+</ul>
+<h4 id="5-持续重构-伴随测试"><a href="#5-持续重构-伴随测试" class="headerlink" title="5, 持续重构, 伴随测试"></a>5, 持续重构, 伴随测试</h4><ul>
+<li>持续进行小的重构, 每次重构需要伴随测试, 保证重构结果.<ul>
+<li>提取方法, 去除重复代码.</li>
+<li>结构调整.</li>
+<li>融入面向对象/接口编程思想, 注意SOLID原则.</li>
+<li>多用组合, 少用继承</li>
+<li>……</li>
+</ul>
+</li>
+<li>最好有单元测试支持.</li>
+</ul>
+<h4 id="6-重构而非重写"><a href="#6-重构而非重写" class="headerlink" title="6, 重构而非重写"></a>6, 重构而非重写</h4><ul>
+<li>不到万不得已不要想重写.</li>
+<li>重写会产生各种意想不到的问题, 诸如设计过度, 对于当前代码把握不够(例如现在看起来很不友好的代码可能就是为了解决一个架构无法解决的问题等).</li>
+</ul>
+<h3 id="附–关于架构重构的规则"><a href="#附–关于架构重构的规则" class="headerlink" title="附–关于架构重构的规则"></a>附–关于架构重构的规则</h3><p>写完此文, 偶然机会在InfoQ上看到Uber的技术主管Raffi Krikorian在 O’Reilly Software Architecture conference上谈及的关于架构重构的12条规则, 共勉之:<br><img src="/img/Re-Architecture%2012%20Rules.png" alt="Re-Architecture 12 Rules"></p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/Android/" rel="tag"># Android</a>
+          
+            <a href="/tags/重构/" rel="tag"># 重构</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2016/06/02/algorithm/bubble_sort/" rel="next" title="冒泡排序">
+                <i class="fa fa-chevron-left"></i> 冒泡排序
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2016/07/22/mvp/mvp1/" rel="prev" title="MVP架构实现的Github客户端(1-准备工作)">
+                MVP架构实现的Github客户端(1-准备工作) <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+        <div class="ds-share flat" data-thread-key="2016/07/13/android/app-refactor/"
+     data-title="关于App重构的几个方面"
+     data-content=""
+     data-url="http://blog.lmj.wiki/2016/07/13/android/app-refactor/">
+  <div class="ds-share-inline">
+    <ul  class="ds-share-icons-16">
+
+      <li data-toggle="ds-share-icons-more"><a class="ds-more" href="javascript:void(0);">分享到：</a></li>
+      <li><a class="ds-weibo" href="javascript:void(0);" data-service="weibo">微博</a></li>
+      <li><a class="ds-qzone" href="javascript:void(0);" data-service="qzone">QQ空间</a></li>
+      <li><a class="ds-qqt" href="javascript:void(0);" data-service="qqt">腾讯微博</a></li>
+      <li><a class="ds-wechat" href="javascript:void(0);" data-service="wechat">微信</a></li>
+
+    </ul>
+    <div class="ds-share-icons-more">
+    </div>
+  </div>
+</div>
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+      <div class="ds-thread" data-thread-key="2016/07/13/android/app-refactor/"
+           data-title="关于App重构的几个方面" data-url="http://blog.lmj.wiki/2016/07/13/android/app-refactor/">
+      </div>
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          
+            <img class="site-author-image" itemprop="image"
+              src="/img/avatar.jpeg"
+              alt="anly_jun" />
+          
+            <p class="site-author-name" itemprop="name">anly_jun</p>
+            <p class="site-description motion-element" itemprop="description">Android, iOS, Mobile Dev/Test, Web, Python</p>
+        </div>
+
+        <nav class="site-state motion-element">
+
+          
+            <div class="site-state-item site-state-posts">
+            
+              <a href="/archives">
+            
+                <span class="site-state-item-count">55</span>
+                <span class="site-state-item-name">日志</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-categories">
+              <a href="/categories/index.html">
+                <span class="site-state-item-count">6</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-tags">
+              <a href="/tags/index.html">
+                <span class="site-state-item-count">20</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+          <div class="feed-link motion-element">
+            <a href="/atom.xml" rel="alternate">
+              <i class="fa fa-rss"></i>
+              RSS
+            </a>
+          </div>
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#关于App重构的几个方面"><span class="nav-number">1.</span> <span class="nav-text">关于App重构的几个方面</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#什么情况下需要重构"><span class="nav-number">1.0.1.</span> <span class="nav-text">什么情况下需要重构</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#1-结构错乱"><span class="nav-number">1.0.1.1.</span> <span class="nav-text">1, 结构错乱</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2-可读性差"><span class="nav-number">1.0.1.2.</span> <span class="nav-text">2, 可读性差</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#3-不能很好的适应产品的发展"><span class="nav-number">1.0.1.3.</span> <span class="nav-text">3, 不能很好的适应产品的发展</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#重构的目标"><span class="nav-number">1.0.2.</span> <span class="nav-text">重构的目标</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#1-可读性"><span class="nav-number">1.0.2.1.</span> <span class="nav-text">1, 可读性</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2-可维护性"><span class="nav-number">1.0.2.2.</span> <span class="nav-text">2, 可维护性</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#3-可扩展性"><span class="nav-number">1.0.2.3.</span> <span class="nav-text">3, 可扩展性</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#如何重构"><span class="nav-number">1.0.3.</span> <span class="nav-text">如何重构</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#1-架构选择-结构调整"><span class="nav-number">1.0.3.1.</span> <span class="nav-text">1, 架构选择, 结构调整</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2-技术-开源库选定"><span class="nav-number">1.0.3.2.</span> <span class="nav-text">2, 技术/开源库选定</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#3-确定规范"><span class="nav-number">1.0.3.3.</span> <span class="nav-text">3, 确定规范</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#4-自底而上-由小至大"><span class="nav-number">1.0.3.4.</span> <span class="nav-text">4, 自底而上, 由小至大</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#5-持续重构-伴随测试"><span class="nav-number">1.0.3.5.</span> <span class="nav-text">5, 持续重构, 伴随测试</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#6-重构而非重写"><span class="nav-number">1.0.3.6.</span> <span class="nav-text">6, 重构而非重写</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#附–关于架构重构的规则"><span class="nav-number">1.0.4.</span> <span class="nav-text">附–关于架构重构的规则</span></a></li></ol></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2017</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">anly_jun</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+  <span class="post-meta-divider">|</span>
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">NexT.Gemini</a> v5.1.2</div>
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.2"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.2"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.2"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.2"></script>
+
+
+
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.2"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.2"></script>
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.2"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.2"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.2"></script>
+
+
+
+  
+
+  
+    
+  
+
+  <script type="text/javascript">
+    var duoshuoQuery = {short_name:"anlyjun"};
+    (function() {
+      var ds = document.createElement('script');
+      ds.type = 'text/javascript';ds.async = true;
+      ds.id = 'duoshuo-script';
+      ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+      ds.charset = 'UTF-8';
+      (document.getElementsByTagName('head')[0]
+      || document.getElementsByTagName('body')[0]).appendChild(ds);
+    })();
+  </script>
+
+  
+    
+    
+    <script src="/lib/ua-parser-js/dist/ua-parser.min.js?v=0.7.9"></script>
+    <script src="/js/src/hook-duoshuo.js"></script>
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

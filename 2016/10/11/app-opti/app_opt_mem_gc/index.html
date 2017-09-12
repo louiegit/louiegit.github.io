@@ -1,0 +1,917 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next gemini use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.2" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="Android,App优化," />
+
+
+
+
+
+  <link rel="alternate" href="/atom.xml" title="ANLY'S BLOG" type="application/atom+xml" />
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.1.2" />
+
+
+
+
+
+
+<meta name="description" content="引言接App优化之内存优化(序), 作为App优化系列中内存优化的一个小部分. 由于内存相关知识比较生涩, 内存优化中使用到的相关工具, 也有很多专有名词. 对Java内存管理, GC, Android内存管理, Dalvik/ART等知识有一个理论的认识, 可以让我们更好的使用这些工具, 分析内存问题. 据此, 我们就先从理论入手, 聊聊GC那些事儿.">
+<meta name="keywords" content="Android,App优化">
+<meta property="og:type" content="article">
+<meta property="og:title" content="GC那些事儿--Android内存优化第一弹">
+<meta property="og:url" content="http://blog.lmj.wiki/2016/10/11/app-opti/app_opt_mem_gc/index.html">
+<meta property="og:site_name" content="ANLY&#39;S BLOG">
+<meta property="og:description" content="引言接App优化之内存优化(序), 作为App优化系列中内存优化的一个小部分. 由于内存相关知识比较生涩, 内存优化中使用到的相关工具, 也有很多专有名词. 对Java内存管理, GC, Android内存管理, Dalvik/ART等知识有一个理论的认识, 可以让我们更好的使用这些工具, 分析内存问题. 据此, 我们就先从理论入手, 聊聊GC那些事儿.">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="http://blog.lmj.wiki/img/Slice%201.jpg">
+<meta property="og:image" content="http://blog.lmj.wiki/img/14763696307856.jpg">
+<meta property="og:image" content="http://blog.lmj.wiki/img/14763697803399.jpg">
+<meta property="og:image" content="http://blog.lmj.wiki/img/14762859577438.jpg">
+<meta property="og:image" content="http://blog.lmj.wiki/img/14762876755221.jpg">
+<meta property="og:image" content="http://blog.lmj.wiki/img/14762879192972.jpg">
+<meta property="og:image" content="http://blog.lmj.wiki/img/14762882699599.jpg">
+<meta property="og:image" content="http://blog.lmj.wiki/img/14762888566508.jpg">
+<meta property="og:image" content="http://blog.lmj.wiki/img/14762889186219.jpg">
+<meta property="og:image" content="http://blog.lmj.wiki/img/14762894155260.jpg">
+<meta property="og:image" content="http://blog.lmj.wiki/img/14762898271473.jpg">
+<meta property="og:updated_time" content="2017-09-12T15:16:05.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="GC那些事儿--Android内存优化第一弹">
+<meta name="twitter:description" content="引言接App优化之内存优化(序), 作为App优化系列中内存优化的一个小部分. 由于内存相关知识比较生涩, 内存优化中使用到的相关工具, 也有很多专有名词. 对Java内存管理, GC, Android内存管理, Dalvik/ART等知识有一个理论的认识, 可以让我们更好的使用这些工具, 分析内存问题. 据此, 我们就先从理论入手, 聊聊GC那些事儿.">
+<meta name="twitter:image" content="http://blog.lmj.wiki/img/Slice%201.jpg">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Gemini',
+    version: '5.1.2',
+    sidebar: {"position":"right","display":"post","offset":12,"offset_float":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://blog.lmj.wiki/2016/10/11/app-opti/app_opt_mem_gc/"/>
+
+
+
+
+
+  <title>GC那些事儿--Android内存优化第一弹 | ANLY'S BLOG</title>
+  
+
+
+
+
+
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?3e4bf02bc6c59d846f194a8afc04ecfc";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-right page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">ANLY'S BLOG</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">看看书, 写写字; 捣鼓捣鼓小技术.</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            关于
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://blog.lmj.wiki/2016/10/11/app-opti/app_opt_mem_gc/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="anly_jun">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/img/avatar.jpeg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="ANLY'S BLOG">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">GC那些事儿--Android内存优化第一弹</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2016-10-11T22:18:00+08:00">
+                2016-10-11
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Android/" itemprop="url" rel="index">
+                    <span itemprop="name">Android</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2016/10/11/app-opti/app_opt_mem_gc/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count ds-thread-count" data-thread-key="2016/10/11/app-opti/app_opt_mem_gc/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h2 id="引言"><a href="#引言" class="headerlink" title="引言"></a>引言</h2><p>接<a href="http://www.jianshu.com/p/48475df838d9" target="_blank" rel="external">App优化之内存优化(序)</a>, 作为<a href="http://www.jianshu.com/p/f7006ab64da7" target="_blank" rel="external">App优化系列</a>中内存优化的一个小部分.</p>
+<p>由于内存相关知识比较生涩, 内存优化中使用到的相关工具, 也有很多专有名词. 对Java内存管理, GC, Android内存管理, Dalvik/ART等知识有一个理论的认识, 可以让我们更好的使用这些工具, 分析内存问题.</p>
+<p>据此, 我们就先从理论入手, 聊聊GC那些事儿.</p>
+<a id="more"></a>
+<h2 id="1-何为GC"><a href="#1-何为GC" class="headerlink" title="1, 何为GC"></a>1, 何为GC</h2><p>GC 是 garbage collection 的缩写, 垃圾回收的意思. 也可以是 Garbage Collector, 也就是垃圾回收器.</p>
+<h3 id="1-1-垃圾回收器"><a href="#1-1-垃圾回收器" class="headerlink" title="1.1 垃圾回收器"></a>1.1 垃圾回收器</h3><p>我们先来解释下Garbage Collector(垃圾回收器).</p>
+<p>内存管理, 一直是编程中的一个大的问题. 在较老的语言中, 例如C++语言中, 内存管理是显式的, 也就是说使用者自己申请内存使用, 自己释放内存. 这就是为什么C++语言中除了构造函数, 还有析构函数. 我们在创建对象的时候调用构造函数创建, 系统会在对象结束其作用域的时候调用析构函数, 我们需要做的就是在析构函数中释放掉我们申请的相关资源, 以便释放内存地址.</p>
+<p>显然, 这种显式的由编程人员自己控制释放内存的方式很容易出问题, 忘了, 漏了, 都可能导致内存问题. 也不符合程序员要懒的特征. </p>
+<p>故而, Java语言中引入了自动内存管理的机制, 也就是垃圾回收器. 大部分的现代面向对象语言, 也都是采用自动内存管理机制.</p>
+<blockquote>
+<p>内存自动管理回收机制可以解决大部分, 但不是所有的内存问题, 这也是为什么我们要讨论内存泄露.</p>
+</blockquote>
+<h4 id="垃圾回收器的职责"><a href="#垃圾回收器的职责" class="headerlink" title="垃圾回收器的职责"></a>垃圾回收器的职责</h4><p>垃圾回收器有三大职责:</p>
+<ol>
+<li>分配内存;</li>
+<li>确保任何被引用的对象保留在内存中;</li>
+<li>回收<strong>不能通过引用关系找到</strong>的对象的内存.</li>
+</ol>
+<h4 id="垃圾回收的一般流程"><a href="#垃圾回收的一般流程" class="headerlink" title="垃圾回收的一般流程"></a>垃圾回收的一般流程</h4><p><img src="/img/Slice%201.jpg" alt="Slice 1"></p>
+<h3 id="1-2-相关概念"><a href="#1-2-相关概念" class="headerlink" title="1.2 相关概念"></a>1.2 相关概念</h3><h4 id="垃圾回收-GC"><a href="#垃圾回收-GC" class="headerlink" title="垃圾回收(GC)"></a>垃圾回收(GC)</h4><p>垃圾回收器中有一个进程来做上面的这些事情, 这个进程查找我们的对象引用的关系并释放其内存, 这个进程就是garbage collection(垃圾回收), 也就是我们常说的GC.</p>
+<h4 id="Heap和Stack"><a href="#Heap和Stack" class="headerlink" title="Heap和Stack"></a>Heap和Stack</h4><p>简单说下:</p>
+<ul>
+<li>Heap内存是指java运行环境用来分配给对象和JRE类的内存. 是应用的内存空间.</li>
+<li>Stack内存是相对于线程Thread而言的, 它保存线程中方法中短期存在的变量值和对Heap中对象的引用等.</li>
+<li>Stack内存, 顾名思义, 是类Stack方式, 总是后进先出(LIFO)的.</li>
+<li>我们通常说的GC的针对Heap内存的. 因为Stack内存相当于是随用随销的.</li>
+</ul>
+<p><img src="/img/14763696307856.jpg" alt=""></p>
+<h4 id="GC-Root"><a href="#GC-Root" class="headerlink" title="GC Root"></a>GC Root</h4><p>直译GC根, 我们姑且不译了吧.<br>所谓GC Root我们可以理解为是一个Heap内存之外的对象, 通常包括但不仅限于如下几种:</p>
+<ul>
+<li>System Class <strong>系统</strong>Class Loader加载的类. 例如java运行环境中rt.jar中类, 比如java.util.* package中的类.</li>
+<li>Thread 运行中的线程</li>
+<li>JNI 中的本地/全局变量, 用户自定义的JNI代码或是JVM内部的.</li>
+<li>Busy Monitor 任何调用了wait()或notify()方法, 或是同步化的(synchronized)的东西. 可以理解为同步监控器.</li>
+<li>Java本地实例, 还在运行的Thread的stack中的方法创建的对象.</li>
+</ul>
+<h4 id="活对象-垃圾"><a href="#活对象-垃圾" class="headerlink" title="活对象/垃圾"></a>活对象/垃圾</h4><p>如果这个对象是<strong>引用可达</strong>的, 则称之为<strong>活的(live)</strong>, 反之, 如果这个对象<strong>引用不可达</strong>, 则称之为<strong>死的(dead)</strong>, 也可以称之为<strong>垃圾(garbage)</strong>.</p>
+<p>这个<strong>引用可达与不可达</strong>就是相对于GC Root来说的:<br><img src="/img/14763697803399.jpg" alt=""></p>
+<h2 id="2-Java的内存管理机制"><a href="#2-Java的内存管理机制" class="headerlink" title="2, Java的内存管理机制"></a>2, Java的内存管理机制</h2><h3 id="2-1-关于JVM"><a href="#2-1-关于JVM" class="headerlink" title="2.1 关于JVM"></a>2.1 关于JVM</h3><p>我们平常在查看我们的java版本时, 你会发现:</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line"><span class="meta">$</span> java -version</div><div class="line">java version "1.8.0_74"</div><div class="line">Java(TM) SE Runtime Environment (build 1.8.0_74-b02)</div><div class="line">Java HotSpot(TM) 64-Bit Server VM (build 25.74-b02, mixed mode)</div></pre></td></tr></table></figure>
+<p>其中有个HotSpot VM的东西, 那么这个是什么呢? 和JVM有什么关系呢?</p>
+<p>在此简单说下, 以便行文:</p>
+<ul>
+<li>JVM, Java虚拟机, 可以简单理解为一种技术思想, 虚拟技术理念.</li>
+<li><a href="https://zh.wikipedia.org/wiki/HotSpot" target="_blank" rel="external">HotSpot VM</a>是JVM的一种实现, 包含了服务器版和桌面应用程序版, 现时由Oracle维护并发布.</li>
+</ul>
+<blockquote>
+<p>我们当前使用的sun(oracle)的java版本(应该是1.3以上)都是内置的HotSpot VM实现. 所以接下来的分析也都是基于HotSpot VM的, 但是还是简称JVM.</p>
+</blockquote>
+<h3 id="2-2-JVM内存区域"><a href="#2-2-JVM内存区域" class="headerlink" title="2.2 JVM内存区域"></a>2.2 JVM内存区域</h3><p>JVM使用分代式的内存管理方式, 将Heap分成三代 — 新生代, 老一代, 持久代.</p>
+<p><img src="/img/14762859577438.jpg" alt=""></p>
+<ul>
+<li><p>Young Generation</p>
+<ul>
+<li>新生代.</li>
+<li>所有new的对象.</li>
+<li>该区域的内存管理使用minor garbage collection(小GC).</li>
+<li>更进一步分成Eden space, Survivor 0 和 Survivor 1 三个部分.</li>
+</ul>
+</li>
+<li><p>Old Generation</p>
+<ul>
+<li>老年区.</li>
+<li>新生代中执行小粒度的GC幸存下来的”老”对象.</li>
+<li>该区域的内存管理使用major garbage collection(大GC).</li>
+</ul>
+</li>
+<li><p>Permanent Generation</p>
+<ul>
+<li>持久代.</li>
+<li>包含应用的类/方法信息, 以及JRE库的类和方法信息.</li>
+</ul>
+</li>
+</ul>
+<blockquote>
+<p><strong>小GC</strong>执行非常频繁, 而且速度特别快.<br><strong>大GC</strong>一般会比小GC慢十倍以上.<br>大小GC都会发出”Stop the World”事件, 也就是说中断程序运行, 直至GC完成. 这也是我们在<a href="http://www.jianshu.com/p/1fb065c806e6" target="_blank" rel="external">App优化之消除卡顿</a>中为什么说频繁GC会造成用户感知卡顿.</p>
+</blockquote>
+<h2 id="3-GC的流程"><a href="#3-GC的流程" class="headerlink" title="3, GC的流程"></a>3, GC的流程</h2><p>了解了内存Heap的几个区域, 我们再来看下垃圾收集器是怎么利用这几个区域来管理内存和回收垃圾的.</p>
+<p><strong>1. 创建新的对象</strong></p>
+<p>每当我们使用new创建一个对象时, 这个对象会被分配到<strong>新生代</strong>的<strong>Eden</strong>区域:</p>
+<p><img src="/img/14762876755221.jpg" alt=""></p>
+<p><strong>2. 当Eden区域满时</strong><br>当Eden区域内存被分配完时, <strong>小GC</strong>程序被触发:<br><img src="/img/14762879192972.jpg" alt=""></p>
+<p><strong>引用可达的对象</strong>会移到Survivor(幸存者)区域–<strong>S0</strong>, 然后清空Eden区域, 此时<strong>引用不可达的对象</strong>会直接删除, 内存回收, 如下:<br><img src="/img/14762882699599.jpg" alt=""></p>
+<p><strong>3. Eden再次满时</strong><br>当Eden区域再次分配完后, <strong>小GC</strong>执行, <strong>引用可达的对象</strong>会移到Survivor(幸存者)区域, 而<strong>引用不可达的对象</strong>会跟随Eden的清空而删除回收.</p>
+<p>需要注意的是, 这次<strong>引用可达的对象</strong>移动到的是<strong>S1</strong>的幸存者区.<br>而且, S0区域也会执行<strong>小GC</strong>, 将其中还<strong>引用可达的对象</strong>移动到S1区, 且年龄+1. 然后清空S0, 回收其中<strong>引用不可达的对象</strong>.</p>
+<p>此时, 所有<strong>引用可达的对象</strong>都在S1区, 且S1区的对象存在不同的年龄. 如下:<br><img src="/img/14762888566508.jpg" alt=""></p>
+<p>当Eden第三次满时, S0和S1的角色互换了:<br><img src="/img/14762889186219.jpg" alt=""></p>
+<p>依此循环.</p>
+<p><strong>4. 当Survivor区的对象年龄达到”老年线”时</strong><br>上面1~3循环, Survivor区的对象年龄也会持续增长, 当其中某些对象年龄达到”老年线”, 例如8岁时, 它们会”晋升”到<strong>老年区</strong>.<br><img src="/img/14762894155260.jpg" alt=""></p>
+<p><strong>如此1~4步重复, 大体流程是这样的</strong><br><img src="/img/14762898271473.jpg" alt=""></p>
+<h2 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h2><ul>
+<li><a href="http://www.oracle.com/webfolder/technetwork/tutorials/obe/java/gc01/index.html" target="_blank" rel="external">http://www.oracle.com/webfolder/technetwork/tutorials/obe/java/gc01/index.html</a></li>
+<li><a href="http://www.ibm.com/support/knowledgecenter/SS3KLZ/com.ibm.java.diagnostics.memory.analyzer.doc/gcroots.html" target="_blank" rel="external">http://www.ibm.com/support/knowledgecenter/SS3KLZ/com.ibm.java.diagnostics.memory.analyzer.doc/gcroots.html</a></li>
+<li><a href="http://www.infoq.com/cn/articles/jvm-memory-collection" target="_blank" rel="external">http://www.infoq.com/cn/articles/jvm-memory-collection</a></li>
+<li><a href="http://www.journaldev.com/4098/java-heap-space-vs-stack-memory" target="_blank" rel="external">http://www.journaldev.com/4098/java-heap-space-vs-stack-memory</a></li>
+</ul>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/Android/" rel="tag"># Android</a>
+          
+            <a href="/tags/App优化/" rel="tag"># App优化</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2016/10/06/app-opti/app_opt_network/" rel="next" title="App优化之网络优化">
+                <i class="fa fa-chevron-left"></i> App优化之网络优化
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2016/10/19/app-opti/app_opt_mem_android/" rel="prev" title="Android是如何管理App内存的--Android内存优化第二弹">
+                Android是如何管理App内存的--Android内存优化第二弹 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+        <div class="ds-share flat" data-thread-key="2016/10/11/app-opti/app_opt_mem_gc/"
+     data-title="GC那些事儿--Android内存优化第一弹"
+     data-content=""
+     data-url="http://blog.lmj.wiki/2016/10/11/app-opti/app_opt_mem_gc/">
+  <div class="ds-share-inline">
+    <ul  class="ds-share-icons-16">
+
+      <li data-toggle="ds-share-icons-more"><a class="ds-more" href="javascript:void(0);">分享到：</a></li>
+      <li><a class="ds-weibo" href="javascript:void(0);" data-service="weibo">微博</a></li>
+      <li><a class="ds-qzone" href="javascript:void(0);" data-service="qzone">QQ空间</a></li>
+      <li><a class="ds-qqt" href="javascript:void(0);" data-service="qqt">腾讯微博</a></li>
+      <li><a class="ds-wechat" href="javascript:void(0);" data-service="wechat">微信</a></li>
+
+    </ul>
+    <div class="ds-share-icons-more">
+    </div>
+  </div>
+</div>
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+      <div class="ds-thread" data-thread-key="2016/10/11/app-opti/app_opt_mem_gc/"
+           data-title="GC那些事儿--Android内存优化第一弹" data-url="http://blog.lmj.wiki/2016/10/11/app-opti/app_opt_mem_gc/">
+      </div>
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          
+            <img class="site-author-image" itemprop="image"
+              src="/img/avatar.jpeg"
+              alt="anly_jun" />
+          
+            <p class="site-author-name" itemprop="name">anly_jun</p>
+            <p class="site-description motion-element" itemprop="description">Android, iOS, Mobile Dev/Test, Web, Python</p>
+        </div>
+
+        <nav class="site-state motion-element">
+
+          
+            <div class="site-state-item site-state-posts">
+            
+              <a href="/archives">
+            
+                <span class="site-state-item-count">55</span>
+                <span class="site-state-item-name">日志</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-categories">
+              <a href="/categories/index.html">
+                <span class="site-state-item-count">6</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-tags">
+              <a href="/tags/index.html">
+                <span class="site-state-item-count">20</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+          <div class="feed-link motion-element">
+            <a href="/atom.xml" rel="alternate">
+              <i class="fa fa-rss"></i>
+              RSS
+            </a>
+          </div>
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#引言"><span class="nav-number">1.</span> <span class="nav-text">引言</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#1-何为GC"><span class="nav-number">2.</span> <span class="nav-text">1, 何为GC</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-1-垃圾回收器"><span class="nav-number">2.1.</span> <span class="nav-text">1.1 垃圾回收器</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#垃圾回收器的职责"><span class="nav-number">2.1.1.</span> <span class="nav-text">垃圾回收器的职责</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#垃圾回收的一般流程"><span class="nav-number">2.1.2.</span> <span class="nav-text">垃圾回收的一般流程</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#1-2-相关概念"><span class="nav-number">2.2.</span> <span class="nav-text">1.2 相关概念</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#垃圾回收-GC"><span class="nav-number">2.2.1.</span> <span class="nav-text">垃圾回收(GC)</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Heap和Stack"><span class="nav-number">2.2.2.</span> <span class="nav-text">Heap和Stack</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#GC-Root"><span class="nav-number">2.2.3.</span> <span class="nav-text">GC Root</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#活对象-垃圾"><span class="nav-number">2.2.4.</span> <span class="nav-text">活对象/垃圾</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-Java的内存管理机制"><span class="nav-number">3.</span> <span class="nav-text">2, Java的内存管理机制</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#2-1-关于JVM"><span class="nav-number">3.1.</span> <span class="nav-text">2.1 关于JVM</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-2-JVM内存区域"><span class="nav-number">3.2.</span> <span class="nav-text">2.2 JVM内存区域</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-GC的流程"><span class="nav-number">4.</span> <span class="nav-text">3, GC的流程</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#参考"><span class="nav-number">5.</span> <span class="nav-text">参考</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2017</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">anly_jun</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+  <span class="post-meta-divider">|</span>
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">NexT.Gemini</a> v5.1.2</div>
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.2"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.2"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.2"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.2"></script>
+
+
+
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.2"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.2"></script>
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.2"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.2"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.2"></script>
+
+
+
+  
+
+  
+    
+  
+
+  <script type="text/javascript">
+    var duoshuoQuery = {short_name:"anlyjun"};
+    (function() {
+      var ds = document.createElement('script');
+      ds.type = 'text/javascript';ds.async = true;
+      ds.id = 'duoshuo-script';
+      ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+      ds.charset = 'UTF-8';
+      (document.getElementsByTagName('head')[0]
+      || document.getElementsByTagName('body')[0]).appendChild(ds);
+    })();
+  </script>
+
+  
+    
+    
+    <script src="/lib/ua-parser-js/dist/ua-parser.min.js?v=0.7.9"></script>
+    <script src="/js/src/hook-duoshuo.js"></script>
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

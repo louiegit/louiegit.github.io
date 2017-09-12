@@ -1,0 +1,908 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next gemini use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.2" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="Android,App优化," />
+
+
+
+
+
+  <link rel="alternate" href="/atom.xml" title="ANLY'S BLOG" type="application/atom+xml" />
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.1.2" />
+
+
+
+
+
+
+<meta name="description" content="前面几弹从Android内存管理, GC机制理论, 到内存分析工具, 内存泄露实例分析等几个方面聊了下Android App中关于内存优化的一些个知识. 本篇作为Android App内存优化的第五弹, 也是最后一弹, 将对Andorid中的内存优化做一个简单的总结.">
+<meta name="keywords" content="Android,App优化">
+<meta property="og:type" content="article">
+<meta property="og:title" content="内存使用总结篇 -- Android内存优化第五弹">
+<meta property="og:url" content="http://blog.lmj.wiki/2016/11/04/app-opti/app_opt_mem_summary/index.html">
+<meta property="og:site_name" content="ANLY&#39;S BLOG">
+<meta property="og:description" content="前面几弹从Android内存管理, GC机制理论, 到内存分析工具, 内存泄露实例分析等几个方面聊了下Android App中关于内存优化的一些个知识. 本篇作为Android App内存优化的第五弹, 也是最后一弹, 将对Andorid中的内存优化做一个简单的总结.">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="http://blog.lmj.wiki/img/14782404728917.jpg">
+<meta property="og:image" content="http://blog.lmj.wiki/img/14782426133614.jpg">
+<meta property="og:image" content="http://blog.lmj.wiki/img/14782435087563.jpg">
+<meta property="og:updated_time" content="2017-09-12T15:16:05.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="内存使用总结篇 -- Android内存优化第五弹">
+<meta name="twitter:description" content="前面几弹从Android内存管理, GC机制理论, 到内存分析工具, 内存泄露实例分析等几个方面聊了下Android App中关于内存优化的一些个知识. 本篇作为Android App内存优化的第五弹, 也是最后一弹, 将对Andorid中的内存优化做一个简单的总结.">
+<meta name="twitter:image" content="http://blog.lmj.wiki/img/14782404728917.jpg">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Gemini',
+    version: '5.1.2',
+    sidebar: {"position":"right","display":"post","offset":12,"offset_float":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://blog.lmj.wiki/2016/11/04/app-opti/app_opt_mem_summary/"/>
+
+
+
+
+
+  <title>内存使用总结篇 -- Android内存优化第五弹 | ANLY'S BLOG</title>
+  
+
+
+
+
+
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?3e4bf02bc6c59d846f194a8afc04ecfc";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-right page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">ANLY'S BLOG</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">看看书, 写写字; 捣鼓捣鼓小技术.</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            关于
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://blog.lmj.wiki/2016/11/04/app-opti/app_opt_mem_summary/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="anly_jun">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/img/avatar.jpeg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="ANLY'S BLOG">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">内存使用总结篇 -- Android内存优化第五弹</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2016-11-04T18:10:00+08:00">
+                2016-11-04
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Android/" itemprop="url" rel="index">
+                    <span itemprop="name">Android</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2016/11/04/app-opti/app_opt_mem_summary/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count ds-thread-count" data-thread-key="2016/11/04/app-opti/app_opt_mem_summary/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>前面几弹从Android内存管理, GC机制理论, 到内存分析工具, 内存泄露实例分析等几个方面聊了下Android App中关于内存优化的一些个知识.</p>
+<p>本篇作为Android App内存优化的第五弹, 也是最后一弹, 将对Andorid中的内存优化做一个简单的总结.</p>
+<a id="more"></a>
+<h2 id="1-回顾"><a href="#1-回顾" class="headerlink" title="1, 回顾"></a>1, 回顾</h2><p>系列文链接:</p>
+<p>1.<a href="http://blog.lmj.wiki/2016/10/11/app-opti/app_opt_mem_gc/">GC那些事儿</a><br>2.<a href="http://blog.lmj.wiki/2016/10/19/app-opti/app_opt_mem_android/">Android的内存管理</a><br>3.<a href="http://blog.lmj.wiki/2016/10/25/app-opti/app_opt_mat/">内存分析工具</a><br>4.<a href="http://blog.lmj.wiki/2016/10/31/app-opti/app_opt_mem_leak/">内存泄露实例分析</a></p>
+<p>几个要点:</p>
+<ul>
+<li>Android的App运行在Dalvik/ART这种类JVM环境的, 使用的是自动内存管理方式, 也就是通常说的GC机制.</li>
+<li>每个App默认单独运行在一个VM进程内, 其内存使用是有上限的.</li>
+<li>所谓GC就是回收垃圾对象.</li>
+<li>所谓垃圾, 就是<strong>GC Roots</strong>不可达的对象, 也就是<strong>死对象</strong>(相对于<strong>活对象</strong>).</li>
+<li>对象占用内存(Retained Size)是其所支配(Dominate)的所有子对象的占用内存之和. 故而我们找内存消耗点, 和内存泄露的时候都是关注对象的<strong>Retained Size</strong>.</li>
+<li>所谓内存分析, 最多是就是使用工具定位是<strong>哪个对象支配着某个Retained Size很大的对象</strong>, 进而定位出内存消耗或内存泄露点.</li>
+</ul>
+<p>回顾之后, 我们再来看下内存问题.</p>
+<h2 id="2-内存问题"><a href="#2-内存问题" class="headerlink" title="2, 内存问题"></a>2, 内存问题</h2><p>从大的分类上来说, Android App中关于内存的问题大致可以分成如下三类:</p>
+<ul>
+<li>内存泄露</li>
+<li>内存消耗过大</li>
+<li>内存抖动</li>
+</ul>
+<p>前二者, 内存泄露和内存消耗过大, 最终的结果就是我们常见的<strong>OutOfMemoryException</strong>, 今天我们的内存使用总结也主要是针对这二者.</p>
+<blockquote>
+<p>关于<strong>内存抖动</strong>我们在<a href="http://blog.lmj.wiki/2016/09/18/app-opti/app_opt_smooth/">App优化之消除卡顿</a>一文中有描述.</p>
+</blockquote>
+<h2 id="3-常见的内存泄露及其解决方案"><a href="#3-常见的内存泄露及其解决方案" class="headerlink" title="3, 常见的内存泄露及其解决方案"></a>3, 常见的内存泄露及其解决方案</h2><blockquote>
+<p>以下关于泄露的名字, 个人根据自己的习惯起的, 并非哪儿的官方称呼, 希望没有误导到吃瓜群众.</p>
+</blockquote>
+<h3 id="3-1-Context泄露"><a href="#3-1-Context泄露" class="headerlink" title="3.1 Context泄露"></a>3.1 Context泄露</h3><p><strong>Context使用不当导致的内存泄露.</strong><br>一般来说是因为某些全部的对象, 理当使用Application级别的Context, 而使用了指定Activity的Context, 导致该Activity无法释放.</p>
+<p>例如, 某个单例中需要一个Context, 传入了一个Activity的Context, 导致其被这个单例持续引用而无法回收. </p>
+<p>这类泄露的解决方案, 就是根据组件的生命周期来正确使用Context, 全局引用使用Application Context.</p>
+<blockquote>
+<p>关于各种Context的说明和使用请参看<a href="http://blog.lmj.wiki/2016/08/02/android/context/">这篇译文</a>.<br>Context泄露的实例还可以看下android dev blog中的<a href="http://android-developers.blogspot.com/2009/01/avoiding-memory-leaks.html" target="_blank" rel="external">这篇</a>, 需翻墙.</p>
+</blockquote>
+<h3 id="3-2-内部类泄露"><a href="#3-2-内部类泄露" class="headerlink" title="3.2 内部类泄露"></a>3.2 内部类泄露</h3><p><strong>由于(匿名)内部类隐式地持有一个外部类的引用, 故而当内部类中执行的事情长于外部类的生命周期时, 就会导致外部类的泄露.</strong></p>
+<p><strong>常见的此类泄露包括Handler泄露, Thread泄露…, 这些也是我们经常会作为(匿名)内部类在Activity中使用的.</strong></p>
+<p>下面以HandlerLeak为例:</p>
+<p>如下:</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">HandlerLeakActivity</span> <span class="keyword">extends</span> <span class="title">AppCompatActivity</span> </span>&#123;</div><div class="line"></div><div class="line">    <span class="keyword">private</span> BigObject mBigObject = <span class="keyword">new</span> BigObject();</div><div class="line"></div><div class="line">    <span class="meta">@Override</span></div><div class="line">    <span class="function"><span class="keyword">protected</span> <span class="keyword">void</span> <span class="title">onCreate</span><span class="params">(Bundle savedInstanceState)</span> </span>&#123;</div><div class="line">        <span class="keyword">super</span>.onCreate(savedInstanceState);</div><div class="line">        setContentView(R.layout.activity_memory_leak);</div><div class="line"></div><div class="line">        mHandler.sendEmptyMessageDelayed(<span class="number">1</span>, <span class="number">60</span> * <span class="number">1000</span>);</div><div class="line"></div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="keyword">private</span> Handler mHandler = <span class="keyword">new</span> Handler() &#123;</div><div class="line">        <span class="meta">@Override</span></div><div class="line">        <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">handleMessage</span><span class="params">(Message msg)</span> </span>&#123;</div><div class="line">            <span class="keyword">super</span>.handleMessage(msg);</div><div class="line">        &#125;</div><div class="line">    &#125;;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>这段代码我们实际上非常多的使用, 然而如果我们用android lint工具检测的话, 会有一段这样的提示:<br><img src="/img/14782404728917.jpg" alt=""></p>
+<p>也就是说这个Handler类可能会导致内存泄露, 建议我们使用static方式. 点开”more”, 我们来看下官方的建议解决方案:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line">Since this Handler is declared as an inner class, it may prevent the outer</div><div class="line">class from being garbage collected. If the Handler is using a Looper or</div><div class="line">MessageQueue for a thread other than the main thread, then there is no issue.</div><div class="line">If the Handler is using the Looper or MessageQueue of the main thread, you</div><div class="line">need to fix your Handler declaration, as follows: Declare the Handler as a</div><div class="line">static class; In the outer class, instantiate a WeakReference to the outer</div><div class="line">class and pass this object to your Handler when you instantiate the Handler;</div><div class="line">Make all references to members of the outer class using the WeakReference</div><div class="line">object.</div></pre></td></tr></table></figure>
+<p>阅读这段”more”的前半段, 我们分析下泄露是怎么产生的:</p>
+<p>因为这个Handler是一个内部类(默认持有一个外部类也就是我们的HandlerLeakActivity的引用), 如果这个Handler的Looper/MQ所在的<strong>Thread</strong>与Main Thread不同, 则没有问题. 但是如果Handler的Looper/MQ就是Main Thread(本例中就是), 那么问题就来了:</p>
+<p>这个Handler发送的message会放到MQ中, 这个message会对Handler有一个引用, 而Handler有HandlerLeakActivity的引用. 当我们进入这个Activity, 然后退出, 理当销毁这个Activity并回收了. 但是因为这个message会延时60s, 故而导致这个mHandler被引用, 从而activity被引用着, 而无法回收释放内存.</p>
+<p>在<a href="http://blog.lmj.wiki/2016/10/11/app-opti/app_opt_mem_gc/">GC那些事儿</a>中, 我们就讲到, 运行中的Thread就是GC Root之一, 根据上面的分析, 得出: HandlerLeakActivity到GC Roots可达, 故而无法回收.</p>
+<p>我们用LeakCanary来验证下我们的分析:</p>
+<p><img src="/img/14782426133614.jpg" alt=""><br>可以看到, 果然如我们分析的.</p>
+<p>那么此类问题怎么解决呢, 可能很多同学也直接使用加上@SuppressLint(“HandlerLeak”)的方式来避免lint提示了, 如下:</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line"><span class="meta">@SuppressLint</span>(<span class="string">"HandlerLeak"</span>)</div><div class="line"><span class="keyword">private</span> Handler mHandler = <span class="keyword">new</span> Handler() &#123;</div><div class="line">   <span class="meta">@Override</span></div><div class="line">   <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">handleMessage</span><span class="params">(Message msg)</span> </span>&#123;</div><div class="line">       <span class="keyword">super</span>.handleMessage(msg);</div><div class="line">   &#125;</div><div class="line">&#125;;</div></pre></td></tr></table></figure>
+<p>然而这并非解决之道, 其实这段”more”的后半段也给了我们解决方案 — 使用Static + WeakReference的方式, 具体如下:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div></pre></td><td class="code"><pre><div class="line">public class HandlerLeakActivity extends AppCompatActivity &#123;</div><div class="line"></div><div class="line">    private BigObject mBigObject = new BigObject();</div><div class="line"></div><div class="line">    @Override</div><div class="line">    protected void onCreate(Bundle savedInstanceState) &#123;</div><div class="line">        super.onCreate(savedInstanceState);</div><div class="line">        setContentView(R.layout.activity_memory_leak);</div><div class="line"></div><div class="line">        new DemoHandler(this).sendEmptyMessageDelayed(1, 60 * 1000);</div><div class="line"></div><div class="line">    &#125;</div><div class="line"></div><div class="line">    private static class DemoHandler extends Handler &#123;</div><div class="line"></div><div class="line">        private final WeakReference&lt;HandlerLeakActivity&gt; mActivity;</div><div class="line"></div><div class="line"></div><div class="line">        private DemoHandler(HandlerLeakActivity activity) &#123;</div><div class="line">            this.mActivity = new WeakReference&lt;&gt;(activity);</div><div class="line">        &#125;</div><div class="line"></div><div class="line">        @Override</div><div class="line">        public void handleMessage(Message msg) &#123;</div><div class="line">            super.handleMessage(msg);</div><div class="line">            HandlerLeakActivity activity = mActivity.get();</div><div class="line">            if (activity != null) &#123;</div><div class="line">                activity.doSomething();</div><div class="line">            &#125;</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    private void doSomething() &#123;</div><div class="line"></div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<blockquote>
+<p>留下一个问题, 为什么说这个Handler不在Main Thread的时候不会有问题, 大家可以自行研究下, 有机会就HandlerLeak这个话题我们再深入研究下.</p>
+</blockquote>
+<h3 id="3-3-Register泄露"><a href="#3-3-Register泄露" class="headerlink" title="3.3 Register泄露"></a>3.3 Register泄露</h3><p>对于观察者, 广播, Listener等, 注册和注销没有成对出现而导致的内存泄露.</p>
+<p><a href="http://blog.lmj.wiki/2016/10/31/app-opti/app_opt_mem_leak/">内存泄露实例</a>中那个例子, 就是这种泄露, 在此不在细述了.</p>
+<p>解决方案就是编码的时候多注意吧, add/remove, register/unregister, bind/unbind什么的~.</p>
+<h3 id="3-4-资源泄露"><a href="#3-4-资源泄露" class="headerlink" title="3.4 资源泄露"></a>3.4 资源泄露</h3><p><strong>常见的数据库查询Cursor, 文件读写流等, 用完没有关闭导致的内存泄露.</strong></p>
+<p>例如:</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">CursorLeakActivity</span> <span class="keyword">extends</span> <span class="title">AppCompatActivity</span> </span>&#123;</div><div class="line"></div><div class="line">    <span class="keyword">private</span> BigObject mBigObject = <span class="keyword">new</span> BigObject();</div><div class="line"></div><div class="line">    <span class="meta">@Override</span></div><div class="line">    <span class="function"><span class="keyword">protected</span> <span class="keyword">void</span> <span class="title">onCreate</span><span class="params">(Bundle savedInstanceState)</span> </span>&#123;</div><div class="line">        <span class="keyword">super</span>.onCreate(savedInstanceState);</div><div class="line">        setContentView(R.layout.activity_memory_leak);</div><div class="line"></div><div class="line">        Cursor cursor = getContentResolver().query(ContactsContract.Contacts.CONTENT_URI, <span class="keyword">null</span>, <span class="keyword">null</span>, <span class="keyword">null</span>, <span class="keyword">null</span>);</div><div class="line"></div><div class="line">        <span class="keyword">if</span> (cursor != <span class="keyword">null</span>) &#123;</div><div class="line">            cursor.moveToFirst();</div><div class="line"></div><div class="line">            <span class="comment">// do something.</span></div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>这个cursor就可能泄露, 实际上android lint也给了我们提示:</p>
+<p><img src="/img/14782435087563.jpg" alt=""></p>
+<p>此类问题的解决方案, 一般我们使用try-catch-finally的结构, 在finally中关闭并释放资源.<br>如下:</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">CursorLeakActivity</span> <span class="keyword">extends</span> <span class="title">AppCompatActivity</span> </span>&#123;</div><div class="line"></div><div class="line">    <span class="keyword">private</span> BigObject mBigObject = <span class="keyword">new</span> BigObject();</div><div class="line"></div><div class="line">    <span class="meta">@Override</span></div><div class="line">    <span class="function"><span class="keyword">protected</span> <span class="keyword">void</span> <span class="title">onCreate</span><span class="params">(Bundle savedInstanceState)</span> </span>&#123;</div><div class="line">        <span class="keyword">super</span>.onCreate(savedInstanceState);</div><div class="line">        setContentView(R.layout.activity_memory_leak);</div><div class="line"></div><div class="line">        Cursor cursor = getContentResolver().query(ContactsContract.Contacts.CONTENT_URI, <span class="keyword">null</span>, <span class="keyword">null</span>, <span class="keyword">null</span>, <span class="keyword">null</span>);</div><div class="line"></div><div class="line">        <span class="keyword">try</span> &#123;</div><div class="line">            <span class="keyword">if</span> (cursor != <span class="keyword">null</span>) &#123;</div><div class="line">                cursor.moveToFirst();</div><div class="line"></div><div class="line">                <span class="comment">// do something.</span></div><div class="line">            &#125;</div><div class="line">        &#125;</div><div class="line">        <span class="keyword">catch</span> (Exception e) &#123;</div><div class="line">            e.printStackTrace();</div><div class="line">        &#125;</div><div class="line">        <span class="keyword">finally</span> &#123;</div><div class="line">            <span class="keyword">if</span> (cursor != <span class="keyword">null</span>) &#123;</div><div class="line">                cursor.close();</div><div class="line">                cursor = <span class="keyword">null</span>;</div><div class="line">            &#125;</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<h3 id="3-5-Bitmap泄露"><a href="#3-5-Bitmap泄露" class="headerlink" title="3.5 Bitmap泄露"></a>3.5 Bitmap泄露</h3><p><strong>Bitmap没有及时调用recycle()回收导致的泄露.</strong></p>
+<p>对于Bitmap是使用, 一直就是Android开发者的痛, 特别是对大图片的处理. 可以说我们大多数的报出来的OutOfMemory异常基本都是因为要给某个Bitmap分配内存, 而可用内存不够导致的.</p>
+<h3 id="3-6-内存泄露小结"><a href="#3-6-内存泄露小结" class="headerlink" title="3.6 内存泄露小结"></a>3.6 内存泄露小结</h3><p>对于内存泄露, 我们尽量是以防为主. 根据上面的常见内存泄露, 我们需要注意以下几点:</p>
+<ul>
+<li>Context的(根据组件生命周期)合理使用.</li>
+<li>避免在Activity中使用非静态内部类, 可以静态内部类+WeakReference达成目的.</li>
+<li>注意add/remove, register/unregister, bind/unbind的成对使用.</li>
+<li>资源及时关闭, 释放.</li>
+</ul>
+<h2 id="4-有效使用内存的建议"><a href="#4-有效使用内存的建议" class="headerlink" title="4, 有效使用内存的建议"></a>4, 有效使用内存的建议</h2><blockquote>
+<p>本节大部分内容来自<a href="https://developer.android.com/topic/performance/memory.html#code" target="_blank" rel="external">官方开发文档</a>.</p>
+</blockquote>
+<ul>
+<li><p>合理使用Service<br>  Service的及时关闭可以让我们节省内存消耗, 对于一次性的任务, 建议使用IntentService.</p>
+</li>
+<li><p>使用优化后的数据容器<br>  使用Android提供的SparseArray, SparseBooleanArray, LongSparseArray来代替HashMap的使用.<br>  关于HashMap，ArrayMap，SparseArray, <a href="http://www.jianshu.com/p/7b9a1b386265" target="_blank" rel="external">这篇文章</a>有个比较直观的比较, 可以看下.</p>
+</li>
+<li><p>少用枚举enum结构<br>  相比于静态常量(static final), enum会耗费双倍的内存.</p>
+</li>
+<li><p>避免创建不必要的对象<br>  诸如一些临时对象, 特别是循环中的.</p>
+</li>
+<li><p>考虑实现onTrimMemory(), 在此根据当前的内存状态做些处理.</p>
+</li>
+<li><p>Bitmap的合理有效使用.<br>  对于Bitmap的使用, 建议直接查看官方开发文档中的<a href="https://developer.android.com/training/displaying-bitmaps/index.html" target="_blank" rel="external">高效显示Bitmap</a>(需翻墙). </p>
+</li>
+</ul>
+<h2 id="结语"><a href="#结语" class="headerlink" title="结语"></a>结语</h2><p>至此, Android App内存优化的5发子弹就打完了, 关于App内存优化的部分, 我们就先到这里了, 可能还有很多遗漏的内容. </p>
+<p>再次表明下我写文的思想: 一个是想记录下自己的一个解决问题的思路和经验, 再一个是想传达如何去解决问题的思想. 故而, 文章并不是一开始就说有哪些内存问题, 怎么解. 而是从理论基础到分析工具的使用, 案例的分析去一步步的让大家学会怎么处理这类问题. </p>
+<p>希望大家能从中得到一些关于解决问题的启发, 而非被灌输一些强记下的知识.</p>
+<p>感谢相随…</p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/Android/" rel="tag"># Android</a>
+          
+            <a href="/tags/App优化/" rel="tag"># App优化</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2016/10/31/app-opti/app_opt_mem_leak/" rel="next" title="内存泄露实例分析 -- Android内存优化第四弹">
+                <i class="fa fa-chevron-left"></i> 内存泄露实例分析 -- Android内存优化第四弹
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2016/11/06/app-opti/app_opt_summary/" rel="prev" title="App性能优化系列结语篇">
+                App性能优化系列结语篇 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+        <div class="ds-share flat" data-thread-key="2016/11/04/app-opti/app_opt_mem_summary/"
+     data-title="内存使用总结篇 -- Android内存优化第五弹"
+     data-content=""
+     data-url="http://blog.lmj.wiki/2016/11/04/app-opti/app_opt_mem_summary/">
+  <div class="ds-share-inline">
+    <ul  class="ds-share-icons-16">
+
+      <li data-toggle="ds-share-icons-more"><a class="ds-more" href="javascript:void(0);">分享到：</a></li>
+      <li><a class="ds-weibo" href="javascript:void(0);" data-service="weibo">微博</a></li>
+      <li><a class="ds-qzone" href="javascript:void(0);" data-service="qzone">QQ空间</a></li>
+      <li><a class="ds-qqt" href="javascript:void(0);" data-service="qqt">腾讯微博</a></li>
+      <li><a class="ds-wechat" href="javascript:void(0);" data-service="wechat">微信</a></li>
+
+    </ul>
+    <div class="ds-share-icons-more">
+    </div>
+  </div>
+</div>
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+      <div class="ds-thread" data-thread-key="2016/11/04/app-opti/app_opt_mem_summary/"
+           data-title="内存使用总结篇 -- Android内存优化第五弹" data-url="http://blog.lmj.wiki/2016/11/04/app-opti/app_opt_mem_summary/">
+      </div>
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          
+            <img class="site-author-image" itemprop="image"
+              src="/img/avatar.jpeg"
+              alt="anly_jun" />
+          
+            <p class="site-author-name" itemprop="name">anly_jun</p>
+            <p class="site-description motion-element" itemprop="description">Android, iOS, Mobile Dev/Test, Web, Python</p>
+        </div>
+
+        <nav class="site-state motion-element">
+
+          
+            <div class="site-state-item site-state-posts">
+            
+              <a href="/archives">
+            
+                <span class="site-state-item-count">55</span>
+                <span class="site-state-item-name">日志</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-categories">
+              <a href="/categories/index.html">
+                <span class="site-state-item-count">6</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-tags">
+              <a href="/tags/index.html">
+                <span class="site-state-item-count">20</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+          <div class="feed-link motion-element">
+            <a href="/atom.xml" rel="alternate">
+              <i class="fa fa-rss"></i>
+              RSS
+            </a>
+          </div>
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#1-回顾"><span class="nav-number">1.</span> <span class="nav-text">1, 回顾</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-内存问题"><span class="nav-number">2.</span> <span class="nav-text">2, 内存问题</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-常见的内存泄露及其解决方案"><span class="nav-number">3.</span> <span class="nav-text">3, 常见的内存泄露及其解决方案</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#3-1-Context泄露"><span class="nav-number">3.1.</span> <span class="nav-text">3.1 Context泄露</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-2-内部类泄露"><span class="nav-number">3.2.</span> <span class="nav-text">3.2 内部类泄露</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-3-Register泄露"><span class="nav-number">3.3.</span> <span class="nav-text">3.3 Register泄露</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-4-资源泄露"><span class="nav-number">3.4.</span> <span class="nav-text">3.4 资源泄露</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-5-Bitmap泄露"><span class="nav-number">3.5.</span> <span class="nav-text">3.5 Bitmap泄露</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-6-内存泄露小结"><span class="nav-number">3.6.</span> <span class="nav-text">3.6 内存泄露小结</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#4-有效使用内存的建议"><span class="nav-number">4.</span> <span class="nav-text">4, 有效使用内存的建议</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#结语"><span class="nav-number">5.</span> <span class="nav-text">结语</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2017</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">anly_jun</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+  <span class="post-meta-divider">|</span>
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">NexT.Gemini</a> v5.1.2</div>
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.2"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.2"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.2"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.2"></script>
+
+
+
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.2"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.2"></script>
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.2"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.2"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.2"></script>
+
+
+
+  
+
+  
+    
+  
+
+  <script type="text/javascript">
+    var duoshuoQuery = {short_name:"anlyjun"};
+    (function() {
+      var ds = document.createElement('script');
+      ds.type = 'text/javascript';ds.async = true;
+      ds.id = 'duoshuo-script';
+      ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+      ds.charset = 'UTF-8';
+      (document.getElementsByTagName('head')[0]
+      || document.getElementsByTagName('body')[0]).appendChild(ds);
+    })();
+  </script>
+
+  
+    
+    
+    <script src="/lib/ua-parser-js/dist/ua-parser.min.js?v=0.7.9"></script>
+    <script src="/js/src/hook-duoshuo.js"></script>
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

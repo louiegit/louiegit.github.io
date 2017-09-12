@@ -1,0 +1,994 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next gemini use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.2" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="Android,App优化," />
+
+
+
+
+
+  <link rel="alternate" href="/atom.xml" title="ANLY'S BLOG" type="application/atom+xml" />
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.1.2" />
+
+
+
+
+
+
+<meta name="description" content="引言欲善其事, 先利其器.">
+<meta name="keywords" content="Android,App优化">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Tools, 出来接活了--Android内存优化第三弹">
+<meta property="og:url" content="http://blog.lmj.wiki/2016/10/25/app-opti/app_opt_mat/index.html">
+<meta property="og:site_name" content="ANLY&#39;S BLOG">
+<meta property="og:description" content="引言欲善其事, 先利其器.">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="http://blog.lmj.wiki/img/14744716246853.jpg">
+<meta property="og:image" content="http://blog.lmj.wiki/img/14745574898971.jpg">
+<meta property="og:image" content="http://blog.lmj.wiki/img/14746393393718.jpg">
+<meta property="og:image" content="http://blog.lmj.wiki/img/14746391552686.jpg">
+<meta property="og:image" content="http://blog.lmj.wiki/img/14746404975571.jpg">
+<meta property="og:image" content="http://blog.lmj.wiki/img/14746410242788.jpg">
+<meta property="og:image" content="http://blog.lmj.wiki/img/14774044158571.jpg">
+<meta property="og:image" content="http://blog.lmj.wiki/img/14774045174558.jpg">
+<meta property="og:image" content="http://blog.lmj.wiki/img/Snip20161025_19.jpg">
+<meta property="og:updated_time" content="2017-09-12T15:16:05.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Tools, 出来接活了--Android内存优化第三弹">
+<meta name="twitter:description" content="引言欲善其事, 先利其器.">
+<meta name="twitter:image" content="http://blog.lmj.wiki/img/14744716246853.jpg">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Gemini',
+    version: '5.1.2',
+    sidebar: {"position":"right","display":"post","offset":12,"offset_float":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://blog.lmj.wiki/2016/10/25/app-opti/app_opt_mat/"/>
+
+
+
+
+
+  <title>Tools, 出来接活了--Android内存优化第三弹 | ANLY'S BLOG</title>
+  
+
+
+
+
+
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?3e4bf02bc6c59d846f194a8afc04ecfc";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-right page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">ANLY'S BLOG</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">看看书, 写写字; 捣鼓捣鼓小技术.</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            关于
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://blog.lmj.wiki/2016/10/25/app-opti/app_opt_mat/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="anly_jun">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/img/avatar.jpeg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="ANLY'S BLOG">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">Tools, 出来接活了--Android内存优化第三弹</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2016-10-25T21:44:00+08:00">
+                2016-10-25
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Android/" itemprop="url" rel="index">
+                    <span itemprop="name">Android</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2016/10/25/app-opti/app_opt_mat/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count ds-thread-count" data-thread-key="2016/10/25/app-opti/app_opt_mat/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h2 id="引言"><a href="#引言" class="headerlink" title="引言"></a>引言</h2><p>欲善其事, 先利其器.</p>
+<a id="more"></a>
+<h2 id="1-一图看懂Memory-Monitor"><a href="#1-一图看懂Memory-Monitor" class="headerlink" title="1, 一图看懂Memory Monitor"></a>1, 一图看懂Memory Monitor</h2><p><strong>Memory Monitor</strong> 是 Android Studio内置的, 官方的内存监测工具. 图形化的展示当前应用的内存状态, 包括已分配内存, 空闲内存, 内存实时动态等.</p>
+<p><img src="/img/14744716246853.jpg" alt=""></p>
+<ul>
+<li><p>顶部矩形指示当前调试的设备以及应用进程.</p>
+</li>
+<li><p>图形区域:</p>
+<ul>
+<li>横向时间轴, 内存检测时间, 跟随滚动.</li>
+<li>纵向内存轴, 内存使用量, 根据应用使用动态分配.</li>
+<li>蓝色区域表示当前已分配使用的内存量.</li>
+<li>灰色区域表示剩余可使用的内存量.</li>
+<li>红色圈圈指示的是系统GC事件(内存有一定量的回收).</li>
+</ul>
+</li>
+<li><p>工具栏:</p>
+<ul>
+<li>① GC按钮, 点击执行一次GC操作.</li>
+<li>② Dump Java Heap按钮, 点击会在该调试工程的captures目录生成一个类似这样”com.anly.githubapp_2016.09.21_23.42.hprof”命名的hprof文件, 并打开Android Studio的HPROF Viewer显示该文件内容.</li>
+<li>③ Allocation Traking按钮, 点击一次开始, 再次点击结束, 同样会在captrures目录生成一个文件, 类似”com.anly.githubapp_2016.09.21_23.48.alloc”, alloc后缀的文件, 并打开Allocation Tracker视图展示该文件内容.</li>
+</ul>
+</li>
+</ul>
+<h2 id="2-使用HPROF-Viewer-amp-Analyzer来分析hprof文件"><a href="#2-使用HPROF-Viewer-amp-Analyzer来分析hprof文件" class="headerlink" title="2, 使用HPROF Viewer &amp; Analyzer来分析hprof文件"></a>2, 使用HPROF Viewer &amp; Analyzer来分析hprof文件</h2><p>Memory Monitor通过Dump Java Heap可以生成一个hprof的文件, 这个文件是Android特定的Heap和CPU分析文件, 记录了这段时间内的Java Heap变化.</p>
+<h3 id="2-1-关于Java-Heap"><a href="#2-1-关于Java-Heap" class="headerlink" title="2.1 关于Java Heap"></a>2.1 关于Java Heap</h3><p>由Java Heap文件可以看到如下数据:</p>
+<ul>
+<li>按类型显示对象申请的内存快照(内存大小);</li>
+<li>每次自动或手动触发GC时的样本数据;</li>
+<li>协助定位可能发生的内存泄露点:<ul>
+<li>所有已经被destroyed的activity, 还可以从GC Root访问到.</li>
+<li>重复的String实例.</li>
+</ul>
+</li>
+</ul>
+<h3 id="2-2-HPROF-Viewer怎么看"><a href="#2-2-HPROF-Viewer怎么看" class="headerlink" title="2.2 HPROF Viewer怎么看"></a>2.2 HPROF Viewer怎么看</h3><p>还是用图说话:<br><img src="/img/14745574898971.jpg" alt="-w1200"></p>
+<p>HPROF Viewer分成三个大块, 分别介绍下:</p>
+<h4 id="2-2-1-Class-View"><a href="#2-2-1-Class-View" class="headerlink" title="2.2.1 Class View"></a>2.2.1 Class View</h4><p>图中标①的View.</p>
+<p>显示当前选中的Heap中的所有Class. 上方有两个可选列表, 分别是用来选择Heap区域, 和Class View的展示方式的.</p>
+<p>Heap类型分为:</p>
+<ul>
+<li>App Heap – 当前App使用的Heap</li>
+<li>Image Heap – 磁盘上当前App的内存映射拷贝</li>
+<li>Zygote Heap – Zygote进程Heap(每个App进程都是从Zygote孵化出来的, 这部分基本是framework中的通用的类的Heap)</li>
+</ul>
+<p>可选展示方式:</p>
+<ul>
+<li>Class List View – 类列表方式</li>
+<li>Package Tree View – 根据包结构的树状显示</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th>列</th>
+<th>解释</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Class Name</td>
+<td>类名</td>
+</tr>
+<tr>
+<td>Total Count</td>
+<td>该类的实例个数</td>
+</tr>
+<tr>
+<td>Heap Count</td>
+<td>选定的Heap中该实例的个数</td>
+</tr>
+<tr>
+<td>Sizeof</td>
+<td>每个该实例占用的内存大小</td>
+</tr>
+<tr>
+<td>Shallow Size</td>
+<td>所有该类的实例占用的内存大小</td>
+</tr>
+<tr>
+<td>Retained Size</td>
+<td>该类的所有实例可支配的内存大小</td>
+</tr>
+</tbody>
+</table>
+<h4 id="2-2-2-Instance-View"><a href="#2-2-2-Instance-View" class="headerlink" title="2.2.2 Instance View"></a>2.2.2 Instance View</h4><p>图中标②的View.<br>根据在Class View中选中的Class, 列表方式展示其所有实例的内存占用情况.</p>
+<table>
+<thead>
+<tr>
+<th>列</th>
+<th>解释</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Instance</td>
+<td>该类的实例</td>
+</tr>
+<tr>
+<td>Depth</td>
+<td>深度, 从任一GC Root点到该实例的最短跳数</td>
+</tr>
+<tr>
+<td>Dominating Size</td>
+<td>该实例可支配的内存大小</td>
+</tr>
+</tbody>
+</table>
+<h4 id="2-2-3-Reference-Tree"><a href="#2-2-3-Reference-Tree" class="headerlink" title="2.2.3 Reference Tree"></a>2.2.3 Reference Tree</h4><p>图中标③的View.<br>根据在Instance View中选中的实例, 显示其引用关系树.</p>
+<p>此View中的列含义与Instance View一致.</p>
+<p>在此View中可以右键点击instance, 进入代码:<br><img src="/img/14746393393718.jpg" alt=""></p>
+<h3 id="2-3-HPROF-Analyzer"><a href="#2-3-HPROF-Analyzer" class="headerlink" title="2.3 HPROF Analyzer"></a>2.3 HPROF Analyzer</h3><p>另外, 在HPROF Viewer的右侧有一个”Analyzer Tasks”的按钮, 点击会进入HPROF Analyzer的hprof的分析界面:</p>
+<p><img src="/img/14746391552686.jpg" alt=""></p>
+<p>分析任务包括:</p>
+<ul>
+<li>检测泄露的Activity</li>
+<li>查找重复的String实例</li>
+</ul>
+<p>点击开始按钮后, 会在Analysis Results区域显示分析结果.</p>
+<blockquote>
+<p>HPROF Viewer &amp; Analyzer 可以用来对App的运行中的Java Heap做一个整体分析, 展示当前内存的具体到类和实例的分配情况, 以便检测到可能的内存泄露和重复实例.</p>
+</blockquote>
+<h2 id="3-Allocation-Tracker"><a href="#3-Allocation-Tracker" class="headerlink" title="3, Allocation Tracker"></a>3, Allocation Tracker</h2><p>HPROF Viewer &amp; Analyzer是整体的, 那么Allocation Tracker则是针对操作的分析.</p>
+<p>Allocation Tracker可以协助我们分析在一个特定操作时, 有哪些对象被分配内存了. 这可以很方便的让我们知道方法调用的情况, 以便针对性的优化, 以提升性能和内存使用.</p>
+<p>在Android Studio的Memory Monitor中点击”Start Allocation Tracking”, 在device中执行一个要分析的操作, 然后再次点击. 如下所示:<br><img src="/img/14746404975571.jpg" alt=""></p>
+<p>会生成一个alloc文件, 并打开:<br><img src="/img/14746410242788.jpg" alt=""></p>
+<p>可以按照两种方式展示:</p>
+<ul>
+<li>Group by Method – 按照线程方法分组显示</li>
+<li>Group by Allocator – 按照包分组显示</li>
+</ul>
+<p>Method视图中的列含义如下:</p>
+<table>
+<thead>
+<tr>
+<th>列</th>
+<th>解释</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Method</td>
+<td>方法</td>
+</tr>
+<tr>
+<td>Count</td>
+<td>该方法分配的实例总数</td>
+</tr>
+<tr>
+<td>Size</td>
+<td>该方法分配的内存总量(byte)</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p>可以根据Count和Size分别排序, 找出产生实例多, 耗费内存多的方法, 结合代码分析, 以提升其性能.</p>
+</blockquote>
+<h2 id="4-MAT"><a href="#4-MAT" class="headerlink" title="4, MAT"></a>4, MAT</h2><p><a href="http://www.eclipse.org/mat/" target="_blank" rel="external">Eclipse MAT</a>是一个快速且功能丰富的Java Heap分析工具, 可以帮助我们寻找内存泄露, 减少内存消耗.</p>
+<p>MAT可以分析程序(成千上万的对象产生过程中)生成的Heap dumps文件, 它会快速计算出对象的Retained Size, 来展示是哪些对象没有被GC, 自动生成内存泄露疑点的报告.</p>
+<blockquote>
+<p>具体MAT的使用请移步<a href="https://www.gitbook.com/book/mingjunli/mat/details" target="_blank" rel="external">鄙人翻译整理的MAT的使用手册</a></p>
+</blockquote>
+<h2 id="5-LeakCanary"><a href="#5-LeakCanary" class="headerlink" title="5, LeakCanary"></a>5, LeakCanary</h2><p><a href="https://github.com/square/leakcanary" target="_blank" rel="external">LeakCanary</a>是大名鼎鼎的<a href="http://square.github.io/" target="_blank" rel="external">square</a>出的一款开源的用来做内存泄露检测的工具.</p>
+<p>具体植入方式, 请参考<a href="https://github.com/square/leakcanary" target="_blank" rel="external">LeakCanary</a> README文档, 略过.</p>
+<p>App植入<a href="https://github.com/square/leakcanary" target="_blank" rel="external">LeakCanary</a>之后, 在检测可能的内存泄露后, 会弹出Toast提示:</p>
+<p><img src="/img/14774044158571.jpg" alt=""></p>
+<p>并在测试手机桌面生成一个Leaks的icon:<br><img src="/img/14774045174558.jpg" alt=""></p>
+<p>点击该icon进入Leaks界面, 可以比较清晰的看到内存泄露疑点:</p>
+<h2 id="6-adb-shell-dumpsys"><a href="#6-adb-shell-dumpsys" class="headerlink" title="6, adb shell dumpsys"></a>6, adb shell dumpsys</h2><p>在之前的<a href="http://www.jianshu.com/p/5980c8c282ef" target="_blank" rel="external">一篇关于ADB使用的文</a>中有聊到<strong>adb shell dumpsys</strong>命令, 该命令可以用户输出当前的系统状态信息.</p>
+<p>其中就有关于内存的选项:</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"><span class="meta">$</span> adb shell dumpsys meminfo com.udinic.perfdemo</div></pre></td></tr></table></figure>
+<p>输出信息如下:</p>
+<p><img src="/img/Snip20161025_19.jpg" alt="Snip20161025_19"></p>
+<p>该命令常用来查看当前进程的的内存使用状态, 是一个总体的预览.</p>
+<h2 id="结语"><a href="#结语" class="headerlink" title="结语"></a>结语</h2><p>正所谓善其事先利其器, 了解了内存分析工具的使用, 我们才能更好的分析内存问题, 从而得出解决方案或是明白从哪些方面去避免内存问题.</p>
+<p>下一篇将以代码实例形式来说明下上面这些工具的具体使用, 敬请期待.</p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/Android/" rel="tag"># Android</a>
+          
+            <a href="/tags/App优化/" rel="tag"># App优化</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2016/10/19/app-opti/app_opt_mem_android/" rel="next" title="Android是如何管理App内存的--Android内存优化第二弹">
+                <i class="fa fa-chevron-left"></i> Android是如何管理App内存的--Android内存优化第二弹
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2016/10/31/app-opti/app_opt_mem_leak/" rel="prev" title="内存泄露实例分析 -- Android内存优化第四弹">
+                内存泄露实例分析 -- Android内存优化第四弹 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+        <div class="ds-share flat" data-thread-key="2016/10/25/app-opti/app_opt_mat/"
+     data-title="Tools, 出来接活了--Android内存优化第三弹"
+     data-content=""
+     data-url="http://blog.lmj.wiki/2016/10/25/app-opti/app_opt_mat/">
+  <div class="ds-share-inline">
+    <ul  class="ds-share-icons-16">
+
+      <li data-toggle="ds-share-icons-more"><a class="ds-more" href="javascript:void(0);">分享到：</a></li>
+      <li><a class="ds-weibo" href="javascript:void(0);" data-service="weibo">微博</a></li>
+      <li><a class="ds-qzone" href="javascript:void(0);" data-service="qzone">QQ空间</a></li>
+      <li><a class="ds-qqt" href="javascript:void(0);" data-service="qqt">腾讯微博</a></li>
+      <li><a class="ds-wechat" href="javascript:void(0);" data-service="wechat">微信</a></li>
+
+    </ul>
+    <div class="ds-share-icons-more">
+    </div>
+  </div>
+</div>
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+      <div class="ds-thread" data-thread-key="2016/10/25/app-opti/app_opt_mat/"
+           data-title="Tools, 出来接活了--Android内存优化第三弹" data-url="http://blog.lmj.wiki/2016/10/25/app-opti/app_opt_mat/">
+      </div>
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          
+            <img class="site-author-image" itemprop="image"
+              src="/img/avatar.jpeg"
+              alt="anly_jun" />
+          
+            <p class="site-author-name" itemprop="name">anly_jun</p>
+            <p class="site-description motion-element" itemprop="description">Android, iOS, Mobile Dev/Test, Web, Python</p>
+        </div>
+
+        <nav class="site-state motion-element">
+
+          
+            <div class="site-state-item site-state-posts">
+            
+              <a href="/archives">
+            
+                <span class="site-state-item-count">55</span>
+                <span class="site-state-item-name">日志</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-categories">
+              <a href="/categories/index.html">
+                <span class="site-state-item-count">6</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-tags">
+              <a href="/tags/index.html">
+                <span class="site-state-item-count">20</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+          <div class="feed-link motion-element">
+            <a href="/atom.xml" rel="alternate">
+              <i class="fa fa-rss"></i>
+              RSS
+            </a>
+          </div>
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#引言"><span class="nav-number">1.</span> <span class="nav-text">引言</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#1-一图看懂Memory-Monitor"><span class="nav-number">2.</span> <span class="nav-text">1, 一图看懂Memory Monitor</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-使用HPROF-Viewer-amp-Analyzer来分析hprof文件"><span class="nav-number">3.</span> <span class="nav-text">2, 使用HPROF Viewer & Analyzer来分析hprof文件</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#2-1-关于Java-Heap"><span class="nav-number">3.1.</span> <span class="nav-text">2.1 关于Java Heap</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-2-HPROF-Viewer怎么看"><span class="nav-number">3.2.</span> <span class="nav-text">2.2 HPROF Viewer怎么看</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#2-2-1-Class-View"><span class="nav-number">3.2.1.</span> <span class="nav-text">2.2.1 Class View</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2-2-2-Instance-View"><span class="nav-number">3.2.2.</span> <span class="nav-text">2.2.2 Instance View</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2-2-3-Reference-Tree"><span class="nav-number">3.2.3.</span> <span class="nav-text">2.2.3 Reference Tree</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-3-HPROF-Analyzer"><span class="nav-number">3.3.</span> <span class="nav-text">2.3 HPROF Analyzer</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-Allocation-Tracker"><span class="nav-number">4.</span> <span class="nav-text">3, Allocation Tracker</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#4-MAT"><span class="nav-number">5.</span> <span class="nav-text">4, MAT</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#5-LeakCanary"><span class="nav-number">6.</span> <span class="nav-text">5, LeakCanary</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#6-adb-shell-dumpsys"><span class="nav-number">7.</span> <span class="nav-text">6, adb shell dumpsys</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#结语"><span class="nav-number">8.</span> <span class="nav-text">结语</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2017</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">anly_jun</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+  <span class="post-meta-divider">|</span>
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">NexT.Gemini</a> v5.1.2</div>
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.2"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.2"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.2"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.2"></script>
+
+
+
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.2"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.2"></script>
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.2"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.2"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.2"></script>
+
+
+
+  
+
+  
+    
+  
+
+  <script type="text/javascript">
+    var duoshuoQuery = {short_name:"anlyjun"};
+    (function() {
+      var ds = document.createElement('script');
+      ds.type = 'text/javascript';ds.async = true;
+      ds.id = 'duoshuo-script';
+      ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+      ds.charset = 'UTF-8';
+      (document.getElementsByTagName('head')[0]
+      || document.getElementsByTagName('body')[0]).appendChild(ds);
+    })();
+  </script>
+
+  
+    
+    
+    <script src="/lib/ua-parser-js/dist/ua-parser.min.js?v=0.7.9"></script>
+    <script src="/js/src/hook-duoshuo.js"></script>
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

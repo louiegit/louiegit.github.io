@@ -1,0 +1,888 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next gemini use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.2" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="设计模式,架构," />
+
+
+
+
+
+  <link rel="alternate" href="/atom.xml" title="ANLY'S BLOG" type="application/atom+xml" />
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.1.2" />
+
+
+
+
+
+
+<meta name="description" content="前情提要上集讲到, 小光引入了饮料机(工厂方法模式)改进了光氏饮品的生产过程. 现在如果要新上什么饮品, 改变配方什么的, 都很简单了, 直接增加一个饮料机, 或是替换/拿掉一个饮料机就可以了. 表妹再也不抱怨了.  小光也找了些饮料厂商拿到了一些试喝的饮料新品. 心想, 正好临近感恩节, 圣诞节, 双十二啥的, 我可以拿这些饮料新品来做些活动啊, 感恩下新老顾客啊… 这些新品小光可是自己亲身试喝">
+<meta name="keywords" content="设计模式,架构">
+<meta property="og:type" content="article">
+<meta property="og:title" content="回馈顾客, 活动搞起---策略模式">
+<meta property="og:url" content="http://blog.lmj.wiki/2016/11/21/design-pattern/strategy/index.html">
+<meta property="og:site_name" content="ANLY&#39;S BLOG">
+<meta property="og:description" content="前情提要上集讲到, 小光引入了饮料机(工厂方法模式)改进了光氏饮品的生产过程. 现在如果要新上什么饮品, 改变配方什么的, 都很简单了, 直接增加一个饮料机, 或是替换/拿掉一个饮料机就可以了. 表妹再也不抱怨了.  小光也找了些饮料厂商拿到了一些试喝的饮料新品. 心想, 正好临近感恩节, 圣诞节, 双十二啥的, 我可以拿这些饮料新品来做些活动啊, 感恩下新老顾客啊… 这些新品小光可是自己亲身试喝">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="http://blog.lmj.wiki/img/14793627513903.jpg">
+<meta property="og:image" content="http://blog.lmj.wiki/img/14793640466854.jpg">
+<meta property="og:image" content="http://blog.lmj.wiki/img/14793646255208.jpg">
+<meta property="og:image" content="http://blog.lmj.wiki/img/14793663038650.jpg">
+<meta property="og:updated_time" content="2017-09-12T15:16:05.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="回馈顾客, 活动搞起---策略模式">
+<meta name="twitter:description" content="前情提要上集讲到, 小光引入了饮料机(工厂方法模式)改进了光氏饮品的生产过程. 现在如果要新上什么饮品, 改变配方什么的, 都很简单了, 直接增加一个饮料机, 或是替换/拿掉一个饮料机就可以了. 表妹再也不抱怨了.  小光也找了些饮料厂商拿到了一些试喝的饮料新品. 心想, 正好临近感恩节, 圣诞节, 双十二啥的, 我可以拿这些饮料新品来做些活动啊, 感恩下新老顾客啊… 这些新品小光可是自己亲身试喝">
+<meta name="twitter:image" content="http://blog.lmj.wiki/img/14793627513903.jpg">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Gemini',
+    version: '5.1.2',
+    sidebar: {"position":"right","display":"post","offset":12,"offset_float":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://blog.lmj.wiki/2016/11/21/design-pattern/strategy/"/>
+
+
+
+
+
+  <title>回馈顾客, 活动搞起---策略模式 | ANLY'S BLOG</title>
+  
+
+
+
+
+
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?3e4bf02bc6c59d846f194a8afc04ecfc";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-right page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">ANLY'S BLOG</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">看看书, 写写字; 捣鼓捣鼓小技术.</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            关于
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://blog.lmj.wiki/2016/11/21/design-pattern/strategy/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="anly_jun">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/img/avatar.jpeg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="ANLY'S BLOG">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">回馈顾客, 活动搞起---策略模式</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2016-11-21T22:00:00+08:00">
+                2016-11-21
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/设计模式/" itemprop="url" rel="index">
+                    <span itemprop="name">设计模式</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2016/11/21/design-pattern/strategy/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count ds-thread-count" data-thread-key="2016/11/21/design-pattern/strategy/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h2 id="前情提要"><a href="#前情提要" class="headerlink" title="前情提要"></a>前情提要</h2><p><a href="http://blog.lmj.wiki/2016/11/16/design-pattern/factory_method/">上集</a>讲到, 小光引入了饮料机(<strong>工厂方法模式</strong>)改进了光氏饮品的生产过程. 现在如果要新上什么饮品, 改变配方什么的, 都很简单了, 直接增加一个饮料机, 或是替换/拿掉一个饮料机就可以了. 表妹再也不抱怨了. </p>
+<p>小光也找了些饮料厂商拿到了一些试喝的饮料新品. 心想, 正好临近感恩节, 圣诞节, 双十二啥的, 我可以拿这些饮料新品来做些活动啊, 感恩下新老顾客啊… 这些新品小光可是自己亲身试喝过的, 绝对好喝, 小光不做奸商, :)</p>
+<a id="more"></a>
+<blockquote>
+<p>所有示例源码已经上传到Github, <a href="https://github.com/mingjunli/JavaDesignPatterns" target="_blank" rel="external">戳这里</a></p>
+</blockquote>
+<h2 id="活动策划"><a href="#活动策划" class="headerlink" title="活动策划"></a>活动策划</h2><p>小光以其独特的码农生意人思维(我也不知道这是什么…), 很快想出了几条活动方案:</p>
+<ul>
+<li>即日起, 到感恩节(11/24)那天, 所有饮品6折优惠.</li>
+<li>双十二当天, 满12立减2元.</li>
+<li>12月20号到圣诞节(12/25), 买热干面+饮料套餐送大苹果.</li>
+</ul>
+<p>小光想出这些活动方案后, 屁颠屁颠去拿给表妹看. 没曾想, 表妹一脸不愉快, 这么多方案, 还这么负责, 我怎么记得住…(单细胞的表妹).</p>
+<p>怎么办了, 小光可不想放弃自己好不容易想出的这些方案, 而且活动方案肯定会因为是不同节日而有所改变嘛.</p>
+<h2 id="解决之道"><a href="#解决之道" class="headerlink" title="解决之道"></a>解决之道</h2><p>很快, 小光就想到了解决办法, 他将三种活动方案的算法做好, 内置在收银台. 在不同的日子里选用不用的算法策略.</p>
+<p>“我真是个天才, 哈哈哈哈”, 小光想着都快笑出声了…</p>
+<p>照例, 收银员无需关注是什么具体的算法, 故而抽象出一个父级接口:</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">interface</span> <span class="title">ActivityStrategy</span> </span>&#123;</div><div class="line"></div><div class="line">    <span class="function">String <span class="title">getActivityPrice</span><span class="params">()</span></span>;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>每个方案对应一个算法策略:</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div></pre></td><td class="code"><pre><div class="line"><span class="comment">// 感恩节活动算法</span></div><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">ThanksGivingDayStrategy</span> <span class="keyword">implements</span> <span class="title">ActivityStrategy</span> </span>&#123;</div><div class="line"></div><div class="line">    <span class="meta">@Override</span></div><div class="line">    <span class="function"><span class="keyword">public</span> String <span class="title">getActivityPrice</span><span class="params">()</span> </span>&#123;</div><div class="line">        <span class="comment">// 经过一系列算法</span></div><div class="line">        <span class="keyword">return</span> <span class="string">"(感恩节)所有饮品一律5折"</span>;</div><div class="line">    &#125;</div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="comment">// 双十二算法</span></div><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">DoubleTwelveDayStrategy</span> <span class="keyword">implements</span> <span class="title">ActivityStrategy</span> </span>&#123;</div><div class="line"></div><div class="line">    <span class="meta">@Override</span></div><div class="line">    <span class="function"><span class="keyword">public</span> String <span class="title">getActivityPrice</span><span class="params">()</span> </span>&#123;</div><div class="line">        <span class="comment">// 经过一系列算法</span></div><div class="line">        <span class="keyword">return</span> <span class="string">"(双十二)满12立减2元"</span>;</div><div class="line">    &#125;</div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="comment">// 圣诞节算法</span></div><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">ChristmasStrategy</span> <span class="keyword">implements</span> <span class="title">ActivityStrategy</span> </span>&#123;</div><div class="line"></div><div class="line">    <span class="meta">@Override</span></div><div class="line">    <span class="function"><span class="keyword">public</span> String <span class="title">getActivityPrice</span><span class="params">()</span> </span>&#123;</div><div class="line">        <span class="comment">// 经过一系列算法</span></div><div class="line">        <span class="keyword">return</span> <span class="string">"(圣诞节)买热干面+饮品套餐, 送大苹果一个"</span>;</div><div class="line">    &#125;</div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="comment">// 默认算法(注意这个, 稍后的扩展阅读会说下这个Default实现的意义)</span></div><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">DefaultActivityStrategy</span> <span class="keyword">implements</span> <span class="title">ActivityStrategy</span> </span>&#123;</div><div class="line">    <span class="meta">@Override</span></div><div class="line">    <span class="function"><span class="keyword">public</span> String <span class="title">getActivityPrice</span><span class="params">()</span> </span>&#123;</div><div class="line">        <span class="comment">// 什么都不做</span></div><div class="line">        <span class="keyword">return</span> <span class="string">"没有活动"</span>;</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>支持各种活动策略算法的收银台:</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div></pre></td><td class="code"><pre><div class="line"><span class="comment">// 收银台</span></div><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Checkstand</span> </span>&#123;</div><div class="line"></div><div class="line">    <span class="keyword">private</span> ActivityStrategy mActivityStrategy;</div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="title">Checkstand</span><span class="params">()</span> </span>&#123;</div><div class="line">        mActivityStrategy = <span class="keyword">new</span> DefaultActivityStrategy();</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="title">Checkstand</span><span class="params">(ActivityStrategy activityStrategy)</span> </span>&#123;</div><div class="line">        <span class="keyword">this</span>.mActivityStrategy = activityStrategy;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setActivityStrategy</span><span class="params">(ActivityStrategy activityStrategy)</span> </span>&#123;</div><div class="line">        <span class="keyword">this</span>.mActivityStrategy = activityStrategy;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">printBill</span><span class="params">()</span> </span>&#123;</div><div class="line">        System.out.println(<span class="string">"本次账单活动:"</span> + mActivityStrategy.getActivityPrice());</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<h2 id="投入使用"><a href="#投入使用" class="headerlink" title="投入使用"></a>投入使用</h2><p>活动方案算法和收银台完工之后, 小光立马投入了使用:</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">XiaoGuang</span> </span>&#123;</div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</div><div class="line"></div><div class="line">        <span class="comment">// 收银台, 默认</span></div><div class="line">        Checkstand checkstand = <span class="keyword">new</span> Checkstand();</div><div class="line">        checkstand.printBill();</div><div class="line"></div><div class="line">        <span class="comment">// 感恩节期间</span></div><div class="line">        checkstand.setActivityStrategy(<span class="keyword">new</span> ThanksGivingDayStrategy());</div><div class="line">        checkstand.printBill();</div><div class="line"></div><div class="line">        <span class="comment">// 双十二</span></div><div class="line">        checkstand.setActivityStrategy(<span class="keyword">new</span> DoubleTwelveDayStrategy());</div><div class="line">        checkstand.printBill();</div><div class="line"></div><div class="line">        <span class="comment">// 圣诞节期间</span></div><div class="line">        checkstand.setActivityStrategy(<span class="keyword">new</span> ChristmasStrategy());</div><div class="line">        checkstand.printBill();</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>结果, 也正如小光预料的:</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">本次账单活动:没有活动</div><div class="line">本次账单活动:(感恩节)所有饮品一律<span class="number">5</span>折</div><div class="line">本次账单活动:(双十二)满<span class="number">12</span>立减<span class="number">2</span>元</div><div class="line">本次账单活动:(圣诞节)买热干面+饮品套餐, 送大苹果一个</div></pre></td></tr></table></figure>
+<p>活动一经推出, 顾客果然是比以前更多了…<br>大家还对小光新推出的那些试喝饮料赞不绝口, 都觉得味道不错, 还很着很有意思的名字…</p>
+<h2 id="故事之后"><a href="#故事之后" class="headerlink" title="故事之后"></a>故事之后</h2><p>照例, 故事之后, 我们用UML类图来梳理下上述的关系(<strong>关注收银台与活动策略算法之间的关系</strong>):<br><img src="/img/14793627513903.jpg" alt=""></p>
+<p>大家可能已经看出端倪了, 没错, 这就是策略模式.</p>
+<blockquote>
+<p>策略模式(Strategy Pattern):<br>定义一组算法, 并将每一个单独算法封装起来, 让它们可以相互替换.</p>
+</blockquote>
+<p>策略模式让算法独立于使用它的客户而变化, 例如如果明年小光的双十二活动改变了, 只需单独修改这个DoubleTwelveDayStrategy即可, 客户类(收银台Checkstand)无需改变, 也无需关注每个算法的具体实现.</p>
+<h2 id="扩展阅读一"><a href="#扩展阅读一" class="headerlink" title="扩展阅读一"></a>扩展阅读一</h2><p>实际上策略模式也还是利用<strong>抽象, 封装, 继承, 多态</strong>的面向对象特性, 来达到<strong>封装变化, 解耦合</strong>的. 典型的<strong>开闭原则</strong>的实践.</p>
+<p>另外, 眼尖的同学可能看到, 貌似这个类图似曾相识啊. 前面讲的<a href="">简单工厂</a>和<a href="">工厂方法</a>中的类图与此极其相似:<br><img src="/img/14793640466854.jpg" alt=""></p>
+<p>比较上图三个模式的红框部分, 我们可以发现, 相当一致. 在此明确下三者的关系与区别:</p>
+<blockquote>
+<ol>
+<li>首先<strong>简单工厂</strong>和<strong>工厂方法</strong>是<strong>创建型</strong>的模式, 而<strong>策略模式</strong>是<strong>行为型</strong>的模式.</li>
+<li>所谓<strong>创建型</strong>就是说用来生产对象的, 注重的生产(new)这个部分, 用创建型的模式来代替直接new一个实例, 更多是想将直接的实例依赖通过不同的方法转化接口依赖.</li>
+<li>所谓<strong>行为型</strong>模式更多是描述一种行为, A使用B, 怎么使用的这个关系上.</li>
+</ol>
+</blockquote>
+<p>实际上, 在上个<a href="http://blog.lmj.wiki/2016/11/16/design-pattern/factory_method/">工厂方法</a>的故事中, 我们就已经使用到了策略模式.</p>
+<p><strong>表妹选择不同的饮料机来那饮料, 这个行为实际上就是一个策略模式的体现, 回顾下表妹的代码:</strong></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Cousins</span> </span>&#123;</div><div class="line"></div><div class="line">    <span class="keyword">private</span> IBeverageMachine mBeverageMachine;</div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">setBeverageMachine</span><span class="params">(IBeverageMachine machine)</span> </span>&#123;</div><div class="line">        <span class="keyword">this</span>.mBeverageMachine = machine;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">private</span> Drink <span class="title">takeDrink</span><span class="params">()</span> </span>&#123;</div><div class="line">        <span class="keyword">if</span> (mBeverageMachine == <span class="keyword">null</span>) <span class="keyword">throw</span> <span class="keyword">new</span> NullPointerException(<span class="string">"Should set Beverage Machine firstly."</span>);</div><div class="line"></div><div class="line">        <span class="keyword">return</span> mBeverageMachine.makeDrink();</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</div><div class="line"></div><div class="line">        Cousins cousins = <span class="keyword">new</span> Cousins();</div><div class="line"></div><div class="line">        <span class="comment">// for A</span></div><div class="line">        cousins.setBeverageMachine(<span class="keyword">new</span> OrangeJuiceMachine());</div><div class="line">        Drink drink = cousins.takeDrink();</div><div class="line">        System.out.println(drink);</div><div class="line"></div><div class="line">        <span class="comment">// for B</span></div><div class="line">        cousins.setBeverageMachine(<span class="keyword">new</span> CokeMachine());</div><div class="line">        System.out.println(cousins.takeDrink());</div><div class="line"></div><div class="line">        <span class="comment">// for D</span></div><div class="line">        cousins.setBeverageMachine(<span class="keyword">new</span> MilkTeaMachine());</div><div class="line">        System.out.println(cousins.takeDrink());</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>和我们这个收银台(Checkstand)是一样一样的, 上例中的模式使用实际可以理解成是这样:</p>
+<p><img src="/img/14793646255208.jpg" alt=""></p>
+<ul>
+<li>蓝色部分是工厂方法模式的使用, 作用在于生产出不同的饮品.</li>
+<li>红色部分是策略模式的使用, 作用在于让表妹根据实际情况选择不同的饮料机.</li>
+</ul>
+<blockquote>
+<p>所以说模式的运用, 往往不是简单而单一, 很多时候是很多模式合在一起的.</p>
+</blockquote>
+<h2 id="扩展阅读二"><a href="#扩展阅读二" class="headerlink" title="扩展阅读二"></a>扩展阅读二</h2><p>在展示本例策略模式的UML类图时, 我们将<strong>DefaultActivityStrategy</strong>类标记成红色了, 这是为什么呢?</p>
+<p>是因为这里我们用的这个DefaultActivityStrategy实际上也是一种设计模式的体现. 这个模式不在GoF的23中设计模式内, 但是绝对是一个很常用, 很实用的模式 — 空对象模式.</p>
+<blockquote>
+<p>空对象模式（Null Object Pattern):<br>用一个空(什么都不做的)对象来代替NULL.</p>
+</blockquote>
+<p>空对象模式是一个很简单的设计模式, 也可以看成是一种编码习惯. 它小但是作用大:</p>
+<ul>
+<li>使用空对象模式可以减少很多我们对于对象是否为空的判断. 例如本例中, 如果Checkstand的无参构造函数我们没有new一个空对象, 那么后续的对于Checkstand实例各种调用我们可能就需要判断其mActivityStrategy是否为空. 如果遗漏, 很有可能导致null pointer异常.</li>
+<li>另外对于一些可以链式调用的对象, 如果我们要每次都判断是否为空会很影响我们的链式调用.</li>
+</ul>
+<blockquote>
+<p>空对象模式经常会用来作为策略模式算法族中的一个, 来提供空策略.</p>
+</blockquote>
+<h2 id="扩展阅读三"><a href="#扩展阅读三" class="headerlink" title="扩展阅读三"></a>扩展阅读三</h2><p>策略模式由于其优秀的对外扩展性和对内封装性, 在一些SDK或是优秀开源库中会经常用到. 还是以Glide为例, 其图片的磁盘缓存就使用了策略模式, 并提供了很多策略供用户选择:</p>
+<p><img src="/img/14793663038650.jpg" alt=""></p>
+<blockquote>
+<p>优秀源码总是设计巧妙但又易懂不晦涩.</p>
+</blockquote>
+<p>活动搞起了, 小光热干面欢迎大家常来光临啊, 喜欢您就收藏, 喜欢您就关注…</p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/设计模式/" rel="tag"># 设计模式</a>
+          
+            <a href="/tags/架构/" rel="tag"># 架构</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2016/11/16/design-pattern/factory_method/" rel="next" title="光氏饮品升级了---工厂方法模式">
+                <i class="fa fa-chevron-left"></i> 光氏饮品升级了---工厂方法模式
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2016/11/22/design-pattern/decorator/" rel="prev" title="可乐要加冰才好喝啊---装饰模式">
+                可乐要加冰才好喝啊---装饰模式 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+        <div class="ds-share flat" data-thread-key="2016/11/21/design-pattern/strategy/"
+     data-title="回馈顾客, 活动搞起---策略模式"
+     data-content=""
+     data-url="http://blog.lmj.wiki/2016/11/21/design-pattern/strategy/">
+  <div class="ds-share-inline">
+    <ul  class="ds-share-icons-16">
+
+      <li data-toggle="ds-share-icons-more"><a class="ds-more" href="javascript:void(0);">分享到：</a></li>
+      <li><a class="ds-weibo" href="javascript:void(0);" data-service="weibo">微博</a></li>
+      <li><a class="ds-qzone" href="javascript:void(0);" data-service="qzone">QQ空间</a></li>
+      <li><a class="ds-qqt" href="javascript:void(0);" data-service="qqt">腾讯微博</a></li>
+      <li><a class="ds-wechat" href="javascript:void(0);" data-service="wechat">微信</a></li>
+
+    </ul>
+    <div class="ds-share-icons-more">
+    </div>
+  </div>
+</div>
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+      <div class="ds-thread" data-thread-key="2016/11/21/design-pattern/strategy/"
+           data-title="回馈顾客, 活动搞起---策略模式" data-url="http://blog.lmj.wiki/2016/11/21/design-pattern/strategy/">
+      </div>
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          
+            <img class="site-author-image" itemprop="image"
+              src="/img/avatar.jpeg"
+              alt="anly_jun" />
+          
+            <p class="site-author-name" itemprop="name">anly_jun</p>
+            <p class="site-description motion-element" itemprop="description">Android, iOS, Mobile Dev/Test, Web, Python</p>
+        </div>
+
+        <nav class="site-state motion-element">
+
+          
+            <div class="site-state-item site-state-posts">
+            
+              <a href="/archives">
+            
+                <span class="site-state-item-count">55</span>
+                <span class="site-state-item-name">日志</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-categories">
+              <a href="/categories/index.html">
+                <span class="site-state-item-count">6</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-tags">
+              <a href="/tags/index.html">
+                <span class="site-state-item-count">20</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+          <div class="feed-link motion-element">
+            <a href="/atom.xml" rel="alternate">
+              <i class="fa fa-rss"></i>
+              RSS
+            </a>
+          </div>
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#前情提要"><span class="nav-number">1.</span> <span class="nav-text">前情提要</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#活动策划"><span class="nav-number">2.</span> <span class="nav-text">活动策划</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#解决之道"><span class="nav-number">3.</span> <span class="nav-text">解决之道</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#投入使用"><span class="nav-number">4.</span> <span class="nav-text">投入使用</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#故事之后"><span class="nav-number">5.</span> <span class="nav-text">故事之后</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#扩展阅读一"><span class="nav-number">6.</span> <span class="nav-text">扩展阅读一</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#扩展阅读二"><span class="nav-number">7.</span> <span class="nav-text">扩展阅读二</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#扩展阅读三"><span class="nav-number">8.</span> <span class="nav-text">扩展阅读三</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2017</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">anly_jun</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+  <span class="post-meta-divider">|</span>
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">NexT.Gemini</a> v5.1.2</div>
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.2"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.2"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.2"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.2"></script>
+
+
+
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.2"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.2"></script>
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.2"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.2"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.2"></script>
+
+
+
+  
+
+  
+    
+  
+
+  <script type="text/javascript">
+    var duoshuoQuery = {short_name:"anlyjun"};
+    (function() {
+      var ds = document.createElement('script');
+      ds.type = 'text/javascript';ds.async = true;
+      ds.id = 'duoshuo-script';
+      ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+      ds.charset = 'UTF-8';
+      (document.getElementsByTagName('head')[0]
+      || document.getElementsByTagName('body')[0]).appendChild(ds);
+    })();
+  </script>
+
+  
+    
+    
+    <script src="/lib/ua-parser-js/dist/ua-parser.min.js?v=0.7.9"></script>
+    <script src="/js/src/hook-duoshuo.js"></script>
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

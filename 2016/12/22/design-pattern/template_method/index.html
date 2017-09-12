@@ -1,0 +1,870 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next gemini use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.2" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="设计模式,架构," />
+
+
+
+
+
+  <link rel="alternate" href="/atom.xml" title="ANLY'S BLOG" type="application/atom+xml" />
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.1.2" />
+
+
+
+
+
+
+<meta name="description" content="前情提要上集讲到, 小光引入了日报制度, 用来从各个分店店长那儿收集信息. 如此一来, 小光每天就通过日报系统了解到各个分店的销售情况, 问题所在, 也好根据收集到的用户反馈来改善系统, 改善经营了. 不多久, 就有一个来自用户的反馈, 通过店长的日报到了小光这边:">
+<meta name="keywords" content="设计模式,架构">
+<meta property="og:type" content="article">
+<meta property="og:title" content="统一热干面的制作流程---模板方法">
+<meta property="og:url" content="http://blog.lmj.wiki/2016/12/22/design-pattern/template_method/index.html">
+<meta property="og:site_name" content="ANLY&#39;S BLOG">
+<meta property="og:description" content="前情提要上集讲到, 小光引入了日报制度, 用来从各个分店店长那儿收集信息. 如此一来, 小光每天就通过日报系统了解到各个分店的销售情况, 问题所在, 也好根据收集到的用户反馈来改善系统, 改善经营了. 不多久, 就有一个来自用户的反馈, 通过店长的日报到了小光这边:">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="http://blog.lmj.wiki/img/14823950290006.jpg">
+<meta property="og:updated_time" content="2017-09-12T15:16:05.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="统一热干面的制作流程---模板方法">
+<meta name="twitter:description" content="前情提要上集讲到, 小光引入了日报制度, 用来从各个分店店长那儿收集信息. 如此一来, 小光每天就通过日报系统了解到各个分店的销售情况, 问题所在, 也好根据收集到的用户反馈来改善系统, 改善经营了. 不多久, 就有一个来自用户的反馈, 通过店长的日报到了小光这边:">
+<meta name="twitter:image" content="http://blog.lmj.wiki/img/14823950290006.jpg">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Gemini',
+    version: '5.1.2',
+    sidebar: {"position":"right","display":"post","offset":12,"offset_float":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://blog.lmj.wiki/2016/12/22/design-pattern/template_method/"/>
+
+
+
+
+
+  <title>统一热干面的制作流程---模板方法 | ANLY'S BLOG</title>
+  
+
+
+
+
+
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?3e4bf02bc6c59d846f194a8afc04ecfc";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-right page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">ANLY'S BLOG</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">看看书, 写写字; 捣鼓捣鼓小技术.</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            关于
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://blog.lmj.wiki/2016/12/22/design-pattern/template_method/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="anly_jun">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/img/avatar.jpeg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="ANLY'S BLOG">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">统一热干面的制作流程---模板方法</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2016-12-22T17:00:00+08:00">
+                2016-12-22
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/设计模式/" itemprop="url" rel="index">
+                    <span itemprop="name">设计模式</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2016/12/22/design-pattern/template_method/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count ds-thread-count" data-thread-key="2016/12/22/design-pattern/template_method/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h2 id="前情提要"><a href="#前情提要" class="headerlink" title="前情提要"></a>前情提要</h2><p><a href="http://blog.lmj.wiki/2016/12/20/design-pattern/singleton/">上集</a>讲到, 小光引入了日报制度, 用来从各个分店店长那儿收集信息. 如此一来, 小光每天就通过日报系统了解到各个分店的销售情况, 问题所在, 也好根据收集到的用户反馈来改善系统, 改善经营了.</p>
+<p>不多久, 就有一个来自用户的反馈, 通过店长的日报到了小光这边:</p>
+<a id="more"></a>
+<p><strong>有用户反馈不同分店的热干面味道不太一样</strong></p>
+<blockquote>
+<p>所有示例源码已经上传到Github, <a href="https://github.com/mingjunli/JavaDesignPatterns" target="_blank" rel="external">戳这里</a></p>
+</blockquote>
+<h2 id="统一热干面的制作流程"><a href="#统一热干面的制作流程" class="headerlink" title="统一热干面的制作流程"></a>统一热干面的制作流程</h2><p>小光是想将品牌做大, 做统一的. 当然是需要在任何分店给用户都是统一的体验啊. 所以, 小光很重视这个问题, 马上投入了这个问题的解决中.</p>
+<p>上次在<a href="http://blog.lmj.wiki/2016/12/15/design-pattern/abstract_factory/">弄分店的标准</a>时并没有统一规划下热干面的制作方法流程, 现在小光想借这个机会正好弄一套, 于是小光做了一个热干面的制作规范:</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">HotDryNoodlesMaker</span> </span>&#123;</div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">make</span><span class="params">()</span> </span>&#123;</div><div class="line">        <span class="comment">// 1, 烫面</span></div><div class="line">        tangmian();</div><div class="line"></div><div class="line">        <span class="comment">// 2, 装碗</span></div><div class="line">        zhuangwan();</div><div class="line"></div><div class="line">        <span class="comment">// 3, 加调料(盐，鸡精，胡椒粉之类)</span></div><div class="line">        jiatiaoliao();</div><div class="line"></div><div class="line">        <span class="comment">// 4, 加芝麻酱</span></div><div class="line">        jiazhimajiang();</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="comment">// 原谅我, 这些个英文真是不知道怎么说了, 以下方法名用拼音吧...</span></div><div class="line">    <span class="comment">// 非我所愿</span></div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">tangmian</span><span class="params">()</span> </span>&#123;</div><div class="line">        System.out.println(<span class="string">"热干面入沸水锅焯烫十几秒"</span>);</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">zhuangwan</span><span class="params">()</span> </span>&#123;</div><div class="line">        System.out.println(<span class="string">"热干面捞出, 装入大碗中"</span>);</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">jiatiaoliao</span><span class="params">()</span> </span>&#123;</div><div class="line">        System.out.println(<span class="string">"加调料"</span>);</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">jiazhimajiang</span><span class="params">()</span> </span>&#123;</div><div class="line">        System.out.println(<span class="string">"加芝麻酱"</span>);</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>各分店都用这套流程来制作热干面:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line">public class XiaoGuang &#123;</div><div class="line"></div><div class="line">    public static void main(String[] args) &#123;</div><div class="line"></div><div class="line">        HotDryNoodlesMaker maker = new HotDryNoodlesMaker();</div><div class="line">        maker.make();</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">热干面入沸水锅焯烫十几秒</div><div class="line">热干面捞出, 装入大碗中</div><div class="line">加调料</div><div class="line">加芝麻酱</div></pre></td></tr></table></figure>
+<p>看起来没有问题. 小光是个谨慎的人, 在全面启用这套流程之前, 小光决定现在光谷店试用下.</p>
+<h2 id="试用出了问题"><a href="#试用出了问题" class="headerlink" title="试用出了问题"></a>试用出了问题</h2><p>果然, 只有经过用户的检验的产品才是好产品, 刚试用第一天, 小光的热干面制作流程就经受考验, 出了问题.</p>
+<blockquote>
+<p>吃客们, 有的是在店吃的, 有的是打包带走的.<br>当初小光为了品牌性, 在店吃都是用的带有小光热干面专属标志的消毒碗的, 外带是定制的一次性碗具</p>
+</blockquote>
+<p>现在在”装碗”这个环节出了问题~~</p>
+<h2 id="解决问题"><a href="#解决问题" class="headerlink" title="解决问题"></a>解决问题</h2><p><strong>解决问题的第一步是描述问题.</strong></p>
+<p>小光深入思考, 探索问题的本质, 发现现在的问题是: 热干面制作必须是这个流程, 而中间的某些步骤又必须可以根据实际场景改变. 也就是说, 不能改变热干面的制作流程, 但是又可以改变(重新定义)这个流程中的某一步(装碗).</p>
+<p>如此, 小光想到了一个办法:</p>
+<blockquote>
+<p>用一个抽象的类来定义操作步骤(当然并不会抽象所有的步骤), 由具体的子类来实现中间需要定制的步骤.</p>
+</blockquote>
+<p><strong>抽象的制作流程:</strong></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">public</span> <span class="keyword">abstract</span> <span class="class"><span class="keyword">class</span> <span class="title">Maker</span> </span>&#123;</div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">make</span><span class="params">()</span> </span>&#123;</div><div class="line">        <span class="comment">// 1, 烫面</span></div><div class="line">        tangmian();</div><div class="line"></div><div class="line">        <span class="comment">// 2, 装碗</span></div><div class="line">        zhuangwan();</div><div class="line"></div><div class="line">        <span class="comment">// 3, 加调料(盐，鸡精，胡椒粉之类)</span></div><div class="line">        jiatiaoliao();</div><div class="line"></div><div class="line">        <span class="comment">// 4, 加芝麻酱</span></div><div class="line">        jiazhimajiang();</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">tangmian</span><span class="params">()</span> </span>&#123;</div><div class="line">        System.out.println(<span class="string">"热干面入沸水锅焯烫十几秒"</span>);</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">jiatiaoliao</span><span class="params">()</span> </span>&#123;</div><div class="line">        System.out.println(<span class="string">"加调料"</span>);</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">jiazhimajiang</span><span class="params">()</span> </span>&#123;</div><div class="line">        System.out.println(<span class="string">"加芝麻酱"</span>);</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="comment">// 将装碗这一步抽象出来, 由具体的子类实现</span></div><div class="line">    <span class="function"><span class="keyword">abstract</span> <span class="keyword">void</span> <span class="title">zhuangwan</span><span class="params">()</span></span>;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p><strong>然后分别弄一个对应的打包的maker和一个堂食的maker:</strong></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div></pre></td><td class="code"><pre><div class="line"><span class="comment">// 打包</span></div><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">PackingMaker</span> <span class="keyword">extends</span> <span class="title">Maker</span> </span>&#123;</div><div class="line"></div><div class="line">    <span class="meta">@Override</span></div><div class="line">    <span class="function"><span class="keyword">void</span> <span class="title">zhuangwan</span><span class="params">()</span> </span>&#123;</div><div class="line">        System.out.println(<span class="string">"热干面捞出, 装入一次性碗"</span>);</div><div class="line">    &#125;</div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="comment">// 堂食</span></div><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">EatInMaker</span> <span class="keyword">extends</span> <span class="title">Maker</span> </span>&#123;</div><div class="line"></div><div class="line">    <span class="meta">@Override</span></div><div class="line">    <span class="function"><span class="keyword">void</span> <span class="title">zhuangwan</span><span class="params">()</span> </span>&#123;</div><div class="line">        System.out.println(<span class="string">"热干面捞出, 装入店内消毒碗"</span>);</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p><strong>如此这般, 制作的流程有maker控制, 但是也给了不同实现(打包, 堂食)一些自主化空间:</strong></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div></pre></td><td class="code"><pre><div class="line">Maker packingMaker = <span class="keyword">new</span> PackingMaker();</div><div class="line">packingMaker.make();</div><div class="line"></div><div class="line"><span class="comment">// output</span></div><div class="line">热干面入沸水锅焯烫十几秒</div><div class="line">热干面捞出, 装入一次性碗</div><div class="line">加调料</div><div class="line">加芝麻酱</div><div class="line"></div><div class="line">Maker eatInMaker = <span class="keyword">new</span> EatInMaker();</div><div class="line">eatInMaker.make();</div><div class="line"></div><div class="line"><span class="comment">// output</span></div><div class="line">热干面入沸水锅焯烫十几秒</div><div class="line">热干面捞出, 装入店内消毒碗</div><div class="line">加调料</div><div class="line">加芝麻酱</div></pre></td></tr></table></figure>
+<p>达成要求.</p>
+<h2 id="故事之后"><a href="#故事之后" class="headerlink" title="故事之后"></a>故事之后</h2><p>照例我们先缕缕类的关系:<br><img src="/img/14823950290006.jpg" alt=""></p>
+<p>在故事过程中, 我们描述了问题及其解决之道. 实际上这个解决之道就是我们今天要说的<strong>模板方法模式</strong>. </p>
+<blockquote>
+<p>模板方法模式<br>定义一个操作中的算法骨架(热干面的制作流程), 而将某些步骤实现延迟到子类中. 使得子类可以根据实际情况不改变算法骨架(热干面的制作流程), 但是可以重新定义或改变该算法中的某些特定步骤(例如装碗).</p>
+</blockquote>
+<h2 id="扩展阅读一"><a href="#扩展阅读一" class="headerlink" title="扩展阅读一"></a>扩展阅读一</h2><p>模板方法是代码复用的基本技术, 基本上随处可见. 我们平常编码上, 如果想复用一些代码, 基本上第一个想到的就是提取父类, 抽象可变, 然后子类实现抽象部分的方式来复用. 没错, 这种用法往往你就用到模板方法模式.</p>
+<blockquote>
+<p>所以说, 设计模式并不高深, 它实际上就是一种良好编程习惯的提炼. 我们可能随处再用, 只是有的时候我们并没有意识到.</p>
+</blockquote>
+<p>这种代码复用的方式在一些底层库, SDK中更是被频繁使用. 例如Android中最为复杂之一的View, 就用到木板方法模式.</p>
+<p><strong>其draw()方法就是模板方法, onDraw()是抽象的可定制的原语操作:</strong></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div></pre></td><td class="code"><pre><div class="line"><span class="comment">// 代码节选自View.java</span></div><div class="line"></div><div class="line"><span class="comment">// draw()方法相当于定义了一个View的绘制算法结构, 其中的onDraw的可变的原语操作.</span></div><div class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">draw</span><span class="params">(Canvas canvas)</span> </span>&#123;</div><div class="line">  </div><div class="line">   <span class="comment">// Step 1, draw the background, if needed</span></div><div class="line">   <span class="keyword">int</span> saveCount;</div><div class="line"></div><div class="line">   <span class="keyword">if</span> (!dirtyOpaque) &#123;</div><div class="line">       drawBackground(canvas);</div><div class="line">   &#125;</div><div class="line"></div><div class="line">   <span class="comment">// skip step 2 &amp; 5 if possible (common case)</span></div><div class="line">   <span class="keyword">final</span> <span class="keyword">int</span> viewFlags = mViewFlags;</div><div class="line">   <span class="keyword">boolean</span> horizontalEdges = (viewFlags &amp; FADING_EDGE_HORIZONTAL) != <span class="number">0</span>;</div><div class="line">   <span class="keyword">boolean</span> verticalEdges = (viewFlags &amp; FADING_EDGE_VERTICAL) != <span class="number">0</span>;</div><div class="line">   </div><div class="line">   <span class="keyword">if</span> (!verticalEdges &amp;&amp; !horizontalEdges) &#123;</div><div class="line">       <span class="comment">// Step 3, draw the content</span></div><div class="line">       <span class="keyword">if</span> (!dirtyOpaque) onDraw(canvas);</div><div class="line"></div><div class="line">       <span class="comment">// Step 4, draw the children</span></div><div class="line">       dispatchDraw(canvas);</div><div class="line"></div><div class="line">       <span class="comment">// Step 6, draw decorations (scrollbars)</span></div><div class="line">       onDrawScrollBars(canvas);</div><div class="line"></div><div class="line">       <span class="keyword">if</span> (mOverlay != <span class="keyword">null</span> &amp;&amp; !mOverlay.isEmpty()) &#123;</div><div class="line">           mOverlay.getOverlayView().dispatchDraw(canvas);</div><div class="line">       &#125;</div><div class="line"></div><div class="line">       <span class="comment">// we're done...</span></div><div class="line">       <span class="keyword">return</span>;</div><div class="line">   &#125;</div><div class="line">&#125;  </div><div class="line"></div><div class="line"><span class="comment">/**</span></div><div class="line"><span class="comment">* Implement this to do your drawing.</span></div><div class="line"><span class="comment">*</span></div><div class="line"><span class="comment">* <span class="doctag">@param</span> canvas the canvas on which the background will be drawn</span></div><div class="line"><span class="comment">*/</span></div><div class="line"><span class="comment">// 原语操作, 由子类实现, 来定制</span></div><div class="line"><span class="function"><span class="keyword">protected</span> <span class="keyword">void</span> <span class="title">onDraw</span><span class="params">(Canvas canvas)</span> </span>&#123;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<h2 id="扩展阅读二"><a href="#扩展阅读二" class="headerlink" title="扩展阅读二"></a>扩展阅读二</h2><p>很多继承关系中, 我们都能找到模板方法的影子, 但是并非所有的继承就是用到了模板方法模式. 有的同学可能会回想起我们之前提到的<a href="http://blog.lmj.wiki/2016/11/21/design-pattern/strategy/">策略模式</a>. 二者看起来很像啊, 貌似都是跟替换算法有关的.</p>
+<p>在这里简单区别下二者:</p>
+<blockquote>
+<p>二者都是通过用继承关系来达到”算法替换”的目的.<br>但是模板方法是不改变算法结构, 只替换/改变其中的步骤.<br>而策略模式是改变了整个算法.</p>
+</blockquote>
+<p>打个比方, 我从北京到武汉的过程, 定义一个回家算法 — 做火车回家, 分成几步:</p>
+<ol>
+<li>上火车站买票</li>
+<li>检票上车</li>
+<li>一路顺风回家</li>
+</ol>
+<p>如果我改变了买票的方式, 例如我不想去火车站买票了, 在网上买, 或是电话买. 但是算法结构不变, 还是做火车, 还是这三步, 那么这个就是模板方法模式.</p>
+<p>但是如果我不想做火车了, 我开车, 我坐飞机回家, 那么就相当于替换了整个算法, 这个就是策略模式.</p>
+<hr>
+<p>总之, 小光又解决了一个问题, 解决用户痛点是产品呢生存之道, 小光知道自己的热干面正在变得越来越好…哈哈.</p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/设计模式/" rel="tag"># 设计模式</a>
+          
+            <a href="/tags/架构/" rel="tag"># 架构</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2016/12/20/design-pattern/singleton/" rel="next" title="日报表格只有一份---单例模式">
+                <i class="fa fa-chevron-left"></i> 日报表格只有一份---单例模式
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2017/01/18/design-pattern/composite/" rel="prev" title="梳理公司的组织架构---组合模式">
+                梳理公司的组织架构---组合模式 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+        <div class="ds-share flat" data-thread-key="2016/12/22/design-pattern/template_method/"
+     data-title="统一热干面的制作流程---模板方法"
+     data-content=""
+     data-url="http://blog.lmj.wiki/2016/12/22/design-pattern/template_method/">
+  <div class="ds-share-inline">
+    <ul  class="ds-share-icons-16">
+
+      <li data-toggle="ds-share-icons-more"><a class="ds-more" href="javascript:void(0);">分享到：</a></li>
+      <li><a class="ds-weibo" href="javascript:void(0);" data-service="weibo">微博</a></li>
+      <li><a class="ds-qzone" href="javascript:void(0);" data-service="qzone">QQ空间</a></li>
+      <li><a class="ds-qqt" href="javascript:void(0);" data-service="qqt">腾讯微博</a></li>
+      <li><a class="ds-wechat" href="javascript:void(0);" data-service="wechat">微信</a></li>
+
+    </ul>
+    <div class="ds-share-icons-more">
+    </div>
+  </div>
+</div>
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+      <div class="ds-thread" data-thread-key="2016/12/22/design-pattern/template_method/"
+           data-title="统一热干面的制作流程---模板方法" data-url="http://blog.lmj.wiki/2016/12/22/design-pattern/template_method/">
+      </div>
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          
+            <img class="site-author-image" itemprop="image"
+              src="/img/avatar.jpeg"
+              alt="anly_jun" />
+          
+            <p class="site-author-name" itemprop="name">anly_jun</p>
+            <p class="site-description motion-element" itemprop="description">Android, iOS, Mobile Dev/Test, Web, Python</p>
+        </div>
+
+        <nav class="site-state motion-element">
+
+          
+            <div class="site-state-item site-state-posts">
+            
+              <a href="/archives">
+            
+                <span class="site-state-item-count">55</span>
+                <span class="site-state-item-name">日志</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-categories">
+              <a href="/categories/index.html">
+                <span class="site-state-item-count">6</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-tags">
+              <a href="/tags/index.html">
+                <span class="site-state-item-count">20</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+          <div class="feed-link motion-element">
+            <a href="/atom.xml" rel="alternate">
+              <i class="fa fa-rss"></i>
+              RSS
+            </a>
+          </div>
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#前情提要"><span class="nav-number">1.</span> <span class="nav-text">前情提要</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#统一热干面的制作流程"><span class="nav-number">2.</span> <span class="nav-text">统一热干面的制作流程</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#试用出了问题"><span class="nav-number">3.</span> <span class="nav-text">试用出了问题</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#解决问题"><span class="nav-number">4.</span> <span class="nav-text">解决问题</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#故事之后"><span class="nav-number">5.</span> <span class="nav-text">故事之后</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#扩展阅读一"><span class="nav-number">6.</span> <span class="nav-text">扩展阅读一</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#扩展阅读二"><span class="nav-number">7.</span> <span class="nav-text">扩展阅读二</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2017</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">anly_jun</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+  <span class="post-meta-divider">|</span>
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">NexT.Gemini</a> v5.1.2</div>
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.2"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.2"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.2"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.2"></script>
+
+
+
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.2"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.2"></script>
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.2"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.2"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.2"></script>
+
+
+
+  
+
+  
+    
+  
+
+  <script type="text/javascript">
+    var duoshuoQuery = {short_name:"anlyjun"};
+    (function() {
+      var ds = document.createElement('script');
+      ds.type = 'text/javascript';ds.async = true;
+      ds.id = 'duoshuo-script';
+      ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+      ds.charset = 'UTF-8';
+      (document.getElementsByTagName('head')[0]
+      || document.getElementsByTagName('body')[0]).appendChild(ds);
+    })();
+  </script>
+
+  
+    
+    
+    <script src="/lib/ua-parser-js/dist/ua-parser.min.js?v=0.7.9"></script>
+    <script src="/js/src/hook-duoshuo.js"></script>
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

@@ -1,0 +1,893 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next gemini use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.2" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="Android,App优化," />
+
+
+
+
+
+  <link rel="alternate" href="/atom.xml" title="ANLY'S BLOG" type="application/atom+xml" />
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.1.2" />
+
+
+
+
+
+
+<meta name="description" content="引言电量使用优化, 基本上是我们最不怎么关注的一项优化. 可能很多公司连QA/Tester也不会关注测试App电量的使用. 一般来说开发和测试的测试设备也一直是连着USB处于充电状态的, 感官上也体会不到电量的损耗. 然而, 对于用户来说, 实际上App的电量损耗也是用户体验的一个方面. 特别是当今人们对移动设备的依赖度越来越高, 电量也是用户特别关注的. 今天我们就来聊聊Android App的">
+<meta name="keywords" content="Android,App优化">
+<meta property="og:type" content="article">
+<meta property="og:title" content="App优化之电池省着用">
+<meta property="og:url" content="http://blog.lmj.wiki/2016/09/25/app-opti/app_opt_battery/index.html">
+<meta property="og:site_name" content="ANLY&#39;S BLOG">
+<meta property="og:description" content="引言电量使用优化, 基本上是我们最不怎么关注的一项优化. 可能很多公司连QA/Tester也不会关注测试App电量的使用. 一般来说开发和测试的测试设备也一直是连着USB处于充电状态的, 感官上也体会不到电量的损耗. 然而, 对于用户来说, 实际上App的电量损耗也是用户体验的一个方面. 特别是当今人们对移动设备的依赖度越来越高, 电量也是用户特别关注的. 今天我们就来聊聊Android App的">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="http://blog.lmj.wiki/img/14749044400861.jpg">
+<meta property="og:image" content="http://blog.lmj.wiki/img/14752508162502.jpg">
+<meta property="og:image" content="http://blog.lmj.wiki/img/14751596147712.jpg">
+<meta property="og:updated_time" content="2017-09-12T15:16:05.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="App优化之电池省着用">
+<meta name="twitter:description" content="引言电量使用优化, 基本上是我们最不怎么关注的一项优化. 可能很多公司连QA/Tester也不会关注测试App电量的使用. 一般来说开发和测试的测试设备也一直是连着USB处于充电状态的, 感官上也体会不到电量的损耗. 然而, 对于用户来说, 实际上App的电量损耗也是用户体验的一个方面. 特别是当今人们对移动设备的依赖度越来越高, 电量也是用户特别关注的. 今天我们就来聊聊Android App的">
+<meta name="twitter:image" content="http://blog.lmj.wiki/img/14749044400861.jpg">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Gemini',
+    version: '5.1.2',
+    sidebar: {"position":"right","display":"post","offset":12,"offset_float":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://blog.lmj.wiki/2016/09/25/app-opti/app_opt_battery/"/>
+
+
+
+
+
+  <title>App优化之电池省着用 | ANLY'S BLOG</title>
+  
+
+
+
+
+
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?3e4bf02bc6c59d846f194a8afc04ecfc";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-right page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">ANLY'S BLOG</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">看看书, 写写字; 捣鼓捣鼓小技术.</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            关于
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://blog.lmj.wiki/2016/09/25/app-opti/app_opt_battery/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="anly_jun">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/img/avatar.jpeg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="ANLY'S BLOG">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">App优化之电池省着用</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2016-09-25T22:23:00+08:00">
+                2016-09-25
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Android/" itemprop="url" rel="index">
+                    <span itemprop="name">Android</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2016/09/25/app-opti/app_opt_battery/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count ds-thread-count" data-thread-key="2016/09/25/app-opti/app_opt_battery/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h2 id="引言"><a href="#引言" class="headerlink" title="引言"></a>引言</h2><p>电量使用优化, 基本上是我们最不怎么关注的一项优化. 可能很多公司连QA/Tester也不会关注测试App电量的使用. 一般来说开发和测试的测试设备也一直是连着USB处于充电状态的, 感官上也体会不到电量的损耗.</p>
+<p>然而, 对于用户来说, 实际上App的电量损耗也是用户体验的一个方面. 特别是当今人们对移动设备的依赖度越来越高, 电量也是用户特别关注的.</p>
+<p>今天我们就来聊聊Android App的电量优化.</p>
+<a id="more"></a>
+<h2 id="1-分析电量的使用情况"><a href="#1-分析电量的使用情况" class="headerlink" title="1, 分析电量的使用情况"></a>1, 分析电量的使用情况</h2><p>老套路, 上来还是先介绍下我们使用什么工具来做电量分析.</p>
+<h3 id="1-1-Batterystats-amp-bugreport"><a href="#1-1-Batterystats-amp-bugreport" class="headerlink" title="1.1 Batterystats &amp; bugreport"></a>1.1 Batterystats &amp; bugreport</h3><p>Android 5.0及以上的设备, 允许我们通过<a href="http://www.jianshu.com/p/5980c8c282ef" target="_blank" rel="external">adb命令</a>dump出电量使用统计信息.</p>
+<p>1, 因为电量统计数据是持续的, 会非常大, 统计我们的待测试App之前先reset下, 连上设备, 命令行执行:</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"><span class="meta">$</span> adb shell dumpsys batterystats --reset</div><div class="line">Battery stats reset.</div></pre></td></tr></table></figure>
+<p>2, 断开测试设备, 操作我们的待测试App.<br>3, 重新连接设备, 使用adb命令导出相关统计数据:</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">// 此命令持续记录输出, 想要停止记录时按Ctrl+C退出.</div><div class="line"><span class="meta">$</span> adb bugreport &gt; bugreport.txt</div></pre></td></tr></table></figure>
+<p>导出的统计数据存储到bugreport.txt, 此时我们可以借助如下工具来图形化展示电池的消耗情况.</p>
+<blockquote>
+<p>注意, <a href="https://developer.android.com/studio/profile/battery-historian.html" target="_blank" rel="external">官方SDK文档</a>导出文件方式为:<br>adb shell dumpsys batterystats &gt; batterystats.txt<br>使用python historian.py batterystats.txt &gt; batterystats.html查看数据<br>是battery-historian老版本的使用方式. 目前Battery Historian已更新2.0版本, 推荐使用bugreport方式导出数据分析, 可以看到更多信息.</p>
+</blockquote>
+<h3 id="1-2-Battery-Historian"><a href="#1-2-Battery-Historian" class="headerlink" title="1.2 Battery Historian"></a>1.2 Battery Historian</h3><p>Google提供了一个开源的电池历史数据分析工具 – <a href="https://github.com/google/battery-historian" target="_blank" rel="external">Battery Historian</a>. </p>
+<h4 id="1-2-1-安装"><a href="#1-2-1-安装" class="headerlink" title="1.2.1 安装"></a>1.2.1 安装</h4><p>按照<a href="https://github.com/google/battery-historian" target="_blank" rel="external">Battery Historian</a>在github上的readme, 一步步安装即可.</p>
+<blockquote>
+<p>需要注意的是, Battery Historian是Go语言的, 安装Go的时候需要配置其bin的环境变量.<br>Python环境需要是2.7的(3.x不行), 建议使用pyenv管理本地的python环境.<br>另外, 因为Battery Historian是一个网页版工具, 涉及一些JS引用, 有时需要翻墙.</p>
+</blockquote>
+<p>安装完成后, 执行:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">cd $GOPATH/src/github.com/google/battery-historian</div><div class="line">go run cmd/battery-historian/battery-historian.go [--port &lt;default:9999&gt;]</div></pre></td></tr></table></figure>
+<p>程序运行在<a href="http://localhost:9999" target="_blank" rel="external">http://localhost:9999</a>, 如下:<br><img src="/img/14749044400861.jpg" alt=""></p>
+<h4 id="1-2-2-界面"><a href="#1-2-2-界面" class="headerlink" title="1.2.2 界面"></a>1.2.2 界面</h4><p>导入我们在第一步通过adb bugreport生成的bugreport.txt文件:<br><img src="/img/14752508162502.jpg" alt=""></p>
+<h2 id="2-主要的耗电因素"><a href="#2-主要的耗电因素" class="headerlink" title="2, 主要的耗电因素"></a>2, 主要的耗电因素</h2><p><img src="/img/14751596147712.jpg" alt="-w1080"></p>
+<p>从手机的电池详情统计可以简单看出, 手机中最耗电的模块肯定是屏幕了, 接着就是网络相关, 另外可能的耗电大户还有GPS芯片, Camera等.</p>
+<p>对于一个App, 对应因素主要有:</p>
+<h3 id="2-1-网络请求"><a href="#2-1-网络请求" class="headerlink" title="2.1 网络请求"></a>2.1 网络请求</h3><p>我们可能会有发现:</p>
+<ul>
+<li>测试用的手机充满电放了一个十一假期还有电, 是因为测试手机没有上SIM卡.</li>
+<li>飞行模式下的手机灭屏下, 可能可以放一个月都还有电.</li>
+</ul>
+<p>这是因为:</p>
+<ul>
+<li>手机的通过内置的射频模块和基站几乎, 从而链接上网的, 而这个射频模块(radio)是非常耗电的. </li>
+<li>为了控制这个射频模块的耗电, 硬件驱动及Android RIL层做了很多处理. 例如可以单独关闭radio(飞行模式), 间歇性假休眠radio(有数据发生时才上电, 保持一个频率的与基站交互)等等.</li>
+</ul>
+<p>现如今App都是移动互联网App, 不可避免的会有大量的网络请求, 会导致radio一直处于活跃状态, 从而耗电量增加.</p>
+<h3 id="2-2-WakeLock"><a href="#2-2-WakeLock" class="headerlink" title="2.2 WakeLock"></a>2.2 WakeLock</h3><p>Android系统本身为了优化电量的使用, 会在没有操作时进入休眠状态, 来节省电量. 当然, 为了便于开发(很多应用不可避免的希望在灭屏后还能运行一些事儿, 或是要保持屏幕一直亮着–比如播放视频), Android提供了一个PowerManager.WakeLock的东西.</p>
+<p>我们可以用WakeLock来保持CPU运行, 或是防止屏幕变暗/关闭, 让手机可以在用户不操作时依然可以做一些事儿. 然而, 获取WakeLock很容易, 释放不好就会成为难题, 消耗电量.</p>
+<p>例如我们获取了一个WakeLock来保持CPU运转, 做一个复杂运算并将数据上传到后台服务器, 然后释放该WakeLock. 然而这个过程可能并不像我们想象的那么快, 可能因为比如服务器挂掉, 计算出了异常等等WakeLock没有释放. 问题就来了, CPU会一直得不到休眠, 而大大增加耗电.</p>
+<p>另外, WakeLock还有android:keepScreenOn属性, 还可以让屏幕常量, 这可是耗电大户.</p>
+<h3 id="2-3-GPS"><a href="#2-3-GPS" class="headerlink" title="2.3 GPS"></a>2.3 GPS</h3><p>应用中经常会用到定位服务, Android提供了Network定位和GPS定位. 相对来说, GPS会精确得多, 对于一些诸如跑步, 导航类的应用基本会使用GPS定位. 然而, GPS定位也会消耗大量的电量.</p>
+<h2 id="3-尽可能减少App的电量消耗的建议"><a href="#3-尽可能减少App的电量消耗的建议" class="headerlink" title="3, 尽可能减少App的电量消耗的建议"></a>3, 尽可能减少App的电量消耗的建议</h2><p>了解了上述的主要的耗电因素, 还有一些程序的耗电问题, 我们通过Battery Historian也可以分析.</p>
+<p>针对这些耗电情况, 给出如下优化建议:</p>
+<h3 id="3-1-优化网络请求"><a href="#3-1-优化网络请求" class="headerlink" title="3.1 优化网络请求"></a>3.1 优化网络请求</h3><blockquote>
+<p>这个会在网络优化那篇中细聊, 在此略过.</p>
+</blockquote>
+<h3 id="3-2-谨慎使用WakeLock"><a href="#3-2-谨慎使用WakeLock" class="headerlink" title="3.2 谨慎使用WakeLock"></a>3.2 谨慎使用WakeLock</h3><ol>
+<li>WakeLock获取释放成对出现.</li>
+<li>使用超时WakeLock, 以防出异常导致没有释放.</li>
+</ol>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"><span class="comment">// Acquires the wake lock with a timeout.</span></div><div class="line">acquire(<span class="keyword">long</span> timeout)</div></pre></td></tr></table></figure>
+<h3 id="3-3-监听手机充电状态"><a href="#3-3-监听手机充电状态" class="headerlink" title="3.3 监听手机充电状态"></a>3.3 监听手机充电状态</h3><p>BatteryManager会发送一个包含充电状态的持续广播, 我们可以通过此广播获取充电状态和电量详情:</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">IntentFilter ifilter = <span class="keyword">new</span> IntentFilter(Intent.ACTION_BATTERY_CHANGED);</div><div class="line">Intent batteryStatus = context.registerReceiver(<span class="keyword">null</span>, ifilter);</div></pre></td></tr></table></figure>
+<blockquote>
+<p>注意: 因为这是一个持续广播, 我们无需写receiver, 可以直接通过intent获取相关数据.</p>
+</blockquote>
+<p>例如, 如果设备正在充电:</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line"><span class="comment">// Are we charging / charged?</span></div><div class="line"><span class="keyword">int</span> status = batteryStatus.getIntExtra(BatteryManager.EXTRA_STATUS, -<span class="number">1</span>);</div><div class="line"><span class="keyword">boolean</span> isCharging = status == BatteryManager.BATTERY_STATUS_CHARGING ||</div><div class="line">                     status == BatteryManager.BATTERY_STATUS_FULL;</div><div class="line"></div><div class="line"><span class="comment">// How are we charging?</span></div><div class="line"><span class="keyword">int</span> chargePlug = battery.getIntExtra(BatteryManager.EXTRA_PLUGGED, -<span class="number">1</span>);</div><div class="line"><span class="keyword">boolean</span> usbCharge = chargePlug == BATTERY_PLUGGED_USB;</div><div class="line"><span class="keyword">boolean</span> acCharge = chargePlug == BATTERY_PLUGGED_AC;</div></pre></td></tr></table></figure>
+<p>另外我们也可以监听充电状态的变化, 只要设备连接或断开电源, BatteryManager就会广播相应的操作, 我们可以注册receiver来监听:</p>
+<figure class="highlight"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">&lt;receiver android:name=<span class="string">".PowerConnectionReceiver"</span>&gt;</div><div class="line">  &lt;intent-filter&gt;</div><div class="line">    &lt;action android:name=<span class="string">"android.intent.action.ACTION_POWER_CONNECTED"</span>/&gt;</div><div class="line">    &lt;action android:name=<span class="string">"android.intent.action.ACTION_POWER_DISCONNECTED"</span>/&gt;</div><div class="line">  &lt;/intent-filter&gt;</div><div class="line">&lt;/receiver&gt;</div></pre></td></tr></table></figure>
+<p>监听电池状态, 可以让我们将一些操作放在充电或是电量足够的情况下进行, 以提升用户体验. 例如用户数据同步, Log上传等.</p>
+<h3 id="3-4-Doze-and-App-Standby"><a href="#3-4-Doze-and-App-Standby" class="headerlink" title="3.4 Doze and App Standby"></a>3.4 Doze and App Standby</h3><p>Android 6.0提供了两个用来节省电量的技术Doze和App Standby.</p>
+<ul>
+<li><p>Doze<br>  瞌睡. 如果设备闲置了一段较长时间, Doze技术将通过延迟后台网络活动, CPU运行等来减少电量损耗.</p>
+</li>
+<li><p>App Standy<br>  应用待机. 不是最近得到过用户”宠幸”的App, App Standy将延缓这个应用的后台网络活动.</p>
+</li>
+</ul>
+<blockquote>
+<p>因为所有Android 6.0及以上的设备上, Doze and App Standby都会运行. 可能会影响你的App的运行, 具体的适配请参考<a href="https://developer.android.com/training/monitoring-device-state/doze-standby.html" target="_blank" rel="external">官方文档</a>.</p>
+</blockquote>
+<h3 id="3-5-关于定位"><a href="#3-5-关于定位" class="headerlink" title="3.5 关于定位"></a>3.5 关于定位</h3><ul>
+<li>定位中使用GPS, 请记得及时关闭</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">// Remove the listener you previously added</div><div class="line">locationManager.removeUpdates(locationListener);</div></pre></td></tr></table></figure>
+<ul>
+<li>减少更新频率</li>
+<li>根据实际情况选择GPS或网络或两者. 只使用一个会降低电量损耗.</li>
+</ul>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/Android/" rel="tag"># Android</a>
+          
+            <a href="/tags/App优化/" rel="tag"># App优化</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2016/09/21/app-opti/app_opt_mem_0/" rel="next" title="App优化之内存优化(序)">
+                <i class="fa fa-chevron-left"></i> App优化之内存优化(序)
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2016/10/06/app-opti/app_opt_network/" rel="prev" title="App优化之网络优化">
+                App优化之网络优化 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+        <div class="ds-share flat" data-thread-key="2016/09/25/app-opti/app_opt_battery/"
+     data-title="App优化之电池省着用"
+     data-content=""
+     data-url="http://blog.lmj.wiki/2016/09/25/app-opti/app_opt_battery/">
+  <div class="ds-share-inline">
+    <ul  class="ds-share-icons-16">
+
+      <li data-toggle="ds-share-icons-more"><a class="ds-more" href="javascript:void(0);">分享到：</a></li>
+      <li><a class="ds-weibo" href="javascript:void(0);" data-service="weibo">微博</a></li>
+      <li><a class="ds-qzone" href="javascript:void(0);" data-service="qzone">QQ空间</a></li>
+      <li><a class="ds-qqt" href="javascript:void(0);" data-service="qqt">腾讯微博</a></li>
+      <li><a class="ds-wechat" href="javascript:void(0);" data-service="wechat">微信</a></li>
+
+    </ul>
+    <div class="ds-share-icons-more">
+    </div>
+  </div>
+</div>
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+      <div class="ds-thread" data-thread-key="2016/09/25/app-opti/app_opt_battery/"
+           data-title="App优化之电池省着用" data-url="http://blog.lmj.wiki/2016/09/25/app-opti/app_opt_battery/">
+      </div>
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          
+            <img class="site-author-image" itemprop="image"
+              src="/img/avatar.jpeg"
+              alt="anly_jun" />
+          
+            <p class="site-author-name" itemprop="name">anly_jun</p>
+            <p class="site-description motion-element" itemprop="description">Android, iOS, Mobile Dev/Test, Web, Python</p>
+        </div>
+
+        <nav class="site-state motion-element">
+
+          
+            <div class="site-state-item site-state-posts">
+            
+              <a href="/archives">
+            
+                <span class="site-state-item-count">55</span>
+                <span class="site-state-item-name">日志</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-categories">
+              <a href="/categories/index.html">
+                <span class="site-state-item-count">6</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-tags">
+              <a href="/tags/index.html">
+                <span class="site-state-item-count">20</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+          <div class="feed-link motion-element">
+            <a href="/atom.xml" rel="alternate">
+              <i class="fa fa-rss"></i>
+              RSS
+            </a>
+          </div>
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#引言"><span class="nav-number">1.</span> <span class="nav-text">引言</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#1-分析电量的使用情况"><span class="nav-number">2.</span> <span class="nav-text">1, 分析电量的使用情况</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-1-Batterystats-amp-bugreport"><span class="nav-number">2.1.</span> <span class="nav-text">1.1 Batterystats & bugreport</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#1-2-Battery-Historian"><span class="nav-number">2.2.</span> <span class="nav-text">1.2 Battery Historian</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#1-2-1-安装"><span class="nav-number">2.2.1.</span> <span class="nav-text">1.2.1 安装</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#1-2-2-界面"><span class="nav-number">2.2.2.</span> <span class="nav-text">1.2.2 界面</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-主要的耗电因素"><span class="nav-number">3.</span> <span class="nav-text">2, 主要的耗电因素</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#2-1-网络请求"><span class="nav-number">3.1.</span> <span class="nav-text">2.1 网络请求</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-2-WakeLock"><span class="nav-number">3.2.</span> <span class="nav-text">2.2 WakeLock</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-3-GPS"><span class="nav-number">3.3.</span> <span class="nav-text">2.3 GPS</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-尽可能减少App的电量消耗的建议"><span class="nav-number">4.</span> <span class="nav-text">3, 尽可能减少App的电量消耗的建议</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#3-1-优化网络请求"><span class="nav-number">4.1.</span> <span class="nav-text">3.1 优化网络请求</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-2-谨慎使用WakeLock"><span class="nav-number">4.2.</span> <span class="nav-text">3.2 谨慎使用WakeLock</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-3-监听手机充电状态"><span class="nav-number">4.3.</span> <span class="nav-text">3.3 监听手机充电状态</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-4-Doze-and-App-Standby"><span class="nav-number">4.4.</span> <span class="nav-text">3.4 Doze and App Standby</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-5-关于定位"><span class="nav-number">4.5.</span> <span class="nav-text">3.5 关于定位</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2017</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">anly_jun</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+  <span class="post-meta-divider">|</span>
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">NexT.Gemini</a> v5.1.2</div>
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.2"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.2"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.2"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.2"></script>
+
+
+
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.2"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.2"></script>
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.2"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.2"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.2"></script>
+
+
+
+  
+
+  
+    
+  
+
+  <script type="text/javascript">
+    var duoshuoQuery = {short_name:"anlyjun"};
+    (function() {
+      var ds = document.createElement('script');
+      ds.type = 'text/javascript';ds.async = true;
+      ds.id = 'duoshuo-script';
+      ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+      ds.charset = 'UTF-8';
+      (document.getElementsByTagName('head')[0]
+      || document.getElementsByTagName('body')[0]).appendChild(ds);
+    })();
+  </script>
+
+  
+    
+    
+    <script src="/lib/ua-parser-js/dist/ua-parser.min.js?v=0.7.9"></script>
+    <script src="/js/src/hook-duoshuo.js"></script>
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

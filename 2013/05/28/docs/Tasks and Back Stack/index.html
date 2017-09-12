@@ -1,0 +1,936 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next gemini use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.2" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="Android,翻译," />
+
+
+
+
+
+  <link rel="alternate" href="/atom.xml" title="ANLY'S BLOG" type="application/atom+xml" />
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.1.2" />
+
+
+
+
+
+
+<meta name="description" content="Tasks and Back Stack一个Application通常包括多个Activity。每一个Activity都应该被设计为执行用户特定行为和启动其他Activity。比如，一个Email Application可能拥有一个列举Email的Activity，当用户选择一封Email时，启动一个新的Activity来阅读这封Email。">
+<meta name="keywords" content="Android,翻译">
+<meta property="og:type" content="article">
+<meta property="og:title" content="[译]Tasks and Back Stack">
+<meta property="og:url" content="http://blog.lmj.wiki/2013/05/28/docs/Tasks and Back Stack/index.html">
+<meta property="og:site_name" content="ANLY&#39;S BLOG">
+<meta property="og:description" content="Tasks and Back Stack一个Application通常包括多个Activity。每一个Activity都应该被设计为执行用户特定行为和启动其他Activity。比如，一个Email Application可能拥有一个列举Email的Activity，当用户选择一封Email时，启动一个新的Activity来阅读这封Email。">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="http://blog.lmj.wiki/img/diagram_backstack.png">
+<meta property="og:image" content="http://blog.lmj.wiki/img/diagram_multitasking.png">
+<meta property="og:image" content="http://blog.lmj.wiki/img/diagram_multiple_instances.png">
+<meta property="og:image" content="http://blog.lmj.wiki/img/diagram_backstack_singletask_multiactivity.png">
+<meta property="og:updated_time" content="2017-09-12T15:16:05.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="[译]Tasks and Back Stack">
+<meta name="twitter:description" content="Tasks and Back Stack一个Application通常包括多个Activity。每一个Activity都应该被设计为执行用户特定行为和启动其他Activity。比如，一个Email Application可能拥有一个列举Email的Activity，当用户选择一封Email时，启动一个新的Activity来阅读这封Email。">
+<meta name="twitter:image" content="http://blog.lmj.wiki/img/diagram_backstack.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Gemini',
+    version: '5.1.2',
+    sidebar: {"position":"right","display":"post","offset":12,"offset_float":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://blog.lmj.wiki/2013/05/28/docs/Tasks and Back Stack/"/>
+
+
+
+
+
+  <title>[译]Tasks and Back Stack | ANLY'S BLOG</title>
+  
+
+
+
+
+
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?3e4bf02bc6c59d846f194a8afc04ecfc";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-right page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">ANLY'S BLOG</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">看看书, 写写字; 捣鼓捣鼓小技术.</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            关于
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://blog.lmj.wiki/2013/05/28/docs/Tasks and Back Stack/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="anly_jun">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/img/avatar.jpeg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="ANLY'S BLOG">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">[译]Tasks and Back Stack</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2013-05-28T10:12:00+08:00">
+                2013-05-28
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Android/" itemprop="url" rel="index">
+                    <span itemprop="name">Android</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2013/05/28/docs/Tasks and Back Stack/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count ds-thread-count" data-thread-key="2013/05/28/docs/Tasks and Back Stack/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h2 id="Tasks-and-Back-Stack"><a href="#Tasks-and-Back-Stack" class="headerlink" title="Tasks and Back Stack"></a>Tasks and Back Stack</h2><p>一个Application通常包括多个Activity。每一个Activity都应该被设计为执行用户特定行为和启动其他Activity。比如，一个Email Application可能拥有一个列举Email的Activity，当用户选择一封Email时，启动一个新的Activity来阅读这封Email。</p>
+<a id="more"></a> 
+<p>一个Activity甚至可以启动device中其他Application存在的Activity。比如，如果你的Application想要发送Email，你可以定义一个执行Send Action并且包含一些数据（Email地址和Message）的Intent。其他应用中可以处理此类Intent的Activity会打开。在这个例子里，Intent是send Email，所以Email Application的编辑Activity会启动（当有多个Activity可以处理该Intent时，会给出选择供用户选择）。当Email发送完成后会返回resume到你的Activity，看起来Email Activity像是你的Application的一部分，即使这些Activity是在不同的Application。Android通过保持这个两个Activity在同一个Task中来提供无缝的用户体验。</p>
+<p>Task是用户执行某个特定工作时交互的Activity的集合。这些Activity按照他们打开的顺序排列在一个Stack中（Back Stack）。</p>
+<p>Device的主界面（Home Screen）是大多数Task的起点。当用户点击Application的启动图标（也可能是快捷方式）时，此Application的Task会切换到前台（foreground）。如果此Application还没有Task存在（此Application最近没有被启动过），会有一个新的Task生成，这个Application的main Activity会被作为这个Stack的根Activity打开。</p>
+<p>当当前Activity启动另外一个时，新Activity被push到栈顶并且获得焦点。前一个Activity保留在Stack中，但是Stopped。当一个Activity Stopped，系统会保留它的UI的当前状态。当用户点击Back按钮，当前Activity会从Stack中弹出（并且Destroy），前一个Activity resume（UI状态会恢复）。Stack中的Activity永远不会被重新排列，只会在Stack中push和pop。被当前Activity启动时push到栈顶，用户点击Back离开Activity时pop出栈。</p>
+<p>此Back Stack做为一种“LIFO”（后进先出）的对象结构。下图展示了这种进出关系：</p>
+<p><img src="/img/diagram_backstack.png" alt="diagram_backstack"></p>
+<p>如果用户不断的点击Back按钮，Activity会Pop出栈而现实它之前的一个，知道用户回到Home Screen（或者回到这个Task开始时正在运行的Activity）。当所有Activity都从这个Stack移除时，这个Task就不存在了。<br>当用户启动一个新的Task或回到Home Screen时，Task可以作为一个凝聚的单位整体切换到后台background。在后台，Task中的所有Activity都Stopped了，但是这个Task的Stack不变——-只是另一个Task执行时此Task失去了focus，如图所示：</p>
+<p><img src="/img/diagram_multitasking.png" alt="diagram_multitasking"></p>
+<p>图解：Task B由于用户交互切换到前台，Task切换到后台等待resume。</p>
+<p>一个Task可以切换到foreground，所有用户可以在任何他们离开的地方再次开始。举个例子：Task A在它的Stack中有三个Activity（两个在当前Activity之下）。用户点击Home按钮，然后启动另外一个Application，系统会启动一个新的拥有自己的Stack的Task（Task B）。与此交互完之后，用户再次回到Home启动Task A的Application。现在，Task A处于foreground（其Stack中的三个Activity不变，且栈顶的Activity  Resumed）。关键是，用户可以通过Home再次回到Task B。这就是Android中多任务处理的实例。</p>
+<p>注意：多个任务可以同时存在于后台background。然而，当用户同时在后台运行了过多的任务是，系统可能为了回收内存而销毁一些后台Activity，导致Activity的状态丢失。参见以下Activity State章节。</p>
+<p>因为Back Stack中Activity绝对不会被重排，如果你的Application中允许用户通过多个Activity去启动一个特定的Activity，此Activity的一个新实例被创建并push到栈顶（而不是将该Activity之前的实例至于栈顶）。这样，你的Application的一个Activity可能被实例化多次（甚至可能在不同的Task），如图所示：</p>
+<p><img src="/img/diagram_multiple_instances.png" alt="diagram_multiple_instances"></p>
+<p>图解：HomeActivity被实例化多次。</p>
+<p>这样，当用户使用Back键向后导航时，每个实例根据打开的顺序都会被显示（每个都有自己的UI状态）。当然，如果你不想Activity被实例化多次，你可以更改这种行为。具体怎么做会在Managing Tasks章节讨论。</p>
+<p>总结下Activity和Task的默认行为：</p>
+<ul>
+<li>当Activity A启动Activity B，A stopped，但是系统会保存其状态（比如滚动的位置和表单中输入的text）。当用户在B中按Back键，A会恢复状态并resume。</li>
+<li>当用户点击Home键退出一个Task时，当前Activity会Stop且它所在的Task切入后台background。系统会保持Task中所有Activity的状态。当用户之后resume此Task时，此Task切换到前台foreground且Task的Stack中栈顶的Activity reusme。</li>
+<li>当用户点击Back键时，当前Activity会pop出栈并销毁。Stack中前一个Activity resume。当一个Activity被销毁时，系统不会保存其状态。</li>
+<li>Activity可以被实例化多次，即使是在不同的Task中。</li>
+</ul>
+<h2 id="Saving-Activity-State"><a href="#Saving-Activity-State" class="headerlink" title="Saving Activity State"></a>Saving Activity State</h2><p>如上讨论，系统默认在Activity Stopped时保存其状态。这么说，当用户通过Back键回到之前的Activity时，展示的UI和他离开时是一样的。但是，你可以或者说应该，主动的调用lifecycle的回调保存Activity的状态，来避免万一Activity被销毁而必须重建。</p>
+<p>当系统Stop你的Activity（启了一个新的Activity或是Task移到后台），系统都可能在它回收系统内存时将此Activity完全销毁。此时，Activity的状态信息都将丢失，系统仍然知道此Activity在Back Stack中的位置，但是当此Activity回到前台时系统会重建它（而不是resume）。为了避免丢失用户工作，你应该在你的Activity中实现onSaveInstanceState方法积极的保存状态。</p>
+<p>更多Activity状态信息，参见<a href="activity">Activity文档</a>。</p>
+<h2 id="Managing-Tasks"><a href="#Managing-Tasks" class="headerlink" title="Managing Tasks"></a>Managing Tasks</h2><p>Android管理Task和Back Stack的方式，如上讨论：将连续的Activity置于一个Task和一个Stack中，大多数Application都可以很好的运作而且你不用担心你的Activity如何与Task关联，如何存在于Back Stack中。</p>
+<p>然后，你可能想要中断一些正常行为。也许你想你的Application中的一个Activity单独启动一个新的Task；或者当你启动一个Activity时，你希望使用之前创建的实例而不是重新在Back Stack建一个新的实例；又或者你希望用户离开Task时清除你的Back Stack除了根Activity。</p>
+<p>在<activity>元素中使用属性或是startActivity的Intent中添加flag，你可以做的更多。</activity></p>
+<p>有如下<activity>属性可以使用：</activity></p>
+<ul>
+<li>taskAffinity</li>
+<li>launchMode</li>
+<li>allowTaskReparenting</li>
+<li>clearTaskOnLaunch</li>
+<li>alwaysRetainTaskState</li>
+<li>finishOnTaskLaunch</li>
+</ul>
+<p>主要有以下flag可以使用：</p>
+<ul>
+<li>FLAG_ACTIVITY_NEW_TASK</li>
+<li>FLAG_ACTIVITY_CLEAR_TOP</li>
+<li>FLAG_ACTIVITY_SINGLE_TOP</li>
+</ul>
+<p>在以下的章节，你将看到如何使用这些属性和flag去定义Activity关联Task和Back Stack。</p>
+<p>注意：大多数Application不需要打断Activity和Task的默认行为。如果你认为改变你Activity的默认行为是必要的，请谨慎使用，且测试Activity在运行时以及通过Back按钮从别的Activity或Task返回时的可用性。一定要测试可能与用户体验冲突的导航行为。</p>
+<h2 id="Defining-launch-modes"><a href="#Defining-launch-modes" class="headerlink" title="Defining launch modes"></a>Defining launch modes</h2><p>Launch Mode让你可以定义你的Activity新实例与当前Task的关联关系。你可以通过两种方式定义Launch Mode：</p>
+<ul>
+<li>使用Manifest文件</li>
+<li>使用Intent Flag</li>
+</ul>
+<p>当Activity A启动Activity B，B可以在manifest文件中定义它与当前Task的关系，A也可以请求B与当前Task的关系。如果两种方式都定义了，则A的请求（Intent）覆盖B的请求（manifest）。</p>
+<p>注意：一些Launch mode作用于manifest而不作用于intent flag，同样的一些Launch mode对intent flag有效而不能在manifest中定义。</p>
+<h3 id="Using-the-manifest-file"><a href="#Using-the-manifest-file" class="headerlink" title="Using the manifest file"></a>Using the manifest file</h3><p>当我们在manifest文件中声明Activity时，我们可以使用<activity>的launchMode属性来指定我们的Activity应该如何关联一个Task。</activity></p>
+<p>launchMode属性指明你的Activity如何在一个Task中启动。有四种属性值：</p>
+<ul>
+<li><p>Standard<br>默认值。当Activity启动时系统会在Task中创建一个该Activity的实例。此类Activity可以被实例化多次，每个实例可以属于不同的Task，且一个Task可以拥有它的多个实例。</p>
+</li>
+<li><p>singleTop<br>如果已经有一个该Activity的实例处于当前Task的栈顶了，系统会通过调用onNewIntent方法引导Intent去调用该实例，而不是为此Activity创建一个新的实例。此类Activity可以被实例化多次，每个实例可以属于不同的Task，且一个Task可以拥有它的多个实例（但是当栈顶是该Activity的现有实例，不会创建新的实例）。</p>
+</li>
+</ul>
+<p>例如：假设一个Task的Back Stack里面有A、B、C、D四个Activity，A-B-C-D（D在栈顶）。一个Intent要启动D，如果D是standard模式的话，会创建一个新的D实例，Stack变为A-B-C-D-D。然而，如果D是singeTop模式的话，已存在的D实例会通过onNewIntent方法来接收这个Intent，以为D已经在栈顶了，此时Stack依然是A-B-C-D。但是，如果来了一个启动B的Intent，Stack中会新建一个B的实例而不管B的launchMode是不是singleTop。</p>
+<blockquote>
+<p>注意：当Activity被创建一个新的实例时，用户可以通过Back键回到前一个Activity。当时当一个当前Activity实例处理一个新的Intent时，用户不可以通过Back回到这个Activity的onNewIntent之前的状态。</p>
+</blockquote>
+<ul>
+<li>singleTask<br>系统会创建一个新的Task，且在这个新的Task的root实例化此Activity。然而，当已经有一个该Activity的实例存在于一个单独的Task时，系统会通过调用onNewIntent方法引导Intent传向已有的这个Activity实例，而不是创建一个新的实例。同一时间只能存在一个Activity实例。</li>
+</ul>
+<blockquote>
+<p>注意：虽然此Activity运行在一个新的Task中，用户点击Back键依然可以回到前一个Activity。</p>
+</blockquote>
+<ul>
+<li>singleInstance<br>与singleTask类似，除了系统在该Activity所在的Task中不会再启动其他任何Activity。Task中有且仅有一个此Activity，任何该Activity启动的Activity都会在另外的Task中打开。</li>
+</ul>
+<p>另外一个例子：Android Browser应用声明网页浏览Activity应该总是在自己的Task中打开（在<activity>元素中定义singleTask launch mode）。这意味着如果你的Application发送一个Intent去打开Browser，它的Activity不会置于你的Application的Task中。系统会为Browser启动一个新的Task（或者如果已经有一个Browser的task运行在后台了，该Task会切换到前台来处理这个Intent）。</activity></p>
+<p>不管一个Activity是运行在一个新的Task还是原来的Task（启动这个Activity的Task）中，用户点击Back键总是可以回到上一个Activity。但是，如果你以singleTask的方式启动一个Activity，且如果已经有一个该Activity的实例存在于后台Task，此Task会整个切换到前台。此时，此Task的Back Stack中的所有Activity都会切换回来处于Stack的顶部。下图展示了此种场景：</p>
+<p><img src="/img/diagram_backstack_singletask_multiactivity.png" alt="diagram_backstack_singletask_multiactivity"></p>
+<p>图解：Activity Y以singleTask的方式运行于后台Task中，此时Activity2启动Y，会将Y所在的Task的整个Back Stack带回前台。用户按Back键会从Y所在的Task开始回退。</p>
+<blockquote>
+<p>注意：你在manifest中定义的Activity的launch mode属性可以被启动它的Intent flag所覆盖。如下面讨论。</p>
+</blockquote>
+<h3 id="Using-Intent-flags"><a href="#Using-Intent-flags" class="headerlink" title="Using Intent flags"></a>Using Intent flags</h3><p>当你启动一个Activity时，你可以在启动的Intent加上flag来指明Activity关联的Task。有以下几种flag：</p>
+<ul>
+<li><p>FLAG_ACTIVITY_NEW_TASK<br>在新的Task中启动Activity。如果已经有一个Task运行着你要启动的Activity，此Task会恢复其最后的状态并切换到前台，而此Activity会在onNewIntent中接收到Intent。<br>与“singleTask”的行为一样。</p>
+</li>
+<li><p>FLAG_ACTIVITY_SINGLE_TOP<br>当你要启动的Activity正是当前Activity（已经处于栈顶），此已存在的Activity实例会接收Intent并调用onNewIntent，而不是重新创建一个Activity实例。<br>与“singleTop”行为一致。</p>
+</li>
+<li><p>FLAG_ACTIVITY_CLEAR_TOP<br>当你要启动的Activity之前已经在当前Task运行，不会创建一个新的Activity实例，而是将Stack中该Activity实例之上的Activity全部销毁（此时该实例位于栈顶），该Activity实例resume调用onNewIntent处理Intent。<br>没有相应的launch mode与此flag对应。<br>FLAG_ACTIVITY_CLEAR_TOP通常与FLAG_ACTIVITY_NEW_TASK一起使用。当他们一起使用时，共同目标是把一个已经存在的Activity放入另一个Task且放在一个可以响应Intent的位置。</p>
+</li>
+</ul>
+<blockquote>
+<p>注意：如果一个Activity的launch mode指定为“standard”，当接收到新的Intent时，它也会被从Stack中移除而新启一个新实例在它的位置去处理该Intent。这是因为launch mode为“standard”的Activity总是会为Intent新建一个实例。</p>
+</blockquote>
+<h2 id="Handling-affinities（亲合力）"><a href="#Handling-affinities（亲合力）" class="headerlink" title="Handling affinities（亲合力）"></a>Handling affinities（亲合力）</h2><p>Affinity指明Activity更倾向于属于哪个Task。默认情况下，同一个Application的Activity彼此拥有一个Affinity。所以，默认同一个Application的Activity运行于同一个Task。但是，你可以改变一个Activity的默认Affinity。不同Application的Activity可以共享一个Affinity，或者同一个Application的Activity可以被赋予不同的Task Affinity。</p>
+<p>你可以通过<activity>元素的taskAffinity属性来改变Activity的Affinity。</activity></p>
+<p>taskAffinity是一个字符串值，它必须来自定义与manifest中的唯一包名（package name）。因为系统会使用该名字去区分Application的task affinity。</p>
+<p>在以下两种情况Affinity发挥它的作用：</p>
+<ul>
+<li><p>启动Activity的Intent带有FLAG_ACTIVITY_NEW_TASK<br>默认情况下，startActivity启动的新Activity会与它的调用者处于同一个Task，被push到同一个Back Stack。但是，如果startActivity的Intent带有FLAG_ACTIVITY_NEW_TASK，系统会寻找一个不同的Task来容纳新的Activity。通常，这是一个新的Task。然而也不是必须的，如果已经存在着一个与新Activity相同Affinity的Task，新Activity会在此Task中运行。如果没有，才会产生一个新的Task。<br>如果此Flag导致Activity运行在一个新的Task，用户点击Home键离开时，应该有一些方式让用户返回到此Task。<br>一些实体（比如Notification Manager）总是在另外的Task中启动Activity，而非他们本身，所以他们总是使用带有FLAG_ACTIVITY_NEW_TASK的intent来startActivity。<br>如果你有一个Activity可以被其他的实体通过此flag方式调用，注意用户有一个独立的方式Back到原来的Task。比如通过Launcher icon（Task的根Activity具有CATEGORY_LAUNCHER的Intent filter，参见Staring a Task章节）。</p>
+</li>
+<li><p>Activity的allowTaskReparenting的属性值为true<br>在这种情况下，一个Activity可以从启动它的Task移动到和它拥有同一个Affinity的Task（当此Task切换到前台时）。<br>比如：假设一个旅游Application定义了一个预报选定城市的天气状况的Activity。它与此Application中的其他Activity具有相同的Affinity（默认的Application Affinity），且其allowTaskReparenting属性为true。当你的Activity启动此天气预报Activity时，它会被初始化与你的Activity相同的Task。但是，当此旅游Application的Task切换到前台时，此天气预报的Activity会重新分配到这个Task，且在此Task中显示。</p>
+</li>
+</ul>
+<blockquote>
+<p>注意：从用户角度看，如果一个apk包含了多个“Application”，你可能要使用“taskAffinity”属性来给属于不同“Application”的Activity分配不同的Affinity值。</p>
+</blockquote>
+<h2 id="Clearing-the-back-stack"><a href="#Clearing-the-back-stack" class="headerlink" title="Clearing the back stack"></a>Clearing the back stack</h2><p>如果用户离开一个Task很长时间，系统会清除这个Task中Activity除了root Activity。当用户在此回到此Task时，只有此root Activity会被恢复。系统如此设计是因为经过很长时间之后，用户可能已经放弃了之前所做的，重新回来是想做新的事情。</p>
+<p>有一些Activity属性可以用来修改此默认行为。</p>
+<ul>
+<li><p>alwaysRetainTaskState<br>如果Task中的root Activity的此属性设置为true，上述默认行为不会发生。此Task会保留Stack中的所有Activity，即使经过了很长时间。</p>
+</li>
+<li><p>clearTaskOnLaunch<br>如果Task中的root Activity的此属性设置为true，无论什么时候用户离开此Task后再返回它，此Stack都会清除只剩下root Activity。换句话说，此属性是alwaysRetainTaskState的对立面，用户总是以初始状态回到此Task，即使只是离开了一瞬间。</p>
+</li>
+<li><p>finishOnTaskLaunch<br>此属性类似于clearTaskOnLaunch，但是它仅作用与单独的Activity而不是整个Task。它会导致任意一个Activity出栈，包括root Activity。当它设置为true，此Activity仅仅会为当前会话作为Task的一部分保留。当用户离开并重新返回该Task时，此Activity不再存在。</p>
+</li>
+</ul>
+<h2 id="Starting-a-task"><a href="#Starting-a-task" class="headerlink" title="Starting a task"></a>Starting a task</h2><p>你可以设定一个Activity作为一个Task的入口，通过给他的Intent filter一个“android.intent.action.MAIN”的action和一个“android.intent.category_LAUNCHER”的category。如：</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line"><span class="tag">&lt;<span class="name">activity</span> <span class="attr">...</span> &gt;</span></div><div class="line">    <span class="tag">&lt;<span class="name">intent-filter</span> <span class="attr">...</span> &gt;</span></div><div class="line">        <span class="tag">&lt;<span class="name">action</span> <span class="attr">android:name</span>=<span class="string">"android.intent.action.MAIN"</span> /&gt;</span></div><div class="line">        <span class="tag">&lt;<span class="name">category</span> <span class="attr">android:name</span>=<span class="string">"android.intent.category.LAUNCHER"</span> /&gt;</span></div><div class="line">    <span class="tag">&lt;/<span class="name">intent-filter</span>&gt;</span></div><div class="line">    ...</div><div class="line"><span class="tag">&lt;/<span class="name">activity</span>&gt;</span></div></pre></td></tr></table></figure>
+<p>拥有此intent filter的Activity会在Launcher Application中显示其icon和label，给用户一种方式去启动此Activity或是在其已经被创建的情况回到创建它的Task。</p>
+<p>第二个能力相当重要：用户必须可以在离开一个Task后通过Launcher重新回来。为此，“singleTask”和“singleInstance”这两个标记Activity总是新启一个Task的launch mode属性，应该仅仅用于拥有“ACTION_MAIN”和“CATEGORY_LAUNCHER”的Activity。<br>试想一下，如果没有此Intent filter（main/launcher）什么会发生：一个Intent启动一个“singleTask”的Activity，初始化一个新的Task，而且用户在此Task中做了一定的工作。之后用户按了Home按钮，此Task切换到后台且对用户不可见，此时用户将回不去此Task，因为在Launcher中没有icon呈现。</p>
+<p>对于那些你不想用户再回去的Activity，可以设置<activity>元素的finishOnTaskLaunch为true。<a href="">参见Clearing the back stack</a>。</activity></p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/Android/" rel="tag"># Android</a>
+          
+            <a href="/tags/翻译/" rel="tag"># 翻译</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2013/05/04/docs/Bound Service/" rel="next" title="[译]Bound Service">
+                <i class="fa fa-chevron-left"></i> [译]Bound Service
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2013/06/21/docs/Content Provider/" rel="prev" title="[译]Content Provider">
+                [译]Content Provider <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+        <div class="ds-share flat" data-thread-key="2013/05/28/docs/Tasks and Back Stack/"
+     data-title="[译]Tasks and Back Stack"
+     data-content=""
+     data-url="http://blog.lmj.wiki/2013/05/28/docs/Tasks and Back Stack/">
+  <div class="ds-share-inline">
+    <ul  class="ds-share-icons-16">
+
+      <li data-toggle="ds-share-icons-more"><a class="ds-more" href="javascript:void(0);">分享到：</a></li>
+      <li><a class="ds-weibo" href="javascript:void(0);" data-service="weibo">微博</a></li>
+      <li><a class="ds-qzone" href="javascript:void(0);" data-service="qzone">QQ空间</a></li>
+      <li><a class="ds-qqt" href="javascript:void(0);" data-service="qqt">腾讯微博</a></li>
+      <li><a class="ds-wechat" href="javascript:void(0);" data-service="wechat">微信</a></li>
+
+    </ul>
+    <div class="ds-share-icons-more">
+    </div>
+  </div>
+</div>
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+      <div class="ds-thread" data-thread-key="2013/05/28/docs/Tasks and Back Stack/"
+           data-title="[译]Tasks and Back Stack" data-url="http://blog.lmj.wiki/2013/05/28/docs/Tasks and Back Stack/">
+      </div>
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          
+            <img class="site-author-image" itemprop="image"
+              src="/img/avatar.jpeg"
+              alt="anly_jun" />
+          
+            <p class="site-author-name" itemprop="name">anly_jun</p>
+            <p class="site-description motion-element" itemprop="description">Android, iOS, Mobile Dev/Test, Web, Python</p>
+        </div>
+
+        <nav class="site-state motion-element">
+
+          
+            <div class="site-state-item site-state-posts">
+            
+              <a href="/archives">
+            
+                <span class="site-state-item-count">55</span>
+                <span class="site-state-item-name">日志</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-categories">
+              <a href="/categories/index.html">
+                <span class="site-state-item-count">6</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-tags">
+              <a href="/tags/index.html">
+                <span class="site-state-item-count">20</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+          <div class="feed-link motion-element">
+            <a href="/atom.xml" rel="alternate">
+              <i class="fa fa-rss"></i>
+              RSS
+            </a>
+          </div>
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#Tasks-and-Back-Stack"><span class="nav-number">1.</span> <span class="nav-text">Tasks and Back Stack</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Saving-Activity-State"><span class="nav-number">2.</span> <span class="nav-text">Saving Activity State</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Managing-Tasks"><span class="nav-number">3.</span> <span class="nav-text">Managing Tasks</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Defining-launch-modes"><span class="nav-number">4.</span> <span class="nav-text">Defining launch modes</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Using-the-manifest-file"><span class="nav-number">4.1.</span> <span class="nav-text">Using the manifest file</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Using-Intent-flags"><span class="nav-number">4.2.</span> <span class="nav-text">Using Intent flags</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Handling-affinities（亲合力）"><span class="nav-number">5.</span> <span class="nav-text">Handling affinities（亲合力）</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Clearing-the-back-stack"><span class="nav-number">6.</span> <span class="nav-text">Clearing the back stack</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Starting-a-task"><span class="nav-number">7.</span> <span class="nav-text">Starting a task</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2017</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">anly_jun</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+  <span class="post-meta-divider">|</span>
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">NexT.Gemini</a> v5.1.2</div>
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.2"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.2"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.2"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.2"></script>
+
+
+
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.2"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.2"></script>
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.2"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.2"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.2"></script>
+
+
+
+  
+
+  
+    
+  
+
+  <script type="text/javascript">
+    var duoshuoQuery = {short_name:"anlyjun"};
+    (function() {
+      var ds = document.createElement('script');
+      ds.type = 'text/javascript';ds.async = true;
+      ds.id = 'duoshuo-script';
+      ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+      ds.charset = 'UTF-8';
+      (document.getElementsByTagName('head')[0]
+      || document.getElementsByTagName('body')[0]).appendChild(ds);
+    })();
+  </script>
+
+  
+    
+    
+    <script src="/lib/ua-parser-js/dist/ua-parser.min.js?v=0.7.9"></script>
+    <script src="/js/src/hook-duoshuo.js"></script>
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

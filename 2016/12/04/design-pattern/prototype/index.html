@@ -1,0 +1,881 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next gemini use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.2" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="设计模式,架构," />
+
+
+
+
+
+  <link rel="alternate" href="/atom.xml" title="ANLY'S BLOG" type="application/atom+xml" />
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.1.2" />
+
+
+
+
+
+
+<meta name="description" content="前情提要上集讲到, 小光请来堂哥大龙作为自己的代理与饮品供应商谈判, 最终大龙用自己丰富的商场经验帮小光拿到合适的价格. 小光也是尝到了代理的甜头, 开始将店里的更多工作交给表妹来打理, 自己腾出功夫去选新的分店地址了.">
+<meta name="keywords" content="设计模式,架构">
+<meta property="og:type" content="article">
+<meta property="og:title" content="创业街分店开张啦---原型模式">
+<meta property="og:url" content="http://blog.lmj.wiki/2016/12/04/design-pattern/prototype/index.html">
+<meta property="og:site_name" content="ANLY&#39;S BLOG">
+<meta property="og:description" content="前情提要上集讲到, 小光请来堂哥大龙作为自己的代理与饮品供应商谈判, 最终大龙用自己丰富的商场经验帮小光拿到合适的价格. 小光也是尝到了代理的甜头, 开始将店里的更多工作交给表妹来打理, 自己腾出功夫去选新的分店地址了.">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="http://blog.lmj.wiki/img/14809331313429.jpg">
+<meta property="og:image" content="http://blog.lmj.wiki/img/14809352540535.jpg">
+<meta property="og:updated_time" content="2017-09-12T15:16:05.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="创业街分店开张啦---原型模式">
+<meta name="twitter:description" content="前情提要上集讲到, 小光请来堂哥大龙作为自己的代理与饮品供应商谈判, 最终大龙用自己丰富的商场经验帮小光拿到合适的价格. 小光也是尝到了代理的甜头, 开始将店里的更多工作交给表妹来打理, 自己腾出功夫去选新的分店地址了.">
+<meta name="twitter:image" content="http://blog.lmj.wiki/img/14809331313429.jpg">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Gemini',
+    version: '5.1.2',
+    sidebar: {"position":"right","display":"post","offset":12,"offset_float":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://blog.lmj.wiki/2016/12/04/design-pattern/prototype/"/>
+
+
+
+
+
+  <title>创业街分店开张啦---原型模式 | ANLY'S BLOG</title>
+  
+
+
+
+
+
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?3e4bf02bc6c59d846f194a8afc04ecfc";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-right page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">ANLY'S BLOG</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">看看书, 写写字; 捣鼓捣鼓小技术.</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            关于
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://blog.lmj.wiki/2016/12/04/design-pattern/prototype/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="anly_jun">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/img/avatar.jpeg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="ANLY'S BLOG">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">创业街分店开张啦---原型模式</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2016-12-04T19:07:00+08:00">
+                2016-12-04
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/设计模式/" itemprop="url" rel="index">
+                    <span itemprop="name">设计模式</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2016/12/04/design-pattern/prototype/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count ds-thread-count" data-thread-key="2016/12/04/design-pattern/prototype/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h2 id="前情提要"><a href="#前情提要" class="headerlink" title="前情提要"></a>前情提要</h2><p><a href="http://blog.lmj.wiki/2016/11/28/design-pattern/proxy/">上集</a>讲到, 小光请来堂哥大龙作为自己的<strong><a href="http://blog.lmj.wiki/2016/11/28/design-pattern/proxy/">代理</a></strong>与饮品供应商谈判, 最终大龙用自己丰富的商场经验帮小光拿到合适的价格.</p>
+<p>小光也是尝到了<strong>代理</strong>的甜头, 开始将店里的更多工作交给表妹来打理, 自己腾出功夫去选新的分店地址了.</p>
+<a id="more"></a>
+<blockquote>
+<p>所有示例源码已经上传到Github, <a href="https://github.com/mingjunli/JavaDesignPatterns" target="_blank" rel="external">戳这里</a></p>
+</blockquote>
+<h2 id="新店建设"><a href="#新店建设" class="headerlink" title="新店建设"></a>新店建设</h2><p>根据光谷店的经营经验, 很快, 小光就选好了分店的地址—创业街. 还是为了造福广大屌丝单身程序猿们啊, 哈哈.</p>
+<p>分店的建设相对第一家店的开辟来说也是简单了很多, 在光谷店的探索, 诸如热干面生产流程, 饮料机机制, 活动策略等都可以复制过来用. 简单来说, 就是复制成功原型, 如下:</p>
+<p><strong>照例, 抽象出一个公司的类:</strong></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Company</span> <span class="keyword">implements</span> <span class="title">Cloneable</span> </span>&#123;</div><div class="line"></div><div class="line">    <span class="comment">// 此处我们假装省略了N多, 诸如活动策略, 饮料机, 热干面生产流程等.</span></div><div class="line">    <span class="comment">// 再此仅以饮品为例</span></div><div class="line">    <span class="keyword">private</span> ArrayList&lt;String&gt; drinks = <span class="keyword">new</span> ArrayList&lt;&gt;();</div><div class="line"></div><div class="line">    <span class="keyword">private</span> String name;</div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">public</span> String <span class="title">getName</span><span class="params">()</span> </span>&#123;</div><div class="line">        <span class="keyword">return</span> name;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setName</span><span class="params">(String name)</span> </span>&#123;</div><div class="line">        <span class="keyword">this</span>.name = name;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">addDrink</span><span class="params">(String drink)</span> </span>&#123;</div><div class="line">        drinks.add(drink);</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="meta">@Override</span></div><div class="line">    <span class="function"><span class="keyword">protected</span> Company <span class="title">clone</span><span class="params">()</span> </span>&#123;</div><div class="line"></div><div class="line">        Company company = <span class="keyword">null</span>;</div><div class="line">        <span class="keyword">try</span> &#123;</div><div class="line">            company = (Company) <span class="keyword">super</span>.clone();</div><div class="line">        &#125; <span class="keyword">catch</span> (CloneNotSupportedException e) &#123;</div><div class="line">            e.printStackTrace();</div><div class="line">        &#125;</div><div class="line">        <span class="keyword">return</span> company;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="meta">@Override</span></div><div class="line">    <span class="function"><span class="keyword">public</span> String <span class="title">toString</span><span class="params">()</span> </span>&#123;</div><div class="line">        <span class="keyword">return</span> <span class="string">"&#123;"</span> +</div><div class="line">                <span class="string">"名字: '"</span> + getName() + <span class="string">'\''</span> +</div><div class="line">                <span class="string">", 饮品: "</span> + drinks  + <span class="string">'\''</span> +</div><div class="line">                <span class="string">'&#125;'</span>;</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p><strong>光谷店:</strong></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">OpticalValleyCompany</span> <span class="keyword">extends</span> <span class="title">Company</span> </span>&#123;</div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="title">OpticalValleyCompany</span><span class="params">()</span> </span>&#123;</div><div class="line">        setName(<span class="string">"光谷软件园分店"</span>);</div><div class="line">        addDrink(<span class="string">"橙汁"</span>);</div><div class="line">        addDrink(<span class="string">"可乐"</span>);</div><div class="line">        addDrink(<span class="string">"酸梅汤"</span>);</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p><strong>看下小光是如何复制光谷店的成功, 创建新的创业街分店的:</strong></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">XiaoGuang</span> </span>&#123;</div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</div><div class="line"></div><div class="line">        <span class="comment">// new 光谷店</span></div><div class="line">        Company ovCompany = <span class="keyword">new</span> OpticalValleyCompany();</div><div class="line">        System.out.println(<span class="string">"光谷店: "</span> + ovCompany);</div><div class="line"></div><div class="line">        <span class="comment">// 在光谷店的基础上clone SBI店</span></div><div class="line">        Company sbiCompany = ovCompany.clone();</div><div class="line">        sbiCompany.setName(<span class="string">"创业街分店"</span>);</div><div class="line">        System.out.println(<span class="string">"SBI店: "</span> + sbiCompany);</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p><strong>output:</strong></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">光谷店: &#123;名字: <span class="string">'光谷软件园分店'</span>, 饮品: [橙汁, 可乐, 酸梅汤]<span class="string">'&#125;</span></div><div class="line"><span class="string">SBI店: &#123;名字: '</span>创业街分店<span class="string">', 饮品: [橙汁, 可乐, 酸梅汤]'</span>&#125;</div></pre></td></tr></table></figure>
+<p>看样子很成功, 小光开始准备试运营了.</p>
+<h2 id="试运营"><a href="#试运营" class="headerlink" title="试运营"></a>试运营</h2><p>小光信心满满的开始了新店的试运营. 为了庆祝分店开张, 小光新拿了一款饮料XDrink在新店做活动, 买热干面赠送饮料.</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line"><span class="comment">// 在光谷店的基础上clone SBI店</span></div><div class="line">Company sbiCompany = ovCompany.clone();</div><div class="line">sbiCompany.setName(<span class="string">"创业街分店"</span>);</div><div class="line">   </div><div class="line"><span class="comment">// 给SBI店新增一款饮品</span></div><div class="line">sbiCompany.addDrink(<span class="string">"雪碧"</span>);</div><div class="line">   </div><div class="line">System.out.println(<span class="string">"SBI店: "</span> + sbiCompany);</div></pre></td></tr></table></figure>
+<p>这时, SBI店的饮品列表是:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">SBI店: &#123;名字: &apos;创业街分店&apos;, 饮品: [橙汁, 可乐, 酸梅汤, 雪碧]&apos;&#125;</div></pre></td></tr></table></figure>
+<p>看着很好, Perfect.<br>然而, 这时, 表妹打来电话了, 说我光谷店这边的菜单系统怎么无端多出一款雪碧的饮料啊, 我这没有提供的啊, 怎么给客户啊.</p>
+<p>小光立马打印了下光谷店的信息(基于上面的修改):</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line">// 在光谷店的基础上clone SBI店</div><div class="line">Company sbiCompany = ovCompany.clone();</div><div class="line">sbiCompany.setName(&quot;创业街分店&quot;);</div><div class="line"></div><div class="line">// 给SBI店新增一款饮品</div><div class="line">sbiCompany.addDrink(&quot;雪碧&quot;);</div><div class="line"></div><div class="line">System.out.println(&quot;SBI店: &quot; + sbiCompany);</div><div class="line"></div><div class="line">// 打印下光谷店ovCompany</div><div class="line">System.out.println(&quot;光谷店: &quot; + ovCompany);</div></pre></td></tr></table></figure>
+<p>果然, 光谷店新增了”雪碧”, </p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">SBI店: &#123;名字: <span class="string">'创业街分店'</span>, 饮品: [橙汁, 可乐, 酸梅汤, 雪碧]<span class="string">'&#125;</span></div><div class="line"><span class="string">光谷店: &#123;名字: '</span>光谷软件园分店<span class="string">', 饮品: [橙汁, 可乐, 酸梅汤, 雪碧]'</span>&#125;</div></pre></td></tr></table></figure>
+<p>这样当然是不好的咯, 小光只想复制光谷店的基本流程架构过来, 后续两个店的某些方面还是要分开发展的, 可不能一改俱改啊.</p>
+<h2 id="改进之路"><a href="#改进之路" class="headerlink" title="改进之路"></a>改进之路</h2><p>小光又开始了clone的改进之路. 先回头看下, 小光之前是怎么clone的:</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line"><span class="meta">@Override</span></div><div class="line"><span class="function"><span class="keyword">protected</span> Company <span class="title">clone</span><span class="params">()</span> </span>&#123;</div><div class="line"></div><div class="line">   Company company = <span class="keyword">null</span>;</div><div class="line">   <span class="keyword">try</span> &#123;</div><div class="line">       company = (Company) <span class="keyword">super</span>.clone();</div><div class="line">   &#125; <span class="keyword">catch</span> (CloneNotSupportedException e) &#123;</div><div class="line">       e.printStackTrace();</div><div class="line">   &#125;</div><div class="line">   <span class="keyword">return</span> company;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>我们注意到, 这个clone只是clone了Company, 并没有clone Company内部的引用(ArrayList<string> drinks). <strong>也就是说clone出来的对象和之前的对象会使用同一份drinks列表</strong><sup>注1</sup>, 这显然不是小光愿意看到的.</string></p>
+<p>小光也很快想到了解决方案, 改造了clone过程:</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div></pre></td><td class="code"><pre><div class="line"><span class="meta">@Override</span></div><div class="line"><span class="function"><span class="keyword">protected</span> Company <span class="title">clone</span><span class="params">()</span> </span>&#123;</div><div class="line"></div><div class="line">   Company company = <span class="keyword">null</span>;</div><div class="line">   <span class="keyword">try</span> &#123;</div><div class="line">       company = (Company) <span class="keyword">super</span>.clone();</div><div class="line"></div><div class="line">       <span class="comment">// 对于对象的属性也加以clone</span></div><div class="line">       company.drinks = (ArrayList&lt;String&gt;) <span class="keyword">this</span>.drinks.clone();</div><div class="line">   &#125; <span class="keyword">catch</span> (CloneNotSupportedException e) &#123;</div><div class="line">       e.printStackTrace();</div><div class="line">   &#125;</div><div class="line">   <span class="keyword">return</span> company;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p><strong>这次小光不仅clone了Company, 还clone了其属性值drinks</strong><sup>注2</sup>.</p>
+<p>让我们来看下小光的成果:</p>
+<p><strong>和之前同样的使用:</strong></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div></pre></td><td class="code"><pre><div class="line"><span class="comment">// new 光谷店</span></div><div class="line">Company ovCompany = <span class="keyword">new</span> OpticalValleyCompany();</div><div class="line">System.out.println(<span class="string">"光谷店: "</span> + ovCompany);</div><div class="line"></div><div class="line"><span class="comment">// 在光谷店的基础上clone SBI店</span></div><div class="line">Company sbiCompany = ovCompany.clone();</div><div class="line">sbiCompany.setName(<span class="string">"创业街分店"</span>);</div><div class="line"></div><div class="line"><span class="comment">// 给SBI店新增一款饮品</span></div><div class="line">sbiCompany.addDrink(<span class="string">"雪碧"</span>);</div><div class="line"></div><div class="line">System.out.println(<span class="string">"SBI店: "</span> + sbiCompany);</div><div class="line">System.out.println(<span class="string">"光谷店: "</span> + ovCompany);</div></pre></td></tr></table></figure>
+<p><strong>改造后的结果:</strong></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">光谷店: &#123;名字: <span class="string">'光谷软件园分店'</span>, 饮品: [橙汁, 可乐, 酸梅汤]<span class="string">'&#125;</span></div><div class="line"><span class="string">SBI店: &#123;名字: '</span>创业街分店<span class="string">', 饮品: [橙汁, 可乐, 酸梅汤, 雪碧]'</span>&#125;</div><div class="line">光谷店: &#123;名字: <span class="string">'光谷软件园分店'</span>, 饮品: [橙汁, 可乐, 酸梅汤]<span class="string">'&#125;</span></div></pre></td></tr></table></figure>
+<p>我们看到, 光谷店不会因为SBI店的改变而改变了.<br>小光热干面SBI店试运营正式开始, 欢迎大家光临咯…</p>
+<h2 id="故事之后"><a href="#故事之后" class="headerlink" title="故事之后"></a>故事之后</h2><p>我们在故事中多次提到了clone, 原型. 没错, 这个就是原型模式. 照例, 我们来梳理下类之间的关系, 相对简单:<br><img src="/img/14809331313429.jpg" alt=""></p>
+<blockquote>
+<p>原型模式:<br>通过原型对象实例, 使用clone的方式来快速创建一个新的(与原型对象实例一致的)对象实例.</p>
+</blockquote>
+<p><strong>由于原型模式较为通用, 且相对简单, Java中的最基类Object已经提供了clone方法, 来方便我们复制出新的对象实例.</strong></p>
+<h2 id="扩展阅读一"><a href="#扩展阅读一" class="headerlink" title="扩展阅读一"></a>扩展阅读一</h2><p>上述故事中, 我们在某些加了<sup>注1</sup>, <sup>注2</sup>的标签. 这就是我们今天的扩展阅读一要注意的内容: </p>
+<blockquote>
+<p><sup>注1</sup> 浅拷贝<br><sup>注2</sup> 深拷贝</p>
+</blockquote>
+<p>其实, 跟随故事我们也大致了解了浅拷贝和深拷贝的区别:</p>
+<ul>
+<li><strong>浅拷贝</strong>对于要克隆的对象, 会复制其基本数据类型(包括String)的属性(本例中的name属性)的<strong>值</strong>给新的对象. 而对于非基本数据类型的属性(本例中的drinks), 仅仅复制一份<strong>引用</strong>给新产生的对象, 即新产生的对象和原始对象中的非基本数据类型的属性都指向的是同一个对象.</li>
+<li><strong>深拷贝</strong>    对于要克隆的对象, clone出的非基本数据类型的属性(要求属性也实现了Cloneable接口, ArrayList就已经自带实现了)不再是和原对象指向同一个对象了, 而是一个新的clone出来的属性对象实例.</li>
+</ul>
+<p>如下:</p>
+<p><img src="/img/14809352540535.jpg" alt=""></p>
+<h2 id="扩展阅读二"><a href="#扩展阅读二" class="headerlink" title="扩展阅读二"></a>扩展阅读二</h2><p>如果我们查看java源码, 可以发现, 我们调用的clone()方法是Object对象的. 而不是Cloneable接口的. 那么我们为什么要实现Cloneable接口呢? 不识闲Cloneable接口可否调用Object的clone()方法呢?</p>
+<p>我们先来看下Cloneable接口的源码:</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">interface</span> <span class="title">Cloneable</span> </span>&#123;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>发现其中并没有任何方法. 幸运的是Java源码的java doc注释足够清晰:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div></pre></td><td class="code"><pre><div class="line">/**</div><div class="line"> * A class implements the &lt;code&gt;Cloneable&lt;/code&gt; interface to</div><div class="line"> * indicate to the &#123;@link java.lang.Object#clone()&#125; method that it</div><div class="line"> * is legal for that method to make a</div><div class="line"> * field-for-field copy of instances of that class.</div><div class="line"> * &lt;p&gt;</div><div class="line"> * Invoking Object&apos;s clone method on an instance that does not implement the</div><div class="line"> * &lt;code&gt;Cloneable&lt;/code&gt; interface results in the exception</div><div class="line"> * &lt;code&gt;CloneNotSupportedException&lt;/code&gt; being thrown.</div><div class="line"> * &lt;p&gt;</div><div class="line"> * By convention, classes that implement this interface should override</div><div class="line"> * &lt;tt&gt;Object.clone&lt;/tt&gt; (which is protected) with a public method.</div><div class="line"> * See &#123;@link java.lang.Object#clone()&#125; for details on overriding this</div><div class="line"> * method.</div><div class="line"> * &lt;p&gt;</div><div class="line"> * Note that this interface does &lt;i&gt;not&lt;/i&gt; contain the &lt;tt&gt;clone&lt;/tt&gt; method.</div><div class="line"> * Therefore, it is not possible to clone an object merely by virtue of the</div><div class="line"> * fact that it implements this interface.  Even if the clone method is invoked</div><div class="line"> * reflectively, there is no guarantee that it will succeed.</div><div class="line"> */</div></pre></td></tr></table></figure>
+<p>大体我们可以理解几点:</p>
+<ol>
+<li>Cloneable可以看着是一个标识, 实现了改接口的类才能合法地调用其从Object类中继承而来的clone()方法.</li>
+<li>如果没有实现Cloneable接口而调用clone()方法, 会触发CloneNotSupportedException异常.</li>
+<li>实现Cloneable接口的类应当重写Object的clone()方法.</li>
+</ol>
+<h2 id="扩展阅读三"><a href="#扩展阅读三" class="headerlink" title="扩展阅读三"></a>扩展阅读三</h2><p>原型模式也是一种创建型的设计模式, 一般会结合工厂模式一起使用, 来构建对象. 本例中就不扩展了.</p>
+<hr>
+<p>好了, 小光热干面创业街分店开张啦, 吃热干面赠雪碧了, 欢迎大家光临, 欢迎大家关注.</p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/设计模式/" rel="tag"># 设计模式</a>
+          
+            <a href="/tags/架构/" rel="tag"># 架构</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2016/11/28/design-pattern/proxy/" rel="next" title="大龙帮忙去谈判---代理模式">
+                <i class="fa fa-chevron-left"></i> 大龙帮忙去谈判---代理模式
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2016/12/15/design-pattern/abstract_factory/" rel="prev" title="是时候弄一套开分店的标准了---抽象工厂">
+                是时候弄一套开分店的标准了---抽象工厂 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+        <div class="ds-share flat" data-thread-key="2016/12/04/design-pattern/prototype/"
+     data-title="创业街分店开张啦---原型模式"
+     data-content=""
+     data-url="http://blog.lmj.wiki/2016/12/04/design-pattern/prototype/">
+  <div class="ds-share-inline">
+    <ul  class="ds-share-icons-16">
+
+      <li data-toggle="ds-share-icons-more"><a class="ds-more" href="javascript:void(0);">分享到：</a></li>
+      <li><a class="ds-weibo" href="javascript:void(0);" data-service="weibo">微博</a></li>
+      <li><a class="ds-qzone" href="javascript:void(0);" data-service="qzone">QQ空间</a></li>
+      <li><a class="ds-qqt" href="javascript:void(0);" data-service="qqt">腾讯微博</a></li>
+      <li><a class="ds-wechat" href="javascript:void(0);" data-service="wechat">微信</a></li>
+
+    </ul>
+    <div class="ds-share-icons-more">
+    </div>
+  </div>
+</div>
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+      <div class="ds-thread" data-thread-key="2016/12/04/design-pattern/prototype/"
+           data-title="创业街分店开张啦---原型模式" data-url="http://blog.lmj.wiki/2016/12/04/design-pattern/prototype/">
+      </div>
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          
+            <img class="site-author-image" itemprop="image"
+              src="/img/avatar.jpeg"
+              alt="anly_jun" />
+          
+            <p class="site-author-name" itemprop="name">anly_jun</p>
+            <p class="site-description motion-element" itemprop="description">Android, iOS, Mobile Dev/Test, Web, Python</p>
+        </div>
+
+        <nav class="site-state motion-element">
+
+          
+            <div class="site-state-item site-state-posts">
+            
+              <a href="/archives">
+            
+                <span class="site-state-item-count">55</span>
+                <span class="site-state-item-name">日志</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-categories">
+              <a href="/categories/index.html">
+                <span class="site-state-item-count">6</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-tags">
+              <a href="/tags/index.html">
+                <span class="site-state-item-count">20</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+          <div class="feed-link motion-element">
+            <a href="/atom.xml" rel="alternate">
+              <i class="fa fa-rss"></i>
+              RSS
+            </a>
+          </div>
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#前情提要"><span class="nav-number">1.</span> <span class="nav-text">前情提要</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#新店建设"><span class="nav-number">2.</span> <span class="nav-text">新店建设</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#试运营"><span class="nav-number">3.</span> <span class="nav-text">试运营</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#改进之路"><span class="nav-number">4.</span> <span class="nav-text">改进之路</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#故事之后"><span class="nav-number">5.</span> <span class="nav-text">故事之后</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#扩展阅读一"><span class="nav-number">6.</span> <span class="nav-text">扩展阅读一</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#扩展阅读二"><span class="nav-number">7.</span> <span class="nav-text">扩展阅读二</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#扩展阅读三"><span class="nav-number">8.</span> <span class="nav-text">扩展阅读三</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2017</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">anly_jun</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+  <span class="post-meta-divider">|</span>
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">NexT.Gemini</a> v5.1.2</div>
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.2"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.2"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.2"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.2"></script>
+
+
+
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.2"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.2"></script>
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.2"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.2"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.2"></script>
+
+
+
+  
+
+  
+    
+  
+
+  <script type="text/javascript">
+    var duoshuoQuery = {short_name:"anlyjun"};
+    (function() {
+      var ds = document.createElement('script');
+      ds.type = 'text/javascript';ds.async = true;
+      ds.id = 'duoshuo-script';
+      ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+      ds.charset = 'UTF-8';
+      (document.getElementsByTagName('head')[0]
+      || document.getElementsByTagName('body')[0]).appendChild(ds);
+    })();
+  </script>
+
+  
+    
+    
+    <script src="/lib/ua-parser-js/dist/ua-parser.min.js?v=0.7.9"></script>
+    <script src="/js/src/hook-duoshuo.js"></script>
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

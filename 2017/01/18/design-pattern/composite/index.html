@@ -1,0 +1,883 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next gemini use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.2" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="设计模式,架构," />
+
+
+
+
+
+  <link rel="alternate" href="/atom.xml" title="ANLY'S BLOG" type="application/atom+xml" />
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.1.2" />
+
+
+
+
+
+
+<meta name="description" content="题外话本来是周更的频率, 因为真实的”小光”真实地逃离了北京, 回了武汉, 回了老家, 处理了一些私人事务. 也就有快一个月时间没有更新了, 抱歉. 年终总结也都没有时间写, 抽空写这么一篇, 提前祝大家新年快乐, 过年回家路上平安顺利. 前情提要上集讲到, 小光统一了各个分店的制作热干面的流程, 并且引入模板方法在不改变热干面的制作流程基础上可以定制其中某些步骤. 通过这些措施, 小光热干面的品">
+<meta name="keywords" content="设计模式,架构">
+<meta property="og:type" content="article">
+<meta property="og:title" content="梳理公司的组织架构---组合模式">
+<meta property="og:url" content="http://blog.lmj.wiki/2017/01/18/design-pattern/composite/index.html">
+<meta property="og:site_name" content="ANLY&#39;S BLOG">
+<meta property="og:description" content="题外话本来是周更的频率, 因为真实的”小光”真实地逃离了北京, 回了武汉, 回了老家, 处理了一些私人事务. 也就有快一个月时间没有更新了, 抱歉. 年终总结也都没有时间写, 抽空写这么一篇, 提前祝大家新年快乐, 过年回家路上平安顺利. 前情提要上集讲到, 小光统一了各个分店的制作热干面的流程, 并且引入模板方法在不改变热干面的制作流程基础上可以定制其中某些步骤. 通过这些措施, 小光热干面的品">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="http://blog.lmj.wiki/img/14844606967206.jpg">
+<meta property="og:image" content="http://blog.lmj.wiki/img/14846604388596.jpg">
+<meta property="og:image" content="http://blog.lmj.wiki/img/14847440201515.jpg">
+<meta property="og:image" content="http://blog.lmj.wiki/img/14847474198397.jpg">
+<meta property="og:updated_time" content="2017-09-12T15:16:05.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="梳理公司的组织架构---组合模式">
+<meta name="twitter:description" content="题外话本来是周更的频率, 因为真实的”小光”真实地逃离了北京, 回了武汉, 回了老家, 处理了一些私人事务. 也就有快一个月时间没有更新了, 抱歉. 年终总结也都没有时间写, 抽空写这么一篇, 提前祝大家新年快乐, 过年回家路上平安顺利. 前情提要上集讲到, 小光统一了各个分店的制作热干面的流程, 并且引入模板方法在不改变热干面的制作流程基础上可以定制其中某些步骤. 通过这些措施, 小光热干面的品">
+<meta name="twitter:image" content="http://blog.lmj.wiki/img/14844606967206.jpg">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Gemini',
+    version: '5.1.2',
+    sidebar: {"position":"right","display":"post","offset":12,"offset_float":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://blog.lmj.wiki/2017/01/18/design-pattern/composite/"/>
+
+
+
+
+
+  <title>梳理公司的组织架构---组合模式 | ANLY'S BLOG</title>
+  
+
+
+
+
+
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?3e4bf02bc6c59d846f194a8afc04ecfc";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-right page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">ANLY'S BLOG</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">看看书, 写写字; 捣鼓捣鼓小技术.</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            关于
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://blog.lmj.wiki/2017/01/18/design-pattern/composite/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="anly_jun">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/img/avatar.jpeg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="ANLY'S BLOG">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">梳理公司的组织架构---组合模式</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-01-18T22:01:00+08:00">
+                2017-01-18
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/设计模式/" itemprop="url" rel="index">
+                    <span itemprop="name">设计模式</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2017/01/18/design-pattern/composite/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count ds-thread-count" data-thread-key="2017/01/18/design-pattern/composite/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h2 id="题外话"><a href="#题外话" class="headerlink" title="题外话"></a>题外话</h2><p>本来是周更的频率, 因为真实的”小光”真实地逃离了北京, 回了武汉, 回了老家, 处理了一些私人事务. 也就有快一个月时间没有更新了, 抱歉.</p>
+<p>年终总结也都没有时间写, 抽空写这么一篇, 提前祝大家新年快乐, 过年回家路上平安顺利.</p>
+<h2 id="前情提要"><a href="#前情提要" class="headerlink" title="前情提要"></a>前情提要</h2><p><a href="http://blog.lmj.wiki/2016/12/22/design-pattern/template_method/">上集</a>讲到, 小光统一了各个分店的制作热干面的流程, 并且引入<strong>模板方法</strong>在不改变热干面的制作流程基础上可以定制其中某些步骤. 通过这些措施, 小光热干面的品牌性也是更加深入人心, 生意红红火火. </p>
+<p>此时的小光, 有了更多的时间去思考公司的前程, 他认为, 一个良好的有序的组织架构是公司发展的必要点. 而此时, 小光也有觉得是时候梳理下公司的组织架构了.</p>
+<a id="more"></a>
+<blockquote>
+<p>所有示例源码已经上传到Github, <a href="https://github.com/mingjunli/JavaDesignPatterns" target="_blank" rel="external">戳这里</a></p>
+</blockquote>
+<h2 id="组织架构"><a href="#组织架构" class="headerlink" title="组织架构"></a>组织架构</h2><p>小光参考了当前很多公司的一些架构方式, 根据分店, 职责简单梳理了下目前小光热干面的架构:<br><img src="/img/14844606967206.jpg" alt=""></p>
+<blockquote>
+<p>整个就是一个<strong>树形</strong>结构.</p>
+</blockquote>
+<ul>
+<li>小光热干面总部下面管理着各个分店, 也有其自己的部门.</li>
+<li>各个分店也有着自己的部门.</li>
+</ul>
+<h2 id="设计一套系统来表达这个组织架构"><a href="#设计一套系统来表达这个组织架构" class="headerlink" title="设计一套系统来表达这个组织架构"></a>设计一套系统来表达这个组织架构</h2><p>梳理完组织关系后, 小光觉得有必要设计一套系统来管理这个关系图, 以便后续能方便的查看和管理这个架构, 并能很清晰地讲解给新员工.</p>
+<h3 id="简单的开始"><a href="#简单的开始" class="headerlink" title="简单的开始"></a>简单的开始</h3><p>一开始, 小光并没有想太多, 按照不同的层级, 分别创建了总公司, 分店, 部门三个类:</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div><div class="line">64</div><div class="line">65</div><div class="line">66</div><div class="line">67</div><div class="line">68</div><div class="line">69</div><div class="line">70</div><div class="line">71</div><div class="line">72</div><div class="line">73</div><div class="line">74</div><div class="line">75</div><div class="line">76</div><div class="line">77</div><div class="line">78</div><div class="line">79</div><div class="line">80</div><div class="line">81</div><div class="line">82</div><div class="line">83</div><div class="line">84</div><div class="line">85</div><div class="line">86</div><div class="line">87</div><div class="line">88</div><div class="line">89</div><div class="line">90</div><div class="line">91</div><div class="line">92</div><div class="line">93</div><div class="line">94</div><div class="line">95</div><div class="line">96</div><div class="line">97</div><div class="line">98</div><div class="line">99</div><div class="line">100</div><div class="line">101</div><div class="line">102</div><div class="line">103</div><div class="line">104</div></pre></td><td class="code"><pre><div class="line"><span class="comment">// 部门</span></div><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Department</span> </span>&#123;</div><div class="line"></div><div class="line">    <span class="keyword">private</span> String name;</div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="title">Department</span><span class="params">(String name)</span> </span>&#123;</div><div class="line">        <span class="keyword">this</span>.name = name;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="meta">@Override</span></div><div class="line">    <span class="function"><span class="keyword">public</span> String <span class="title">toString</span><span class="params">()</span> </span>&#123;</div><div class="line">        <span class="keyword">return</span> <span class="string">"部门:"</span> + name;</div><div class="line">    &#125;</div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="comment">// 分店</span></div><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">BranchOffice</span> </span>&#123;</div><div class="line"></div><div class="line">    <span class="keyword">private</span> String name;</div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="title">BranchOffice</span><span class="params">(String name)</span> </span>&#123;</div><div class="line">        <span class="keyword">this</span>.name = name;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="keyword">private</span> List&lt;Department&gt; departments = <span class="keyword">new</span> ArrayList&lt;&gt;();</div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">add</span><span class="params">(Department sub)</span> </span>&#123;</div><div class="line">        departments.add(sub);</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="meta">@Override</span></div><div class="line">    <span class="function"><span class="keyword">public</span> String <span class="title">toString</span><span class="params">()</span> </span>&#123;</div><div class="line">        StringBuilder builder = <span class="keyword">new</span> StringBuilder(<span class="string">"分公司:"</span> + name);</div><div class="line"></div><div class="line">        <span class="keyword">for</span> (Department dept : departments) &#123;</div><div class="line">            builder.append(<span class="string">" - "</span> + dept.toString());</div><div class="line">        &#125;</div><div class="line"></div><div class="line">        <span class="keyword">return</span> builder.toString();</div><div class="line">    &#125;</div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="comment">// 总公司</span></div><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">HeadOffice</span> </span>&#123;</div><div class="line"></div><div class="line">    <span class="keyword">private</span> String name;</div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="title">HeadOffice</span><span class="params">(String name)</span> </span>&#123;</div><div class="line">        <span class="keyword">this</span>.name = name;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="keyword">private</span> List&lt;Department&gt; departments = <span class="keyword">new</span> ArrayList&lt;&gt;();</div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">add</span><span class="params">(Department sub)</span> </span>&#123;</div><div class="line">        departments.add(sub);</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="keyword">private</span> List&lt;BranchOffice&gt; branches = <span class="keyword">new</span> ArrayList&lt;&gt;();</div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">add</span><span class="params">(BranchOffice branchOffice)</span> </span>&#123;</div><div class="line">        branches.add(branchOffice);</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">print</span><span class="params">()</span> </span>&#123;</div><div class="line">        System.out.println(<span class="string">"总公司:"</span> + name);</div><div class="line">        <span class="keyword">for</span> (BranchOffice branch : branches) &#123;</div><div class="line">            System.out.println(<span class="string">" - "</span> + branch);</div><div class="line">        &#125;</div><div class="line"></div><div class="line">        <span class="keyword">for</span> (Department dept : departments) &#123;</div><div class="line">            System.out.println(<span class="string">" - "</span> + dept);</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line">&#125;</div><div class="line">``` </div><div class="line"></div><div class="line">利用这些层次的类来组成小光的组织架构:</div><div class="line"></div><div class="line">```java</div><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">XiaoGuang</span> </span>&#123;</div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</div><div class="line"></div><div class="line">        HeadOffice headOffice = <span class="keyword">new</span> HeadOffice(<span class="string">"小光热干面"</span>);</div><div class="line"></div><div class="line">        Department financeDept = <span class="keyword">new</span> Department(<span class="string">"财务部"</span>);</div><div class="line">        Department strategyDept = <span class="keyword">new</span> Department(<span class="string">"策划部"</span>);</div><div class="line"></div><div class="line">        BranchOffice ov = <span class="keyword">new</span> BranchOffice(<span class="string">"光谷分店"</span>);</div><div class="line">        ov.add(financeDept);</div><div class="line">        ov.add(strategyDept);</div><div class="line"></div><div class="line">        BranchOffice huashan = <span class="keyword">new</span> BranchOffice(<span class="string">"花山分店"</span>);</div><div class="line">        huashan.add(financeDept);</div><div class="line">        huashan.add(strategyDept);</div><div class="line"></div><div class="line">        headOffice.add(financeDept);</div><div class="line">        headOffice.add(strategyDept);</div><div class="line">        headOffice.add(ov);</div><div class="line">        headOffice.add(huashan);</div><div class="line"></div><div class="line">        headOffice.print();</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>结果如下, 达到要求:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">总公司:小光热干面</div><div class="line"> - 分公司:光谷分店 - 部门:财务部 - 部门:策划部</div><div class="line"> - 分公司:花山分店 - 部门:财务部 - 部门:策划部</div><div class="line"> - 部门:财务部</div><div class="line"> - 部门:策划部</div></pre></td></tr></table></figure>
+<h3 id="小光的思考"><a href="#小光的思考" class="headerlink" title="小光的思考"></a>小光的思考</h3><p>看着这新鲜出炉的架构程序, 小光总觉得哪儿不对劲儿. 毕竟小光是历经了北上广各种类型公司的人才啊, 回想起上班敲代码的日子, 小光想起了哪儿不妥了. 公司总会发展, 发展过程中总会有一些战略调整, 从而导致公司部门的各种变化. </p>
+<p>目前小光设计的组织架构是三层架构, 但是随着公司的发展壮大, 很有可能层级会变得更多. 比如说, 总部的采购部壮大了, 可能会增加下一级的食材采购部和设备采购部. 甚至可能现在的层级还会随着公司的战略调整而升降. 例如, 如果分店开到别的城市了, 可能会在总部和分店之间插入一层”子公司”来分别管理各地的分店. 如下:<br><img src="/img/14846604388596.jpg" alt=""></p>
+<p>那么就出现了一个我们一直在强调的问题: 有些东西可能会一直有变化, 而我们从产品角度肯定会想要拥抱变化, 然而代码层面上我们又不想修改代码(修改原有代码意味着还有对原有逻辑负责).</p>
+<p>那应该怎么办呢? 有没有更好的方式来表达这种树形的组织架构关系呢? 以便能够很容易地扩展层次呢?</p>
+<p>小光又回想起了自己的码农时代, 回想当年这种问题的解决方案:</p>
+<blockquote>
+<p>既然是因为变化, 扩展而引起的问题, 我们最重要是要先找出系统中<strong>可变</strong>和<strong>不可变</strong>的部分, 封装不可变(使其修改关闭), 拥抱可变(使其扩展开放). </p>
+</blockquote>
+<h3 id="小光的解决之道"><a href="#小光的解决之道" class="headerlink" title="小光的解决之道"></a>小光的解决之道</h3><p>那么具体到这个组织系统架构的问题, 又该怎么做呢?</p>
+<p>小光可不想每增加一个层级都要重新为其增加一个类, 然后改变原有系统. 特别是有些情况下, 曾加的类(子公司)中可能会包含分店和自己的部门. 随着类别的增加, 每次增加一个层级将会越来越难.</p>
+<p>小光想到着, 突然想到:</p>
+<blockquote>
+<p>每个部门/分店/子公司乃至总公司不都是部门的集合吗?<br>部门可能有下属部门, 可能没有<br>分店下有部门<br>子公司下有分店, 可能还有自己的部门<br>总公司下有子公司, 分店, 自己的部门</p>
+</blockquote>
+<p>所以说, 所有实体(总公司/子公司/分店/部门)实际上都是由部门组成的. 这些实体也都可以看着是一个部门.</p>
+<p>想到做到:</p>
+<p><strong>首先定义出基础的部门:</strong></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Department</span> </span>&#123;</div><div class="line"></div><div class="line">    <span class="keyword">private</span> String name;</div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="title">Department</span><span class="params">(String name)</span> </span>&#123;</div><div class="line">        <span class="keyword">this</span>.name = name;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="keyword">private</span> List&lt;Department&gt; subDepartments = <span class="keyword">new</span> ArrayList&lt;&gt;();</div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">add</span><span class="params">(Department sub)</span> </span>&#123;</div><div class="line">        subDepartments.add(sub);</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="meta">@Override</span></div><div class="line">    <span class="function"><span class="keyword">public</span> String <span class="title">toString</span><span class="params">()</span> </span>&#123;</div><div class="line">        StringBuilder builder = <span class="keyword">new</span> StringBuilder(name);</div><div class="line"></div><div class="line">        <span class="keyword">for</span> (Department dept : subDepartments) &#123;</div><div class="line">            builder.append(<span class="string">"\n"</span>);</div><div class="line">            builder.append(<span class="string">" - "</span> + dept.toString());</div><div class="line">        &#125;</div><div class="line"></div><div class="line">        <span class="keyword">return</span> builder.toString();</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p><strong>来看下, 利用Department这一个类别怎么搭建组织:</strong></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">XiaoGuang</span> </span>&#123;</div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</div><div class="line"></div><div class="line">        Department financeDept = <span class="keyword">new</span> Department(<span class="string">"财务部"</span>);</div><div class="line">        Department strategyDept = <span class="keyword">new</span> Department(<span class="string">"策划部"</span>);</div><div class="line"></div><div class="line">        Department ovBranchOffice = <span class="keyword">new</span> Department(<span class="string">"光谷分店"</span>);</div><div class="line">        ovBranchOffice.add(financeDept);</div><div class="line">        ovBranchOffice.add(strategyDept);</div><div class="line"></div><div class="line">        Department huashanBranchOffice = <span class="keyword">new</span> Department(<span class="string">"花山分店"</span>);</div><div class="line">        huashanBranchOffice.add(financeDept);</div><div class="line">        huashanBranchOffice.add(strategyDept);</div><div class="line"></div><div class="line">        Department wuhanChildOffice = <span class="keyword">new</span> Department(<span class="string">"武汉子公司"</span>);</div><div class="line">        wuhanChildOffice.add(ovBranchOffice);</div><div class="line">        wuhanChildOffice.add(huashanBranchOffice);</div><div class="line"></div><div class="line">        Department changshaChildOffice = <span class="keyword">new</span> Department(<span class="string">"长沙子公司"</span>);</div><div class="line"></div><div class="line">        Department xiaoguang = <span class="keyword">new</span> Department(<span class="string">"小光热干面"</span>);</div><div class="line">        xiaoguang.add(wuhanChildOffice);</div><div class="line">        xiaoguang.add(changshaChildOffice);</div><div class="line">        xiaoguang.add(financeDept);</div><div class="line">        xiaoguang.add(strategyDept);</div><div class="line"></div><div class="line">        System.out.println(xiaoguang);</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p><strong>输出如下</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line">小光热干面</div><div class="line"> - 武汉子公司</div><div class="line">    - 光谷分店</div><div class="line">        - 财务部</div><div class="line">        - 策划部</div><div class="line">    - 花山分店</div><div class="line">        - 财务部</div><div class="line">        - 策划部</div><div class="line"> - 长沙子公司</div><div class="line"> - 财务部</div><div class="line"> - 策划部</div></pre></td></tr></table></figure>
+<blockquote>
+<p>输出稍有调整, 以显示直观的层级. 大家可以自行修改下代码, 来给department加入level属性, 以便输出更完美的结构.</p>
+</blockquote>
+<p>到此, 我们算是解决了组织架构的问题了, 以后不管是增加了什么层级, 我们都只需要使用Department来表示即可, 而无需增加一个类了.</p>
+<h2 id="故事之后"><a href="#故事之后" class="headerlink" title="故事之后"></a>故事之后</h2><p>照例, 我们来缕缕小光设计的这套系统的”类关系”:<br><img src="/img/14847440201515.jpg" alt=""></p>
+<p>结构相当简单, 实际上就是一个类, 其中关键的是: <strong>这个类中有一个list属性(subDepartments)包含的是一组该类.</strong> 有点递归的感觉.</p>
+<p>这个就是我们今天想说的 — <strong>组合模式</strong></p>
+<blockquote>
+<p>组合模式<br>又叫部分整体模式，通过组合的方式, 创建一个包含了<strong>一组自己的对象组(List<department>)</department></strong>的类(Department). 从而达成了用一个类来递归地表示一个整体.</p>
+<p>组合模式通常用来解决<strong>树形结构</strong>的表达问题, 例如本例中的组织结构.<br>所谓<strong>组合的方式</strong>, 就是创建一个包含了<em>一组自己的对象组</em>的类</p>
+</blockquote>
+<hr>
+<blockquote>
+<p>注: 我们这里实现的相对简单, 旨在说明模式的形式.<br>实际场景中, Department可能是一个抽象的, 例如有一个抽象方法来执行该部门的职责, 有不同的具体部门实现来实现其职责. 从而有不同的”Department实现”来组合另一个大的Department节点.</p>
+</blockquote>
+<h2 id="扩展阅读一"><a href="#扩展阅读一" class="headerlink" title="扩展阅读一"></a>扩展阅读一</h2><p>前面说到, 组合模式通常用来处理<strong>树形结构</strong>的表达问题. 而我们的用户界面实现通常就是一个UI元素的节点树. 例如HTML中的div中可能有button, 还会有其他div层级, 依次往下; Java SE中的界面实现AWT和Swing包也到处是组合模式的体现; Android中的View体系, View和ViewGroup, Layout层级树也都是组合模式的体现.</p>
+<p>在此我们以Android的View体系为例, 简单描述下.<br>众所周知, Android的界面实际上就是一颗大树, <a href="http://blog.lmj.wiki/2016/09/01/app-opti/app_opt_layout/">Hierarchy Viewer</a>中展示的就是一个树形结构. 我们来看下Android是怎么利用组合模式实现的.</p>
+<p>如下:</p>
+<p><img src="/img/14847474198397.jpg" alt=""></p>
+<ol>
+<li>ViewGroup就是相当于例子中的Department, 这里面比我们的例子复杂的是, ViewGroup是扩展自View的, View实际上我们可以理解为是<strong>叶子节点</strong>, 也就是最小的组成单元了, 不再有以下的层级了.</li>
+<li>ViewGroup中包含了一组View对象, 因为ViewGroup是View的子类, 故而我们也可以说ViewGroup中包含了一组ViewGroup和/或View. 进入形成了我们之前说的递归, 生成一个树形结构.</li>
+</ol>
+<p>关于View的体系, 在此不细述了.</p>
+<hr>
+<p>搭建好弹性可扩展的组织架构体系, 小光又开始将眼光转移到市场, 转移到业务了, 准备着新年大展拳脚~</p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/设计模式/" rel="tag"># 设计模式</a>
+          
+            <a href="/tags/架构/" rel="tag"># 架构</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2016/12/22/design-pattern/template_method/" rel="next" title="统一热干面的制作流程---模板方法">
+                <i class="fa fa-chevron-left"></i> 统一热干面的制作流程---模板方法
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2017/02/22/design-pattern/chain/" rel="prev" title="采购申请的处理流程---责任链模式">
+                采购申请的处理流程---责任链模式 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+        <div class="ds-share flat" data-thread-key="2017/01/18/design-pattern/composite/"
+     data-title="梳理公司的组织架构---组合模式"
+     data-content=""
+     data-url="http://blog.lmj.wiki/2017/01/18/design-pattern/composite/">
+  <div class="ds-share-inline">
+    <ul  class="ds-share-icons-16">
+
+      <li data-toggle="ds-share-icons-more"><a class="ds-more" href="javascript:void(0);">分享到：</a></li>
+      <li><a class="ds-weibo" href="javascript:void(0);" data-service="weibo">微博</a></li>
+      <li><a class="ds-qzone" href="javascript:void(0);" data-service="qzone">QQ空间</a></li>
+      <li><a class="ds-qqt" href="javascript:void(0);" data-service="qqt">腾讯微博</a></li>
+      <li><a class="ds-wechat" href="javascript:void(0);" data-service="wechat">微信</a></li>
+
+    </ul>
+    <div class="ds-share-icons-more">
+    </div>
+  </div>
+</div>
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+      <div class="ds-thread" data-thread-key="2017/01/18/design-pattern/composite/"
+           data-title="梳理公司的组织架构---组合模式" data-url="http://blog.lmj.wiki/2017/01/18/design-pattern/composite/">
+      </div>
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          
+            <img class="site-author-image" itemprop="image"
+              src="/img/avatar.jpeg"
+              alt="anly_jun" />
+          
+            <p class="site-author-name" itemprop="name">anly_jun</p>
+            <p class="site-description motion-element" itemprop="description">Android, iOS, Mobile Dev/Test, Web, Python</p>
+        </div>
+
+        <nav class="site-state motion-element">
+
+          
+            <div class="site-state-item site-state-posts">
+            
+              <a href="/archives">
+            
+                <span class="site-state-item-count">55</span>
+                <span class="site-state-item-name">日志</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-categories">
+              <a href="/categories/index.html">
+                <span class="site-state-item-count">6</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-tags">
+              <a href="/tags/index.html">
+                <span class="site-state-item-count">20</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+          <div class="feed-link motion-element">
+            <a href="/atom.xml" rel="alternate">
+              <i class="fa fa-rss"></i>
+              RSS
+            </a>
+          </div>
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#题外话"><span class="nav-number">1.</span> <span class="nav-text">题外话</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#前情提要"><span class="nav-number">2.</span> <span class="nav-text">前情提要</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#组织架构"><span class="nav-number">3.</span> <span class="nav-text">组织架构</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#设计一套系统来表达这个组织架构"><span class="nav-number">4.</span> <span class="nav-text">设计一套系统来表达这个组织架构</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#简单的开始"><span class="nav-number">4.1.</span> <span class="nav-text">简单的开始</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#小光的思考"><span class="nav-number">4.2.</span> <span class="nav-text">小光的思考</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#小光的解决之道"><span class="nav-number">4.3.</span> <span class="nav-text">小光的解决之道</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#故事之后"><span class="nav-number">5.</span> <span class="nav-text">故事之后</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#扩展阅读一"><span class="nav-number">6.</span> <span class="nav-text">扩展阅读一</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2017</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">anly_jun</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+  <span class="post-meta-divider">|</span>
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">NexT.Gemini</a> v5.1.2</div>
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.2"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.2"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.2"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.2"></script>
+
+
+
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.2"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.2"></script>
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.2"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.2"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.2"></script>
+
+
+
+  
+
+  
+    
+  
+
+  <script type="text/javascript">
+    var duoshuoQuery = {short_name:"anlyjun"};
+    (function() {
+      var ds = document.createElement('script');
+      ds.type = 'text/javascript';ds.async = true;
+      ds.id = 'duoshuo-script';
+      ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+      ds.charset = 'UTF-8';
+      (document.getElementsByTagName('head')[0]
+      || document.getElementsByTagName('body')[0]).appendChild(ds);
+    })();
+  </script>
+
+  
+    
+    
+    <script src="/lib/ua-parser-js/dist/ua-parser.min.js?v=0.7.9"></script>
+    <script src="/js/src/hook-duoshuo.js"></script>
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

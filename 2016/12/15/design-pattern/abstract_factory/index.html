@@ -1,0 +1,907 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next gemini use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.2" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="设计模式,架构," />
+
+
+
+
+
+  <link rel="alternate" href="/atom.xml" title="ANLY'S BLOG" type="application/atom+xml" />
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.1.2" />
+
+
+
+
+
+
+<meta name="description" content="前情提要上集讲到, 小光(利用原型模式)Copy了光谷店的模式, 成功开张了创业街分店.  现在两家分店都运营得不错, 小光闲暇之时, 又陷入了思考(思考是个好习惯). 琢磨着, 这次开分店, 我是完全clone了光谷店的那一套, 然后修改了一些个属性(例如分店名字什么的). 但是, 以后小光热干面的发展, 还会开出很多分店呢, 而且没家分店可能不仅仅是名字不一样, 还有一些诸如饮料杯上的地址什么">
+<meta name="keywords" content="设计模式,架构">
+<meta property="og:type" content="article">
+<meta property="og:title" content="是时候弄一套开分店的标准了---抽象工厂">
+<meta property="og:url" content="http://blog.lmj.wiki/2016/12/15/design-pattern/abstract_factory/index.html">
+<meta property="og:site_name" content="ANLY&#39;S BLOG">
+<meta property="og:description" content="前情提要上集讲到, 小光(利用原型模式)Copy了光谷店的模式, 成功开张了创业街分店.  现在两家分店都运营得不错, 小光闲暇之时, 又陷入了思考(思考是个好习惯). 琢磨着, 这次开分店, 我是完全clone了光谷店的那一套, 然后修改了一些个属性(例如分店名字什么的). 但是, 以后小光热干面的发展, 还会开出很多分店呢, 而且没家分店可能不仅仅是名字不一样, 还有一些诸如饮料杯上的地址什么">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="http://blog.lmj.wiki/img/14817124198215.jpg">
+<meta property="og:image" content="http://blog.lmj.wiki/img/14817907182444.jpg">
+<meta property="og:updated_time" content="2017-09-12T15:16:05.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="是时候弄一套开分店的标准了---抽象工厂">
+<meta name="twitter:description" content="前情提要上集讲到, 小光(利用原型模式)Copy了光谷店的模式, 成功开张了创业街分店.  现在两家分店都运营得不错, 小光闲暇之时, 又陷入了思考(思考是个好习惯). 琢磨着, 这次开分店, 我是完全clone了光谷店的那一套, 然后修改了一些个属性(例如分店名字什么的). 但是, 以后小光热干面的发展, 还会开出很多分店呢, 而且没家分店可能不仅仅是名字不一样, 还有一些诸如饮料杯上的地址什么">
+<meta name="twitter:image" content="http://blog.lmj.wiki/img/14817124198215.jpg">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Gemini',
+    version: '5.1.2',
+    sidebar: {"position":"right","display":"post","offset":12,"offset_float":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://blog.lmj.wiki/2016/12/15/design-pattern/abstract_factory/"/>
+
+
+
+
+
+  <title>是时候弄一套开分店的标准了---抽象工厂 | ANLY'S BLOG</title>
+  
+
+
+
+
+
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?3e4bf02bc6c59d846f194a8afc04ecfc";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-right page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">ANLY'S BLOG</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">看看书, 写写字; 捣鼓捣鼓小技术.</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            关于
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://blog.lmj.wiki/2016/12/15/design-pattern/abstract_factory/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="anly_jun">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/img/avatar.jpeg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="ANLY'S BLOG">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">是时候弄一套开分店的标准了---抽象工厂</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2016-12-15T16:27:00+08:00">
+                2016-12-15
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/设计模式/" itemprop="url" rel="index">
+                    <span itemprop="name">设计模式</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2016/12/15/design-pattern/abstract_factory/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count ds-thread-count" data-thread-key="2016/12/15/design-pattern/abstract_factory/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h2 id="前情提要"><a href="#前情提要" class="headerlink" title="前情提要"></a>前情提要</h2><p><a href="http://blog.lmj.wiki/2016/12/04/design-pattern/prototype/">上集</a>讲到, 小光(利用原型模式)Copy了光谷店的模式, 成功开张了创业街分店. </p>
+<p>现在两家分店都运营得不错, 小光闲暇之时, 又陷入了思考(<strong>思考是个好习惯</strong>). 琢磨着, 这次开分店, 我是完全clone了光谷店的那一套, 然后修改了一些个属性(例如分店名字什么的). 但是, 以后小光热干面的发展, 还会开出很多分店呢, 而且没家分店可能不仅仅是名字不一样, 还有一些诸如饮料杯上的地址什么的也会不一样, clone起来是很方便, 但是万一哪次忘了改属性了, 就麻烦了.</p>
+<p>想到着, 小光心想, 是时候制定一套开分店的标准流程/方式了.</p>
+<a id="more"></a>
+<blockquote>
+<p>所有示例源码已经上传到Github, <a href="https://github.com/mingjunli/JavaDesignPatterns" target="_blank" rel="external">戳这里</a></p>
+</blockquote>
+<h2 id="分店都有什么"><a href="#分店都有什么" class="headerlink" title="分店都有什么"></a>分店都有什么</h2><p>根据现有的经验, 小光很快总结出来了目前按照他的方式开一家热干面店基本包括的一系列东西:</p>
+<ol>
+<li>店铺</li>
+<li>收银台</li>
+<li>杯具餐具</li>
+<li>热干面流程</li>
+<li>饮料机套路</li>
+<li>活动策略</li>
+<li>…</li>
+</ol>
+<blockquote>
+<p>为便于区分讲解, 我们以前三个为例.</p>
+</blockquote>
+<h2 id="建立开分店的标准方式"><a href="#建立开分店的标准方式" class="headerlink" title="建立开分店的标准方式"></a>建立开分店的标准方式</h2><h3 id="制定每项东西标准"><a href="#制定每项东西标准" class="headerlink" title="制定每项东西标准"></a>制定每项东西标准</h3><p>本着良好的<strong>面向接口编程思维</strong>, 小光照例给这些东西制定了一些标准(接口).</p>
+<p><strong>门面:</strong></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">interface</span> <span class="title">Store</span> </span>&#123;</div><div class="line"></div><div class="line">    <span class="comment">// 地址</span></div><div class="line">    <span class="function">String <span class="title">getAddress</span><span class="params">()</span></span>;</div><div class="line"></div><div class="line">    <span class="comment">// 店铺名</span></div><div class="line">    <span class="function">String <span class="title">getName</span><span class="params">()</span></span>;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p><strong>收银台:</strong></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">interface</span> <span class="title">Checkstand</span> </span>&#123;</div><div class="line"></div><div class="line">    <span class="comment">// 银行账户</span></div><div class="line">    <span class="function">String <span class="title">getAccount</span><span class="params">()</span></span>;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">interface</span> <span class="title">Tableware</span> </span>&#123;</div><div class="line"></div><div class="line">    <span class="comment">// 标签</span></div><div class="line">    <span class="function">String <span class="title">getLabel</span><span class="params">()</span></span>;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<h3 id="统一配置生产"><a href="#统一配置生产" class="headerlink" title="统一配置生产"></a>统一配置生产</h3><p>接下来, 小光要做的就是想着统一下每个分店开店的标准, 既要避免开分店时别遗漏了什么, 也能根据不同分店的配置开出不一样的分店. (开闭原则)</p>
+<p><strong>开分店的标准如下:</strong></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">interface</span> <span class="title">CompanyFactory</span> </span>&#123;</div><div class="line"></div><div class="line">    <span class="function">Store <span class="title">createStore</span><span class="params">()</span></span>;</div><div class="line"></div><div class="line">    <span class="function">Checkstand <span class="title">createCheckstand</span><span class="params">()</span></span>;</div><div class="line"></div><div class="line">    <span class="function">Tableware <span class="title">createTableware</span><span class="params">()</span></span>;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<h2 id="按照这个方式开分店"><a href="#按照这个方式开分店" class="headerlink" title="按照这个方式开分店"></a>按照这个方式开分店</h2><p>好的, 让我们来试下按照这个标准套路来开出SBI创业街分店. </p>
+<p><strong>先实现创业街分店的Store, Checkstand和Tableware:</strong></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">SbiStore</span> <span class="keyword">implements</span> <span class="title">Store</span> </span>&#123;</div><div class="line"></div><div class="line">    <span class="meta">@Override</span></div><div class="line">    <span class="function"><span class="keyword">public</span> String <span class="title">getAddress</span><span class="params">()</span> </span>&#123;</div><div class="line">        <span class="keyword">return</span> <span class="string">"关山创业街"</span>;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="meta">@Override</span></div><div class="line">    <span class="function"><span class="keyword">public</span> String <span class="title">getName</span><span class="params">()</span> </span>&#123;</div><div class="line">        <span class="keyword">return</span> <span class="string">"SBI店"</span>;</div><div class="line">    &#125;</div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">SbiCheckStand</span> <span class="keyword">implements</span> <span class="title">Checkstand</span> </span>&#123;</div><div class="line"></div><div class="line">    <span class="meta">@Override</span></div><div class="line">    <span class="function"><span class="keyword">public</span> String <span class="title">getAccount</span><span class="params">()</span> </span>&#123;</div><div class="line">        <span class="keyword">return</span> <span class="string">"招商银行:620123131231233"</span>;</div><div class="line">    &#125;</div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">SbiTableware</span> <span class="keyword">implements</span> <span class="title">Tableware</span> </span>&#123;</div><div class="line">    <span class="meta">@Override</span></div><div class="line">    <span class="function"><span class="keyword">public</span> String <span class="title">getLabel</span><span class="params">()</span> </span>&#123;</div><div class="line">        <span class="keyword">return</span> <span class="string">"SBI"</span>;</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p><strong>然后, 实现一个SBI的专属工厂来生成这些东西:</strong></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">SbiCompanyFactory</span> <span class="keyword">implements</span> <span class="title">CompanyFactory</span> </span>&#123;</div><div class="line">    <span class="meta">@Override</span></div><div class="line">    <span class="function"><span class="keyword">public</span> Store <span class="title">createStore</span><span class="params">()</span> </span>&#123;</div><div class="line">        <span class="keyword">return</span> <span class="keyword">new</span> SbiStore();</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="meta">@Override</span></div><div class="line">    <span class="function"><span class="keyword">public</span> Checkstand <span class="title">createCheckstand</span><span class="params">()</span> </span>&#123;</div><div class="line">        <span class="keyword">return</span> <span class="keyword">new</span> SbiCheckStand();</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="meta">@Override</span></div><div class="line">    <span class="function"><span class="keyword">public</span> Tableware <span class="title">createTableware</span><span class="params">()</span> </span>&#123;</div><div class="line">        <span class="keyword">return</span> <span class="keyword">new</span> SbiTableware();</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p><strong>让我们利用SBI工厂生成的东西组建一个分店吧:</strong></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">XiaoGuang</span> </span>&#123;</div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</div><div class="line"></div><div class="line">        CompanyFactory factory = <span class="keyword">new</span> SbiCompanyFactory();</div><div class="line"></div><div class="line">        <span class="comment">// 来根据factory生产出来的东西构建一个分店:</span></div><div class="line">        Company sbiCompany = <span class="keyword">new</span> Company(factory.createStore(), factory.createCheckstand(), factory.createTableware());</div><div class="line"></div><div class="line">        System.out.println(sbiCompany);</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p><strong>结果:</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">分店&#123;地址:关山创业街, 名字:SBI店, 收银账户:招商银行:620123131231233, 杯具餐具标签:SBI&#125;</div></pre></td></tr></table></figure>
+<p>不负众望啊, 创建出来SBI店了.</p>
+<h2 id="以后我们就可以根据这种方式开分店了"><a href="#以后我们就可以根据这种方式开分店了" class="headerlink" title="以后我们就可以根据这种方式开分店了"></a>以后我们就可以根据这种方式开分店了</h2><p>例如, 如果想开一家花山软件新城店, 按照上面开创业街店的方式:</p>
+<ol>
+<li>实现花山店的店铺 HuashanStore.</li>
+<li>实现花山店的收银台 HuashanCheckStand.</li>
+<li>实现花山店的餐具 HuashanTableware.</li>
+<li>实现生产花山店的这些东西的工厂 HuashanCompanyFactory.</li>
+</ol>
+<blockquote>
+<p>代码就不一一贴了, 完整代码<a href="https://github.com/mingjunli/JavaDesignPatterns" target="_blank" rel="external">戳这里</a>.</p>
+</blockquote>
+<p>来看下怎么开出花山分店:</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line"><span class="comment">// 创建Huashan工厂</span></div><div class="line">factory = <span class="keyword">new</span> HuashanCompanyFactory();</div><div class="line"></div><div class="line"><span class="comment">// 根据factory生产出来的东西构建花山店:</span></div><div class="line">Company huashanCompany = <span class="keyword">new</span> Company(factory.createStore(), factory.createCheckstand(), factory.createTableware());</div><div class="line"></div><div class="line">System.out.println(huashanCompany);</div></pre></td></tr></table></figure>
+<p><strong>结果:</strong></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">分店&#123;地址:花山软件新城, 名字:花山店, 收银账户:建设银行:<span class="number">62610000000000</span>, 杯具餐具标签:HS&#125;</div></pre></td></tr></table></figure>
+<p>好的, 花山店创建完毕.</p>
+<h2 id="故事之后"><a href="#故事之后" class="headerlink" title="故事之后"></a>故事之后</h2><p>在这次建立<strong>创建分店</strong>的标准中, 小光一直想做就是: 确定分店的开设方式标准, 避免修改原有的分店产品, 方便扩展开出新的分店.</p>
+<p>这个实际上就是我们屡次提到的<strong>开闭原则</strong>的思想, 即对修改关闭(不修改原有的), 对扩展开放(方便扩展出新的产品/实例).</p>
+<p>惯例, 我们来梳理下类之间的关系:</p>
+<p><img src="/img/14817124198215.jpg" alt=""></p>
+<p>没错, 这个就是我们今天的主角 — <strong>抽象工厂模式</strong>.</p>
+<blockquote>
+<p>抽象工厂<br>提供一个创建<strong>一系列</strong>相关或互相依赖的对象的<strong>接口</strong>, 而无需指定它们的具体实现.</p>
+</blockquote>
+<p>在本例中这个<strong>接口</strong>就是CompanyFactory, 它创建了<strong>一系列相关的对象</strong>(Store, Checkstand, Tableware), 并且这些对象并非具体实现(也是接口). 具体的对象实例是由实现了CompanyFactory接口的HuashanCompanyFactory, SbiCompanyFactory来创建的.</p>
+<h2 id="扩展阅读一"><a href="#扩展阅读一" class="headerlink" title="扩展阅读一"></a>扩展阅读一</h2><p>到目前为止, 算上这个, 我们提到了三种<strong>工厂</strong>:</p>
+<ol>
+<li><a href="http://blog.lmj.wiki/2016/11/14/design-pattern/simple_factory/">小光热干面提供饮料了 — 简单工厂</a></li>
+<li><a href="http://blog.lmj.wiki/2016/11/16/design-pattern/factory_method/">光氏饮品升级了 — 工厂方法</a></li>
+<li><a href="#">是时候弄一套开分店的标准了 — 抽象工厂</a></li>
+</ol>
+<p>那么这三者有什么区别呢?</p>
+<p>我们首先来对比下三者的类图:<br><img src="/img/14817907182444.jpg" alt=""></p>
+<p><strong>简单工厂</strong><br>实际上我们可以理解为是一种编程习惯, 将类似对象的初始化放下一个地方, 便于管理.<br>它提供了一个工厂(表妹), 来根据不同的指令(drinkType)来生产不同的饮料产品(橙汁, 可乐, 酸梅汤).<br>相对简单, 适用于要创建类似(实现同一接口的)的产品, 且产品种类不多, 扩展可能性不大的情况. 当需要增加一中饮料时, 我们需要修改工厂(表妹)的实现, 增加drinkType的对应实现.</p>
+<p><strong>工厂方法</strong><br>顾名思义, 有一个工厂, 工厂(饮料机)里有那么一个方法(定义了一个创建对象的接口makeDrink), 可以生产产品(Drink). 由实现了这个工厂方法的类来决定具体生产出什么产品(可以是可乐, 橙汁, 奶茶等).</p>
+<p>相比于<strong>简单工厂</strong>, <strong>工厂方法</strong>有良好的扩展性, 当我们需要增加一种饮料时, 不需要去修改工厂, 只需扩展一个新的工厂, 实现其工厂方法, 提供新的饮料即可. </p>
+<p>这实际上就是典型的, 通过继承/实现, 来达成了对修改关闭, 对扩展开放的效果.</p>
+<p>另外, 从简单工厂到工厂方法, 我们也可以理解为是一次Switch Statements的重构.</p>
+<blockquote>
+<p>对于”Switch Statements的重构”, 有兴趣的同学可以参看&lt;&lt;重构–改善既有代码的设计&gt;&gt;一书的3.10节. 那是一本好书, 2010年的时候华为的一位技术经理推荐给我的, 感谢他.</p>
+<p>另外, 并不是我们以后遇到Switch就要想着改造, 遇到简单工厂就想着用工厂方法…还需根据实际情况取用合适的.</p>
+</blockquote>
+<p><strong>抽象工厂</strong><br>同样, 从名字中, 我们大致能了解, <strong>抽象工厂</strong>描述的一个抽象的工厂, 其可以生产<strong>一系列</strong>的相关的或是互相依赖的产品.</p>
+<p>抽象工厂和工厂方法有很多类似之处, 都是创建产品, 都是通过继承/实现, 来达成了对修改关闭, 对扩展开放的效果.</p>
+<p>然而, 抽象工厂相较于工厂方法, 它的重点, 是它解决的是一个产品族(相关的, 或是互相依赖的<strong>产品们</strong>)的创建问题, 而非仅仅是一类产品.</p>
+<p>以本故事来说, 工厂方法是用来创建<strong>一类</strong>产品, 通过他创建出来的都是饮料. 而抽象工厂是用来创建<strong>一系列</strong>产品, 包括店铺, 收银台, 餐具等, 这些产品是相关的, 都是一个分店所需要的.</p>
+<p>打个比方, 如果我有一个轮胎工厂, 我生产的东西都是轮胎, 只是规格不同, 我就可以使用工厂方法; 如果我是一个汽车工厂, 我生产汽车, 它需要轮胎, 车架, 发动机… 那么我就应用使用抽象工厂.</p>
+<h2 id="扩展阅读二"><a href="#扩展阅读二" class="headerlink" title="扩展阅读二"></a>扩展阅读二</h2><p><a href="http://blog.lmj.wiki/2016/12/04/design-pattern/prototype/">前文, 原型模式</a>我们讲到, 原型工厂, 会经常跟工厂一起用. 那么它一般会与哪种工厂一起用呢, 没错, 就是我们今天说的抽象工厂.</p>
+<p>为什么呢?<br>我们回过头来看下, 我们抽象工厂创建的过程, 是不是创建了很多对象啊. 是的, 抽象工厂如果生产的产品系列很多的话, 我们会发现我们会创建很多很多的对象(产品), 而这些对象有的时候是可能一样的, 有可能是很类似的.</p>
+<p>例如, 我们的分店工厂创建了收银台(Checkstand), 这个不同的分店的收银台可能都是一样的, 稍微有点不同可能是仅仅是账户不一样, 我们没有必要去重新创建一个.</p>
+<p>回想下, 原型模式的使用 — 使用clone的方式来快速创建一个新的(与原型对象实例一致的)对象实例. 这种方法可以避免我们屡次复杂的创建. </p>
+<blockquote>
+<p>我们当前的Checkstand创建可能相对简单, 想象下, 如果Checkstand足够复杂的时候, clone将会是很有用的.</p>
+</blockquote>
+<p>具体的实现, 大家可以私下去改造下<a href="https://github.com/mingjunli/JavaDesignPatterns/tree/master/src/com/anly/designpattern/abstractfactory" target="_blank" rel="external">本例代码</a>, 融合下原型模式, 体验下. </p>
+<hr>
+<p>OK, 创建出开分店的标准了, 小光想着, 以后开分店都不用我亲力亲为的…哈哈.</p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/设计模式/" rel="tag"># 设计模式</a>
+          
+            <a href="/tags/架构/" rel="tag"># 架构</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2016/12/04/design-pattern/prototype/" rel="next" title="创业街分店开张啦---原型模式">
+                <i class="fa fa-chevron-left"></i> 创业街分店开张啦---原型模式
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2016/12/20/design-pattern/singleton/" rel="prev" title="日报表格只有一份---单例模式">
+                日报表格只有一份---单例模式 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+        <div class="ds-share flat" data-thread-key="2016/12/15/design-pattern/abstract_factory/"
+     data-title="是时候弄一套开分店的标准了---抽象工厂"
+     data-content=""
+     data-url="http://blog.lmj.wiki/2016/12/15/design-pattern/abstract_factory/">
+  <div class="ds-share-inline">
+    <ul  class="ds-share-icons-16">
+
+      <li data-toggle="ds-share-icons-more"><a class="ds-more" href="javascript:void(0);">分享到：</a></li>
+      <li><a class="ds-weibo" href="javascript:void(0);" data-service="weibo">微博</a></li>
+      <li><a class="ds-qzone" href="javascript:void(0);" data-service="qzone">QQ空间</a></li>
+      <li><a class="ds-qqt" href="javascript:void(0);" data-service="qqt">腾讯微博</a></li>
+      <li><a class="ds-wechat" href="javascript:void(0);" data-service="wechat">微信</a></li>
+
+    </ul>
+    <div class="ds-share-icons-more">
+    </div>
+  </div>
+</div>
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+      <div class="ds-thread" data-thread-key="2016/12/15/design-pattern/abstract_factory/"
+           data-title="是时候弄一套开分店的标准了---抽象工厂" data-url="http://blog.lmj.wiki/2016/12/15/design-pattern/abstract_factory/">
+      </div>
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          
+            <img class="site-author-image" itemprop="image"
+              src="/img/avatar.jpeg"
+              alt="anly_jun" />
+          
+            <p class="site-author-name" itemprop="name">anly_jun</p>
+            <p class="site-description motion-element" itemprop="description">Android, iOS, Mobile Dev/Test, Web, Python</p>
+        </div>
+
+        <nav class="site-state motion-element">
+
+          
+            <div class="site-state-item site-state-posts">
+            
+              <a href="/archives">
+            
+                <span class="site-state-item-count">55</span>
+                <span class="site-state-item-name">日志</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-categories">
+              <a href="/categories/index.html">
+                <span class="site-state-item-count">6</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-tags">
+              <a href="/tags/index.html">
+                <span class="site-state-item-count">20</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+          <div class="feed-link motion-element">
+            <a href="/atom.xml" rel="alternate">
+              <i class="fa fa-rss"></i>
+              RSS
+            </a>
+          </div>
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#前情提要"><span class="nav-number">1.</span> <span class="nav-text">前情提要</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#分店都有什么"><span class="nav-number">2.</span> <span class="nav-text">分店都有什么</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#建立开分店的标准方式"><span class="nav-number">3.</span> <span class="nav-text">建立开分店的标准方式</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#制定每项东西标准"><span class="nav-number">3.1.</span> <span class="nav-text">制定每项东西标准</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#统一配置生产"><span class="nav-number">3.2.</span> <span class="nav-text">统一配置生产</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#按照这个方式开分店"><span class="nav-number">4.</span> <span class="nav-text">按照这个方式开分店</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#以后我们就可以根据这种方式开分店了"><span class="nav-number">5.</span> <span class="nav-text">以后我们就可以根据这种方式开分店了</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#故事之后"><span class="nav-number">6.</span> <span class="nav-text">故事之后</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#扩展阅读一"><span class="nav-number">7.</span> <span class="nav-text">扩展阅读一</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#扩展阅读二"><span class="nav-number">8.</span> <span class="nav-text">扩展阅读二</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2017</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">anly_jun</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+  <span class="post-meta-divider">|</span>
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">NexT.Gemini</a> v5.1.2</div>
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.2"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.2"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.2"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.2"></script>
+
+
+
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.2"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.2"></script>
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.2"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.2"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.2"></script>
+
+
+
+  
+
+  
+    
+  
+
+  <script type="text/javascript">
+    var duoshuoQuery = {short_name:"anlyjun"};
+    (function() {
+      var ds = document.createElement('script');
+      ds.type = 'text/javascript';ds.async = true;
+      ds.id = 'duoshuo-script';
+      ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+      ds.charset = 'UTF-8';
+      (document.getElementsByTagName('head')[0]
+      || document.getElementsByTagName('body')[0]).appendChild(ds);
+    })();
+  </script>
+
+  
+    
+    
+    <script src="/lib/ua-parser-js/dist/ua-parser.min.js?v=0.7.9"></script>
+    <script src="/js/src/hook-duoshuo.js"></script>
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

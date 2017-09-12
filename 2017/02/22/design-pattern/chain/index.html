@@ -1,0 +1,885 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next gemini use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.2" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="设计模式,架构," />
+
+
+
+
+
+  <link rel="alternate" href="/atom.xml" title="ANLY'S BLOG" type="application/atom+xml" />
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.1.2" />
+
+
+
+
+
+
+<meta name="description" content="前情提要上集讲到小光梳理了公司的组织架构, 利用组合模式建立起了一个可扩展变化的多层的组织架构体系. 更清晰地明确了公司各个层级, 各个部门的职责. 大家明确职责, 通力合作, 让”小光热干面”这个招牌越做越好. 然而, 小光毕竟是经历过几任大企业的人啊, 弄好组织结构只是小光企业管理的第一步, 接下来小光准备要梳理下工作流了.">
+<meta name="keywords" content="设计模式,架构">
+<meta property="og:type" content="article">
+<meta property="og:title" content="采购申请的处理流程---责任链模式">
+<meta property="og:url" content="http://blog.lmj.wiki/2017/02/22/design-pattern/chain/index.html">
+<meta property="og:site_name" content="ANLY&#39;S BLOG">
+<meta property="og:description" content="前情提要上集讲到小光梳理了公司的组织架构, 利用组合模式建立起了一个可扩展变化的多层的组织架构体系. 更清晰地明确了公司各个层级, 各个部门的职责. 大家明确职责, 通力合作, 让”小光热干面”这个招牌越做越好. 然而, 小光毕竟是经历过几任大企业的人啊, 弄好组织结构只是小光企业管理的第一步, 接下来小光准备要梳理下工作流了.">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="http://blog.lmj.wiki/img/14876869310492.jpg">
+<meta property="og:image" content="http://blog.lmj.wiki/img/14876904920203.jpg">
+<meta property="og:image" content="http://blog.lmj.wiki/img/14877777203327.jpg">
+<meta property="og:image" content="http://blog.lmj.wiki/img/okhttp.gif">
+<meta property="og:updated_time" content="2017-09-12T15:16:05.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="采购申请的处理流程---责任链模式">
+<meta name="twitter:description" content="前情提要上集讲到小光梳理了公司的组织架构, 利用组合模式建立起了一个可扩展变化的多层的组织架构体系. 更清晰地明确了公司各个层级, 各个部门的职责. 大家明确职责, 通力合作, 让”小光热干面”这个招牌越做越好. 然而, 小光毕竟是经历过几任大企业的人啊, 弄好组织结构只是小光企业管理的第一步, 接下来小光准备要梳理下工作流了.">
+<meta name="twitter:image" content="http://blog.lmj.wiki/img/14876869310492.jpg">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Gemini',
+    version: '5.1.2',
+    sidebar: {"position":"right","display":"post","offset":12,"offset_float":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://blog.lmj.wiki/2017/02/22/design-pattern/chain/"/>
+
+
+
+
+
+  <title>采购申请的处理流程---责任链模式 | ANLY'S BLOG</title>
+  
+
+
+
+
+
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?3e4bf02bc6c59d846f194a8afc04ecfc";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-right page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">ANLY'S BLOG</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">看看书, 写写字; 捣鼓捣鼓小技术.</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            关于
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://blog.lmj.wiki/2017/02/22/design-pattern/chain/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="anly_jun">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/img/avatar.jpeg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="ANLY'S BLOG">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">采购申请的处理流程---责任链模式</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-02-22T23:51:00+08:00">
+                2017-02-22
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/设计模式/" itemprop="url" rel="index">
+                    <span itemprop="name">设计模式</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2017/02/22/design-pattern/chain/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count ds-thread-count" data-thread-key="2017/02/22/design-pattern/chain/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h2 id="前情提要"><a href="#前情提要" class="headerlink" title="前情提要"></a>前情提要</h2><p><a href="http://blog.lmj.wiki/2017/01/18/design-pattern/composite/">上集</a>讲到小光梳理了公司的组织架构, 利用<strong>组合模式</strong>建立起了一个可扩展变化的多层的组织架构体系. 更清晰地明确了公司各个层级, 各个部门的职责. 大家明确职责, 通力合作, 让”小光热干面”这个招牌越做越好.</p>
+<p>然而, 小光毕竟是经历过几任大企业的人啊, 弄好组织结构只是小光企业管理的第一步, 接下来小光准备要梳理下工作流了. </p>
+<a id="more"></a>
+<blockquote>
+<p>所有示例源码已经上传到Github, <a href="https://github.com/mingjunli/JavaDesignPatterns" target="_blank" rel="external">戳这里</a></p>
+</blockquote>
+<h2 id="比如采购的审批流程"><a href="#比如采购的审批流程" class="headerlink" title="比如采购的审批流程"></a>比如采购的审批流程</h2><p>刚开始, 小光只有光谷一个店的时候, 很多时候采购某些东西也就没有什么流程, 大家一商量, 小光拍板, 就派人去采购了. 然而, 现在发展到好几个分店了, 小光肯定不能做到事事过问了, 故而会有一些放权, 但是某些情况(大件的采购)小光肯定还是想要到自己这里审批的.</p>
+<p>想到这些, 小光想着第一个需要建立的就是<strong>这个采购审批流程</strong>了.</p>
+<h2 id="做一个采购审批系统"><a href="#做一个采购审批系统" class="headerlink" title="做一个采购审批系统"></a>做一个采购审批系统</h2><h3 id="先分析问题"><a href="#先分析问题" class="headerlink" title="先分析问题"></a>先分析问题</h3><p>那么该怎么做呢?<br>正所谓问对了问题, 也就解决了一半. 小光一贯的做法, 是<strong>先想清楚问题是什么, 然后再针对性的出解决方案</strong>.</p>
+<p>那么, 再回头看看, 问题具体是什么呢?</p>
+<ol>
+<li>一个采购申请的审批流程系统</li>
+<li>不同物件采购的审批流程并不是一样的(有的可能会到小光那儿, 有的没有必要)</li>
+<li>同一个审批流程也可能会有变化(如上期<strong><a href="http://blog.lmj.wiki/2017/01/18/design-pattern/composite/">组织结构</a></strong>所言, 公司组织结构会不断调整, 肯定会影响到采购审批层级的变化).</li>
+</ol>
+<h3 id="相应的解决点"><a href="#相应的解决点" class="headerlink" title="相应的解决点"></a>相应的解决点</h3><p>问清楚了问题, 小光针对性的想了下方案的特性:</p>
+<ol>
+<li><p>首先肯定是一个流程化的东东, 也就是说类似流水线的处理审批单. 例如采购员提出采购单, 采购部经理审批盖章, 到总经理审批…<br> <img src="/img/14876869310492.jpg" alt=""></p>
+</li>
+<li><p>不只是一条这样的流水线, 不同类型审批单的流水线不一致, 故而应该是有几条流水线.</p>
+</li>
+<li>因为流水线上的操作员(由于公司层级的调整, 部门变化)会变化, 故而流水线的每个节点最好是可定制的.</li>
+</ol>
+<h3 id="解决之道"><a href="#解决之道" class="headerlink" title="解决之道"></a>解决之道</h3><p>了解了问题及其对应的特性, 小光开始了自己的采购审批系统设计.</p>
+<p>首先, 对于第一个特性, 小光心想, 这很简单, 实际上就是一个指向性的调用嘛, A调用B, B再调用C…如此这般即可.</p>
+<p>当然, 小光面向对象的编程思想已经深入脑髓, 他将采购员, 采购经理, 总经理都对象化了. 另外, 采购经理和总经理以及小光, 都视为是可以处理采购申请的人, 故而抽象出了一个RequestHandler:</p>
+<p><strong>RequestHandler(采购申请处理人)</strong></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">public</span> <span class="keyword">abstract</span> <span class="class"><span class="keyword">class</span> <span class="title">RequestHandler</span> </span>&#123;</div><div class="line"></div><div class="line">    <span class="comment">// 上一级的处理人员</span></div><div class="line">    <span class="keyword">private</span> RequestHandler mNext;</div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="title">RequestHandler</span><span class="params">(RequestHandler next)</span> </span>&#123;</div><div class="line">        <span class="keyword">this</span>.mNext = next;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="comment">/**</span></div><div class="line"><span class="comment">     * 处理采购需求</span></div><div class="line"><span class="comment">     * <span class="doctag">@param</span> req</span></div><div class="line"><span class="comment">     */</span></div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">handleRequest</span><span class="params">(Request req)</span> </span>&#123;</div><div class="line">        printHandling(req);</div><div class="line">        <span class="keyword">if</span> (mNext != <span class="keyword">null</span>) &#123;</div><div class="line">            mNext.handleRequest(req);</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">protected</span> <span class="keyword">void</span> <span class="title">printHandling</span><span class="params">(Request req)</span> </span>&#123;</div><div class="line">        System.out.println(<span class="keyword">this</span>.toString() + <span class="string">"审批了:"</span> + req);</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="meta">@Override</span></div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">abstract</span> String <span class="title">toString</span><span class="params">()</span></span>;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p><strong>采购经理:</strong></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">PurchasingManager</span> <span class="keyword">extends</span> <span class="title">RequestHandler</span> </span>&#123;</div><div class="line"></div><div class="line">    <span class="comment">/**</span></div><div class="line"><span class="comment">     * 构造时, 传入下一个处理人</span></div><div class="line"><span class="comment">     * <span class="doctag">@param</span> next 下一个处理人</span></div><div class="line"><span class="comment">     */</span></div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="title">PurchasingManager</span><span class="params">(RequestHandler next)</span> </span>&#123;</div><div class="line">        <span class="keyword">super</span>(next);</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="meta">@Override</span></div><div class="line">    <span class="function"><span class="keyword">public</span> String <span class="title">toString</span><span class="params">()</span> </span>&#123;</div><div class="line">        <span class="keyword">return</span> <span class="string">"采购部经理"</span>;</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p><strong>总经理和小光的实现与采购经理类似, 在此略过, 大家可以参看<a href="https://github.com/mingjunli/JavaDesignPatterns" target="_blank" rel="external">github上的源码</a>.</strong></p>
+<p>为了满足问题的第2点:</p>
+<blockquote>
+<p>不同物件采购的审批流程并不是一样的(有的可能会到小光那儿, 有的没有必要)</p>
+</blockquote>
+<p>还需要有一些定制的流程:</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">RequestFlow</span> </span>&#123;</div><div class="line"></div><div class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">int</span> TYPE_SMALL_REQUEST = <span class="number">1</span>;</div><div class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">int</span> TYPE_NORMAL_REQUEST = <span class="number">2</span>;</div><div class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">int</span> TYPE_BIG_REQUEST = <span class="number">3</span>;</div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> RequestHandler <span class="title">getRequestChain</span><span class="params">(<span class="keyword">int</span> type)</span> </span>&#123;</div><div class="line">        <span class="keyword">switch</span> (type) &#123;</div><div class="line">            <span class="comment">// 小物件, 只需采购经理审批</span></div><div class="line">            <span class="keyword">case</span> TYPE_SMALL_REQUEST:</div><div class="line">                <span class="keyword">return</span> <span class="keyword">new</span> PurchasingManager(<span class="keyword">null</span>);</div><div class="line"></div><div class="line">            <span class="comment">// 一般物件, 需要总经理审批</span></div><div class="line">            <span class="keyword">case</span> TYPE_NORMAL_REQUEST:</div><div class="line">                <span class="keyword">return</span> <span class="keyword">new</span> PurchasingManager(<span class="keyword">new</span> GeneralManager(<span class="keyword">null</span>));</div><div class="line"></div><div class="line">            <span class="comment">// 大件物品, 需要小光审批</span></div><div class="line">            <span class="keyword">case</span> TYPE_BIG_REQUEST:</div><div class="line">            <span class="keyword">default</span>:</div><div class="line">                <span class="keyword">return</span>  <span class="keyword">new</span> PurchasingManager(<span class="keyword">new</span> GeneralManager(<span class="keyword">new</span> XiaoGuang(<span class="keyword">null</span>)));</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>让我们看看采购员的请求方式:</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div></pre></td><td class="code"><pre><div class="line"><span class="comment">// 采购员</span></div><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Buyer</span> </span>&#123;</div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</div><div class="line"></div><div class="line">        <span class="comment">// 小需求</span></div><div class="line">        Request smallRequest = <span class="keyword">new</span> Request(<span class="string">"10箱饮料"</span>);</div><div class="line">        RequestFlow.getRequestChain(RequestFlow.TYPE_SMALL_REQUEST).handleRequest(smallRequest);</div><div class="line"></div><div class="line">        <span class="comment">// 一般需求</span></div><div class="line">        Request normalRequest = <span class="keyword">new</span> Request(<span class="string">"10套桌椅"</span>);</div><div class="line">        RequestFlow.getRequestChain(RequestFlow.TYPE_NORMAL_REQUEST).handleRequest(normalRequest);</div><div class="line"></div><div class="line">        <span class="comment">// 大需求</span></div><div class="line">        Request bigRequest = <span class="keyword">new</span> Request(<span class="string">"一套同步电子显示大屏"</span>);</div><div class="line">        RequestFlow.getRequestChain(RequestFlow.TYPE_BIG_REQUEST).handleRequest(bigRequest);</div><div class="line"></div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<hr>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line"><span class="comment">// 小需求 输出:</span></div><div class="line">采购经理审批了:<span class="number">10</span>箱饮料采购申请</div><div class="line"></div><div class="line"><span class="comment">// 一般需求  输出:</span></div><div class="line">采购经理审批了:<span class="number">10</span>套桌椅采购申请</div><div class="line">总经理审批了:<span class="number">10</span>套桌椅采购申请</div><div class="line"></div><div class="line"><span class="comment">// 大需求 输出:</span></div><div class="line">采购经理审批了:一套同步电子显示大屏采购申请</div><div class="line">总经理审批了:一套同步电子显示大屏采购申请</div><div class="line">小光审批了:一套同步电子显示大屏采购申请</div></pre></td></tr></table></figure>
+<blockquote>
+<p>可以看到, 小光目前设计的这套系统是可以业务审批流程的需求的. 我们这里RequestFlow实际上采用简单工厂的模式, 适用于流程数比较少的情况. 如果考虑到后续的组织架构的变化影响什么的, 这块是值得重构一下的.</p>
+</blockquote>
+<hr>
+<blockquote>
+<p>另外一个可优化的是, 我们实际上并不需要这么多的流水线, 可能只需要定制最长的那条, 然后在每个节点上根据传过来的审批请求来决定是否在当前节点就消化掉, 还是说还要传给上一级处理. 大家可以自己尝试修改下~~</p>
+</blockquote>
+<h2 id="故事之后"><a href="#故事之后" class="headerlink" title="故事之后"></a>故事之后</h2><p>故事情节相对简单, 然而确确实实这个就是<strong>责任链模式</strong>的一个应用. 照例, 我们上UML类图, 看下各个部分的关系(为了清晰展示链的关系, 类图中国舍弃RequestFlow这个工厂):<br><img src="/img/14876904920203.jpg" alt=""></p>
+<blockquote>
+<p>责任链模式<br>很多对象由每一个对象对其下家的引用(mNext)而连接起来形成一条链. 请求在这个链上传递, 直到链上的某一个对象决定处理此请求.<br>行为解耦的一种模式, 调用者并不确切知道也无需知道行为的执行者是谁.</p>
+</blockquote>
+<h2 id="扩展阅读一"><a href="#扩展阅读一" class="headerlink" title="扩展阅读一"></a>扩展阅读一</h2><p>开发Android的同学可能都用过大名鼎鼎的OkHttp了, OkHttp的核心其实就是其拦截器链(interceptor chain)的实现. 个人认为其最巧妙的也是这个拦截器链的实现了, 完美契合.</p>
+<p>让我们先简单缕下OkHttp的request流程:<br><img src="/img/14877777203327.jpg" alt=""></p>
+<p>简单分析CacheInterceptor(OkHttp的缓存实现):</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div></pre></td><td class="code"><pre><div class="line"><span class="meta">@Override</span> <span class="function"><span class="keyword">public</span> Response <span class="title">intercept</span><span class="params">(Chain chain)</span> <span class="keyword">throws</span> IOException </span>&#123;</div><div class="line">  ...</div><div class="line">  </div><div class="line">  <span class="comment">// 取缓存的Response</span></div><div class="line">  Response cacheResponse = strategy.cacheResponse;</div><div class="line"></div><div class="line">  <span class="comment">// 如果缓存满足要求, 直接返回. 相当于采购经理能够审批该采购请求, 无需上报给总经理.</span></div><div class="line">  <span class="keyword">if</span> (networkRequest == <span class="keyword">null</span>) &#123;</div><div class="line">    <span class="keyword">return</span> cacheResponse.newBuilder()</div><div class="line">        .cacheResponse(stripBody(cacheResponse))</div><div class="line">        .build();</div><div class="line">  &#125;</div><div class="line"></div><div class="line">  <span class="comment">// 如果不能, 则交给链路的下一个责任人来处理.</span></div><div class="line">  <span class="keyword">try</span> &#123;</div><div class="line">    networkResponse = chain.proceed(networkRequest);</div><div class="line">  &#125; <span class="keyword">finally</span> &#123;</div><div class="line">    ...</div><div class="line">  &#125;</div><div class="line">  </div><div class="line">  <span class="comment">// 对一个链点返回的response做处理, 看是否要缓存起来.</span></div><div class="line">  Response response = networkResponse.newBuilder()</div><div class="line">      .cacheResponse(stripBody(cacheResponse))</div><div class="line">      .networkResponse(stripBody(networkResponse))</div><div class="line">      .build();</div><div class="line"></div><div class="line">  <span class="keyword">if</span> (HttpHeaders.hasBody(response)) &#123;</div><div class="line">    CacheRequest cacheRequest = maybeCache(response, networkResponse.request(), cache);</div><div class="line">    response = cacheWritingResponse(cacheRequest, response);</div><div class="line">  &#125;</div><div class="line">  </div><div class="line">  <span class="keyword">return</span> response;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<blockquote>
+<p>大家可以看到, 只是一个典型的责任链模式的运用.<br>牛逼的是, OkHttp中的拦截器(interceptor)不仅仅是单向的一个链点, 而是一个双向的回路. 每个链路节点, 在request的过程中会做一次拦截处理, 诸如是否直接返回缓存, 加上统一的UserAgent等; 在response回来之后会再做一次拦截处理, 例如缓存, 根据response header做相关处理等. 如下:<br><img src="/img/okhttp.gif" alt="okhttp"></p>
+</blockquote>
+<p>强烈建议Android开发的同学可以深入研究下OkHttp的interceptor链这块的处理, 肯定是受益匪浅~</p>
+<hr>
+<p>搭建后初步的审批体系, 小光又开始畅想未来了~~</p>
+<hr>
+<blockquote>
+<p>最近工作真的是太忙了, 本系列延期了又延期, 抱歉.</p>
+</blockquote>
+<hr>
+<blockquote>
+<p>借自己的广告位, 广告一波<br><strong>大量高级Android坑位求自荐, 求推荐.</strong><br>关键词:<br><strong>alibaba.com这个App的开发</strong><br><strong>坐标杭州</strong><br><strong>3年及以上Android平台开发经验</strong><br>简历请发至anly_jun@163.com, 谢谢.</p>
+</blockquote>
+<hr>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/设计模式/" rel="tag"># 设计模式</a>
+          
+            <a href="/tags/架构/" rel="tag"># 架构</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2017/01/18/design-pattern/composite/" rel="next" title="梳理公司的组织架构---组合模式">
+                <i class="fa fa-chevron-left"></i> 梳理公司的组织架构---组合模式
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2017/09/07/others/内推职位/" rel="prev" title="阿里内推职位">
+                阿里内推职位 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+        <div class="ds-share flat" data-thread-key="2017/02/22/design-pattern/chain/"
+     data-title="采购申请的处理流程---责任链模式"
+     data-content=""
+     data-url="http://blog.lmj.wiki/2017/02/22/design-pattern/chain/">
+  <div class="ds-share-inline">
+    <ul  class="ds-share-icons-16">
+
+      <li data-toggle="ds-share-icons-more"><a class="ds-more" href="javascript:void(0);">分享到：</a></li>
+      <li><a class="ds-weibo" href="javascript:void(0);" data-service="weibo">微博</a></li>
+      <li><a class="ds-qzone" href="javascript:void(0);" data-service="qzone">QQ空间</a></li>
+      <li><a class="ds-qqt" href="javascript:void(0);" data-service="qqt">腾讯微博</a></li>
+      <li><a class="ds-wechat" href="javascript:void(0);" data-service="wechat">微信</a></li>
+
+    </ul>
+    <div class="ds-share-icons-more">
+    </div>
+  </div>
+</div>
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+      <div class="ds-thread" data-thread-key="2017/02/22/design-pattern/chain/"
+           data-title="采购申请的处理流程---责任链模式" data-url="http://blog.lmj.wiki/2017/02/22/design-pattern/chain/">
+      </div>
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          
+            <img class="site-author-image" itemprop="image"
+              src="/img/avatar.jpeg"
+              alt="anly_jun" />
+          
+            <p class="site-author-name" itemprop="name">anly_jun</p>
+            <p class="site-description motion-element" itemprop="description">Android, iOS, Mobile Dev/Test, Web, Python</p>
+        </div>
+
+        <nav class="site-state motion-element">
+
+          
+            <div class="site-state-item site-state-posts">
+            
+              <a href="/archives">
+            
+                <span class="site-state-item-count">55</span>
+                <span class="site-state-item-name">日志</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-categories">
+              <a href="/categories/index.html">
+                <span class="site-state-item-count">6</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-tags">
+              <a href="/tags/index.html">
+                <span class="site-state-item-count">20</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+          <div class="feed-link motion-element">
+            <a href="/atom.xml" rel="alternate">
+              <i class="fa fa-rss"></i>
+              RSS
+            </a>
+          </div>
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#前情提要"><span class="nav-number">1.</span> <span class="nav-text">前情提要</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#比如采购的审批流程"><span class="nav-number">2.</span> <span class="nav-text">比如采购的审批流程</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#做一个采购审批系统"><span class="nav-number">3.</span> <span class="nav-text">做一个采购审批系统</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#先分析问题"><span class="nav-number">3.1.</span> <span class="nav-text">先分析问题</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#相应的解决点"><span class="nav-number">3.2.</span> <span class="nav-text">相应的解决点</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#解决之道"><span class="nav-number">3.3.</span> <span class="nav-text">解决之道</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#故事之后"><span class="nav-number">4.</span> <span class="nav-text">故事之后</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#扩展阅读一"><span class="nav-number">5.</span> <span class="nav-text">扩展阅读一</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2017</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">anly_jun</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+  <span class="post-meta-divider">|</span>
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">NexT.Gemini</a> v5.1.2</div>
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.2"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.2"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.2"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.2"></script>
+
+
+
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.2"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.2"></script>
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.2"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.2"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.2"></script>
+
+
+
+  
+
+  
+    
+  
+
+  <script type="text/javascript">
+    var duoshuoQuery = {short_name:"anlyjun"};
+    (function() {
+      var ds = document.createElement('script');
+      ds.type = 'text/javascript';ds.async = true;
+      ds.id = 'duoshuo-script';
+      ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+      ds.charset = 'UTF-8';
+      (document.getElementsByTagName('head')[0]
+      || document.getElementsByTagName('body')[0]).appendChild(ds);
+    })();
+  </script>
+
+  
+    
+    
+    <script src="/lib/ua-parser-js/dist/ua-parser.min.js?v=0.7.9"></script>
+    <script src="/js/src/hook-duoshuo.js"></script>
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

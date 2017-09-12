@@ -1,0 +1,1038 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next gemini use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.2" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="Android,Tools," />
+
+
+
+
+
+  <link rel="alternate" href="/atom.xml" title="ANLY'S BLOG" type="application/atom+xml" />
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.1.2" />
+
+
+
+
+
+
+<meta name="description" content="引言本文基于Android官方文档, 以及个人工作的使用经验, 总结下adb的常用用法, 备忘.">
+<meta name="keywords" content="Android,Tools">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Android adb你真的会用吗?">
+<meta property="og:url" content="http://blog.lmj.wiki/2016/08/24/android/adb/index.html">
+<meta property="og:site_name" content="ANLY&#39;S BLOG">
+<meta property="og:description" content="引言本文基于Android官方文档, 以及个人工作的使用经验, 总结下adb的常用用法, 备忘.">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="http://upload-images.jianshu.io/upload_images/851999-88b639f225fe00c3.gif?imageMogr2/auto-orient/strip">
+<meta property="og:updated_time" content="2017-09-12T15:16:05.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Android adb你真的会用吗?">
+<meta name="twitter:description" content="引言本文基于Android官方文档, 以及个人工作的使用经验, 总结下adb的常用用法, 备忘.">
+<meta name="twitter:image" content="http://upload-images.jianshu.io/upload_images/851999-88b639f225fe00c3.gif?imageMogr2/auto-orient/strip">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Gemini',
+    version: '5.1.2',
+    sidebar: {"position":"right","display":"post","offset":12,"offset_float":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://blog.lmj.wiki/2016/08/24/android/adb/"/>
+
+
+
+
+
+  <title>Android adb你真的会用吗? | ANLY'S BLOG</title>
+  
+
+
+
+
+
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?3e4bf02bc6c59d846f194a8afc04ecfc";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-right page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">ANLY'S BLOG</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">看看书, 写写字; 捣鼓捣鼓小技术.</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            关于
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://blog.lmj.wiki/2016/08/24/android/adb/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="anly_jun">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/img/avatar.jpeg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="ANLY'S BLOG">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">Android adb你真的会用吗?</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2016-08-24T23:25:00+08:00">
+                2016-08-24
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Android/" itemprop="url" rel="index">
+                    <span itemprop="name">Android</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2016/08/24/android/adb/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count ds-thread-count" data-thread-key="2016/08/24/android/adb/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h2 id="引言"><a href="#引言" class="headerlink" title="引言"></a>引言</h2><p>本文基于Android官方文档, 以及个人工作的使用经验, 总结下adb的常用用法, 备忘.</p>
+<a id="more"></a>
+<h2 id="1-adb简介"><a href="#1-adb简介" class="headerlink" title="1, adb简介"></a>1, adb简介</h2><p>adb全名Andorid Debug Bridge. 顾名思义, 这是一个Debug工具.<br>然而, 为何称之为Bridge呢? 因为adb是一个标准的CS结构的工具, 是要连接开发电脑和你的调试手机的.包含如下几个部分:</p>
+<ul>
+<li>Client端, 运行在开发机器中, 即你的开发PC机. 用来发送adb命令.</li>
+<li>Deamon守护进程, 运行在调试设备中, 即的调试手机或模拟器. </li>
+<li>Server端, 作为一个后台进程运行在开发机器中, 即你的开发PC机. 用来管理PC中的Client端和手机的Deamon之间的通信.</li>
+</ul>
+<h2 id="2-常用用法"><a href="#2-常用用法" class="headerlink" title="2, 常用用法"></a>2, 常用用法</h2><h3 id="2-1-adb-devices"><a href="#2-1-adb-devices" class="headerlink" title="2.1 adb devices"></a>2.1 adb devices</h3><p>列举当前连接的调试设备</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line"><span class="meta">$</span> adb devices</div><div class="line">List of devices attached</div><div class="line">DU2SSE1467010378	device</div></pre></td></tr></table></figure>
+<h3 id="2-2-adb-logcat"><a href="#2-2-adb-logcat" class="headerlink" title="2.2 adb logcat"></a>2.2 adb logcat</h3><p>打印log信息</p>
+<table>
+<thead>
+<tr>
+<th>指令</th>
+<th>说明</th>
+<th>备注</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td> adb logcat</td>
+<td>打印log</td>
+<td>/</td>
+</tr>
+<tr>
+<td> adb logcat -c</td>
+<td>清除手机的log buffer</td>
+<td>有些手机权限控制, 不支持.</td>
+</tr>
+<tr>
+<td> adb logcat -b <buffer></buffer></td>
+<td>打印指定buffer的log信息</td>
+<td>buffer有: main(主log区,默认), events(事件相关的log), radio(射频, telephony相关的log)</td>
+</tr>
+<tr>
+<td> adb logcat -v <format></format></td>
+<td>格式化输出log</td>
+<td>常用的用adb logcat -v time显示时间</td>
+</tr>
+<tr>
+<td> adb logcat -f <filename></filename></td>
+<td>输出log到指定文件</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<h3 id="2-3-adb-install-uninstall"><a href="#2-3-adb-install-uninstall" class="headerlink" title="2.3 adb install/uninstall"></a>2.3 adb install/uninstall</h3><p>安装卸载apk</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line">// 安装apk时指定apk file路径</div><div class="line"><span class="meta">$</span> adb install ~/Downloads/mobileqq_android.apk</div><div class="line"><span class="meta">[100%</span>] /data/local/tmp/mobileqq_android.apk</div><div class="line">	pkg: /data/local/tmp/mobileqq_android.apk</div><div class="line">Success</div><div class="line"></div><div class="line">// 卸载apk时指定包名</div><div class="line"><span class="meta">$</span> adb uninstall com.tencent.mobileqq</div><div class="line">Success</div></pre></td></tr></table></figure>
+<h3 id="2-4-adb-pull-push"><a href="#2-4-adb-pull-push" class="headerlink" title="2.4 adb pull/push"></a>2.4 adb pull/push</h3><p>调试设备和开发PC之间拷贝文件.</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">// 拷贝本地文件到调试设备中</div><div class="line"><span class="meta">$</span> adb push ~/temp/GithubApp.trace /sdcard/</div><div class="line"><span class="meta">[100%</span>] /sdcard/GithubApp.trace</div><div class="line"></div><div class="line">// 从调试设备中拷贝文件到本地</div><div class="line"><span class="meta">$</span> adb pull /sdcard/GithubApp.trace ~/</div><div class="line"><span class="meta">[100%</span>] /sdcard/GithubApp.trace</div></pre></td></tr></table></figure>
+<h3 id="2-5-adb-start-kill-server"><a href="#2-5-adb-start-kill-server" class="headerlink" title="2.5 adb start/kill-server"></a>2.5 adb start/kill-server</h3><p>启动/杀死adb简介中提到的Server端进程.</p>
+<blockquote>
+<p>由于adb并不稳定, 有时候莫名的问题掉线时, 可以先kill-server, 然后start-server来确保Server进程启动. 往往可以解决问题.</p>
+</blockquote>
+<h3 id="2-5-adb-shell"><a href="#2-5-adb-shell" class="headerlink" title="2.5 adb shell"></a>2.5 adb shell</h3><p>进入调试设备的shell界面, 此时可以使用调试设备中的很多指令. 下文高阶用法中很多就是.</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"><span class="meta">$</span> adb shell</div><div class="line">shell@hwH60:/ $</div></pre></td></tr></table></figure>
+<h2 id="3-高阶用法"><a href="#3-高阶用法" class="headerlink" title="3, 高阶用法"></a>3, 高阶用法</h2><h3 id="3-1-adb-connect-disconnect"><a href="#3-1-adb-connect-disconnect" class="headerlink" title="3.1 adb connect/disconnect"></a>3.1 adb connect/disconnect</h3><p>通过wifi进行远程连接手机进行调试的.<br><a href="https://developer.android.com/studio/command-line/adb.html#wireless" target="_blank" rel="external">https://developer.android.com/studio/command-line/adb.html#wireless</a></p>
+<blockquote>
+<p>需先连上usb模式, 开启远程调试模式:<br>$ adb tcpip 5555</p>
+</blockquote>
+<h3 id="3-2-adb-shell-am"><a href="#3-2-adb-shell-am" class="headerlink" title="3.2 adb shell am"></a>3.2 adb shell am</h3><p>am即activity manager.<br>该命令用来执行一些系统动作, 例如启动指定activity, 结束进程, 发送广播, 更改屏幕属性等. 调试利器.</p>
+<table>
+<thead>
+<tr>
+<th>指令</th>
+<th>说明</th>
+<th>备注</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>start <intent></intent></td>
+<td>根据intent指向启动Activity</td>
+<td>Intent可以是显示的指向activity, 也可以是ACTION方式, 并且可以添加flag, data等参数信息.</td>
+</tr>
+<tr>
+<td>startservice <intent></intent></td>
+<td>启动Service</td>
+<td>可以添加flag, data等参数信息.</td>
+</tr>
+<tr>
+<td>broadcast <intent></intent></td>
+<td>发送广播</td>
+<td>可以添加flag, data等参数信息.</td>
+</tr>
+<tr>
+<td>monitor</td>
+<td>启动一个Crash和ANR的监听器</td>
+<td>如有Crash或ANR会在控制台输出相关信息.</td>
+</tr>
+<tr>
+<td>force-stop <package></package></td>
+<td>强制停止该包相关的一切</td>
+<td>传入package name.</td>
+</tr>
+<tr>
+<td>kill <package></package></td>
+<td>杀死该包相关的所有进程</td>
+<td>传入package name.</td>
+</tr>
+<tr>
+<td>kill-all</td>
+<td>杀死所有后台进程</td>
+<td></td>
+</tr>
+<tr>
+<td>display-size WxH</td>
+<td>改变显示的分辨率</td>
+<td>例如adb shell am display-size 1280x720, 手机可能不支持.</td>
+</tr>
+<tr>
+<td>display-density <dpi></dpi></td>
+<td>改变显示的density</td>
+<td>例如adb shell am display-density 320, 手机可能不支持.</td>
+</tr>
+</tbody>
+</table>
+<h3 id="3-3-adb-shell-pm"><a href="#3-3-adb-shell-pm" class="headerlink" title="3.3 adb shell pm"></a>3.3 adb shell pm</h3><p>pm即package manager.<br>用来执行package相关的操作, 例如安装卸载, 查询系统的安装包等.</p>
+<table>
+<thead>
+<tr>
+<th>指令</th>
+<th>说明</th>
+<th>备注</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>list packages <filter></filter></td>
+<td>列出满足filter条件的所有包</td>
+<td></td>
+</tr>
+<tr>
+<td>list permissions <group></group></td>
+<td>列出该Group的所有权限</td>
+<td></td>
+</tr>
+<tr>
+<td>list features</td>
+<td>查看系统支持哪些feature</td>
+<td>例如蓝牙, wifi, 摄像头等.</td>
+</tr>
+<tr>
+<td>install <path></path>/uninstall <package></package></td>
+<td>安装卸载</td>
+<td></td>
+</tr>
+<tr>
+<td>clear <package></package></td>
+<td>清除应用数据</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<h3 id="3-4-adb-shell-screencap"><a href="#3-4-adb-shell-screencap" class="headerlink" title="3.4 adb shell screencap"></a>3.4 adb shell screencap</h3><p>截屏, 比截屏快捷键更加方便快捷.</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line"><span class="meta">$</span> adb shell screencap /sdcard/screen.png</div><div class="line"></div><div class="line"><span class="meta">$</span> adb pull /sdcard/screen.png ~/temp</div><div class="line"><span class="meta">[100%</span>] /sdcard/screen.png</div></pre></td></tr></table></figure>
+<h3 id="3-5-adb-shell-screenrecord"><a href="#3-5-adb-shell-screenrecord" class="headerlink" title="3.5 adb shell screenrecord"></a>3.5 adb shell screenrecord</h3><p>录屏, 做demo的话, 可以很方便的用这个命名录制视频, 然后借助工具将其转换成gif图, 超赞. 如下:</p>
+<p><img src="http://upload-images.jianshu.io/upload_images/851999-88b639f225fe00c3.gif?imageMogr2/auto-orient/strip" alt="screenrecord gif"></p>
+<blockquote>
+<p>Android4.4及以上系统可用.</p>
+</blockquote>
+<h3 id="2-5-adb-shell-dumpsys"><a href="#2-5-adb-shell-dumpsys" class="headerlink" title="2.5 adb shell dumpsys"></a>2.5 adb shell dumpsys</h3><p>强大的dump工具, 可以输出很多系统信息. 例如window, activity, task/back stack信息, wifi信息等.</p>
+<blockquote>
+<p><a href="http://lmj.wiki/post/androidtan-suo-lu/tan-suo-activityzhi-launchmode" target="_blank" rel="external">探索Activity之launchMode</a>和<a href="http://lmj.wiki/post/androidtan-suo-lu/tan-suo-activityzhi-qi-dong-intent-flaghe-taskaffinity" target="_blank" rel="external">探索Activity之启动Intent flag和Affinity</a>就是用adb shell dumpsys activity来输出task信息的.</p>
+</blockquote>
+<p>常用dumpsys:</p>
+<table>
+<thead>
+<tr>
+<th>指令</th>
+<th>说明</th>
+<th>备注</th>
+<th>细分参数</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>activity</td>
+<td>输出app组件相关信息</td>
+<td>还可以用细分参数获得单项内容, 下同. 例如adb shell dumpsys activity activities来获取activity task/back stack信息.</td>
+<td>activites, service, providers, intents, broadcasts, processes</td>
+</tr>
+<tr>
+<td>alarm</td>
+<td>输出当前系统的alarm信息</td>
+<td>/</td>
+<td>/</td>
+</tr>
+<tr>
+<td>cpuinfo</td>
+<td>输出当前的CPU使用情况</td>
+<td>/</td>
+<td>/</td>
+</tr>
+<tr>
+<td>diskstats</td>
+<td>输出当前的磁盘使用状态</td>
+<td>/</td>
+<td>/</td>
+</tr>
+<tr>
+<td>batterystats</td>
+<td>电池使用信息</td>
+<td>/</td>
+<td>/</td>
+</tr>
+<tr>
+<td>package</td>
+<td>package相关信息, 相当于pm功能的集合</td>
+<td>输出诸如libs, features, packages等信息</td>
+<td>/</td>
+</tr>
+<tr>
+<td>meminfo</td>
+<td>输出每个App的内存使用和系统内存状态</td>
+<td>可以指定包名, 例如adb shell dumpsys meminfo com.anly.githubapp</td>
+<td>/</td>
+</tr>
+<tr>
+<td>window</td>
+<td>输出当前窗口相关信息</td>
+<td>/</td>
+<td>policy, animator, tokens, windows</td>
+</tr>
+</tbody>
+</table>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/Android/" rel="tag"># Android</a>
+          
+            <a href="/tags/Tools/" rel="tag"># Tools</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2016/08/23/android/app_startup/" rel="next" title="[译]Android Application启动流程分析">
+                <i class="fa fa-chevron-left"></i> [译]Android Application启动流程分析
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2016/08/26/app-opti/app_opt_app_startup1/" rel="prev" title="App优化之提升你的App启动速度之理论基础">
+                App优化之提升你的App启动速度之理论基础 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+        <div class="ds-share flat" data-thread-key="2016/08/24/android/adb/"
+     data-title="Android adb你真的会用吗?"
+     data-content=""
+     data-url="http://blog.lmj.wiki/2016/08/24/android/adb/">
+  <div class="ds-share-inline">
+    <ul  class="ds-share-icons-16">
+
+      <li data-toggle="ds-share-icons-more"><a class="ds-more" href="javascript:void(0);">分享到：</a></li>
+      <li><a class="ds-weibo" href="javascript:void(0);" data-service="weibo">微博</a></li>
+      <li><a class="ds-qzone" href="javascript:void(0);" data-service="qzone">QQ空间</a></li>
+      <li><a class="ds-qqt" href="javascript:void(0);" data-service="qqt">腾讯微博</a></li>
+      <li><a class="ds-wechat" href="javascript:void(0);" data-service="wechat">微信</a></li>
+
+    </ul>
+    <div class="ds-share-icons-more">
+    </div>
+  </div>
+</div>
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+      <div class="ds-thread" data-thread-key="2016/08/24/android/adb/"
+           data-title="Android adb你真的会用吗?" data-url="http://blog.lmj.wiki/2016/08/24/android/adb/">
+      </div>
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          
+            <img class="site-author-image" itemprop="image"
+              src="/img/avatar.jpeg"
+              alt="anly_jun" />
+          
+            <p class="site-author-name" itemprop="name">anly_jun</p>
+            <p class="site-description motion-element" itemprop="description">Android, iOS, Mobile Dev/Test, Web, Python</p>
+        </div>
+
+        <nav class="site-state motion-element">
+
+          
+            <div class="site-state-item site-state-posts">
+            
+              <a href="/archives">
+            
+                <span class="site-state-item-count">55</span>
+                <span class="site-state-item-name">日志</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-categories">
+              <a href="/categories/index.html">
+                <span class="site-state-item-count">6</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-tags">
+              <a href="/tags/index.html">
+                <span class="site-state-item-count">20</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+          <div class="feed-link motion-element">
+            <a href="/atom.xml" rel="alternate">
+              <i class="fa fa-rss"></i>
+              RSS
+            </a>
+          </div>
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#引言"><span class="nav-number">1.</span> <span class="nav-text">引言</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#1-adb简介"><span class="nav-number">2.</span> <span class="nav-text">1, adb简介</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-常用用法"><span class="nav-number">3.</span> <span class="nav-text">2, 常用用法</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#2-1-adb-devices"><span class="nav-number">3.1.</span> <span class="nav-text">2.1 adb devices</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-2-adb-logcat"><span class="nav-number">3.2.</span> <span class="nav-text">2.2 adb logcat</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-3-adb-install-uninstall"><span class="nav-number">3.3.</span> <span class="nav-text">2.3 adb install/uninstall</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-4-adb-pull-push"><span class="nav-number">3.4.</span> <span class="nav-text">2.4 adb pull/push</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-5-adb-start-kill-server"><span class="nav-number">3.5.</span> <span class="nav-text">2.5 adb start/kill-server</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-5-adb-shell"><span class="nav-number">3.6.</span> <span class="nav-text">2.5 adb shell</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-高阶用法"><span class="nav-number">4.</span> <span class="nav-text">3, 高阶用法</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#3-1-adb-connect-disconnect"><span class="nav-number">4.1.</span> <span class="nav-text">3.1 adb connect/disconnect</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-2-adb-shell-am"><span class="nav-number">4.2.</span> <span class="nav-text">3.2 adb shell am</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-3-adb-shell-pm"><span class="nav-number">4.3.</span> <span class="nav-text">3.3 adb shell pm</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-4-adb-shell-screencap"><span class="nav-number">4.4.</span> <span class="nav-text">3.4 adb shell screencap</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-5-adb-shell-screenrecord"><span class="nav-number">4.5.</span> <span class="nav-text">3.5 adb shell screenrecord</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-5-adb-shell-dumpsys"><span class="nav-number">4.6.</span> <span class="nav-text">2.5 adb shell dumpsys</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2017</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">anly_jun</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+  <span class="post-meta-divider">|</span>
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">NexT.Gemini</a> v5.1.2</div>
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.2"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.2"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.2"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.2"></script>
+
+
+
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.2"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.2"></script>
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.2"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.2"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.2"></script>
+
+
+
+  
+
+  
+    
+  
+
+  <script type="text/javascript">
+    var duoshuoQuery = {short_name:"anlyjun"};
+    (function() {
+      var ds = document.createElement('script');
+      ds.type = 'text/javascript';ds.async = true;
+      ds.id = 'duoshuo-script';
+      ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+      ds.charset = 'UTF-8';
+      (document.getElementsByTagName('head')[0]
+      || document.getElementsByTagName('body')[0]).appendChild(ds);
+    })();
+  </script>
+
+  
+    
+    
+    <script src="/lib/ua-parser-js/dist/ua-parser.min.js?v=0.7.9"></script>
+    <script src="/js/src/hook-duoshuo.js"></script>
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

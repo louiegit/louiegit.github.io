@@ -1,0 +1,908 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next gemini use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.2" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="设计模式,架构," />
+
+
+
+
+
+  <link rel="alternate" href="/atom.xml" title="ANLY'S BLOG" type="application/atom+xml" />
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.1.2" />
+
+
+
+
+
+
+<meta name="description" content="前情提要上集讲到, 小光建立了开分店的标准(工厂), 以后开分店都按照这套标准执行(从CompanyFactory的实现中生产开分店的必须东西), 开分店变得更加容易了. 小光也是马上将自己的这套”开分公司的工厂”投入使用了, 开出了花山软件新城分店. 随着分店越来越多, 小光也请了分别请了店长来”代理”小光之前的职责. 当然, 小光可不能完全放任不管啊, 他想着我至少得知道下每天各个店的基本情况">
+<meta name="keywords" content="设计模式,架构">
+<meta property="og:type" content="article">
+<meta property="og:title" content="日报表格只有一份---单例模式">
+<meta property="og:url" content="http://blog.lmj.wiki/2016/12/20/design-pattern/singleton/index.html">
+<meta property="og:site_name" content="ANLY&#39;S BLOG">
+<meta property="og:description" content="前情提要上集讲到, 小光建立了开分店的标准(工厂), 以后开分店都按照这套标准执行(从CompanyFactory的实现中生产开分店的必须东西), 开分店变得更加容易了. 小光也是马上将自己的这套”开分公司的工厂”投入使用了, 开出了花山软件新城分店. 随着分店越来越多, 小光也请了分别请了店长来”代理”小光之前的职责. 当然, 小光可不能完全放任不管啊, 他想着我至少得知道下每天各个店的基本情况">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="http://blog.lmj.wiki/img/14818758848340.jpg">
+<meta property="og:image" content="http://blog.lmj.wiki/img/14818830419580.jpg">
+<meta property="og:updated_time" content="2017-09-12T15:16:05.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="日报表格只有一份---单例模式">
+<meta name="twitter:description" content="前情提要上集讲到, 小光建立了开分店的标准(工厂), 以后开分店都按照这套标准执行(从CompanyFactory的实现中生产开分店的必须东西), 开分店变得更加容易了. 小光也是马上将自己的这套”开分公司的工厂”投入使用了, 开出了花山软件新城分店. 随着分店越来越多, 小光也请了分别请了店长来”代理”小光之前的职责. 当然, 小光可不能完全放任不管啊, 他想着我至少得知道下每天各个店的基本情况">
+<meta name="twitter:image" content="http://blog.lmj.wiki/img/14818758848340.jpg">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Gemini',
+    version: '5.1.2',
+    sidebar: {"position":"right","display":"post","offset":12,"offset_float":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://blog.lmj.wiki/2016/12/20/design-pattern/singleton/"/>
+
+
+
+
+
+  <title>日报表格只有一份---单例模式 | ANLY'S BLOG</title>
+  
+
+
+
+
+
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?3e4bf02bc6c59d846f194a8afc04ecfc";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-right page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">ANLY'S BLOG</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">看看书, 写写字; 捣鼓捣鼓小技术.</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            关于
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://blog.lmj.wiki/2016/12/20/design-pattern/singleton/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="anly_jun">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/img/avatar.jpeg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="ANLY'S BLOG">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">日报表格只有一份---单例模式</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2016-12-20T12:00:00+08:00">
+                2016-12-20
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/设计模式/" itemprop="url" rel="index">
+                    <span itemprop="name">设计模式</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2016/12/20/design-pattern/singleton/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count ds-thread-count" data-thread-key="2016/12/20/design-pattern/singleton/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h2 id="前情提要"><a href="#前情提要" class="headerlink" title="前情提要"></a>前情提要</h2><p><a href="http://blog.lmj.wiki/2016/12/15/design-pattern/abstract_factory/">上集</a>讲到, 小光建立了开分店的标准(工厂), 以后开分店都按照这套标准执行(从CompanyFactory的实现中生产开分店的必须东西), 开分店变得更加容易了.</p>
+<p>小光也是马上将自己的这套”开分公司的工厂”投入使用了, 开出了花山软件新城分店.</p>
+<p>随着分店越来越多, 小光也请了分别请了店长来”代理”小光之前的职责. 当然, 小光可不能完全放任不管啊, 他想着我至少得知道下每天各个店的基本情况吧.</p>
+<a id="more"></a>
+<blockquote>
+<p>所有示例源码已经上传到Github, <a href="https://github.com/mingjunli/JavaDesignPatterns" target="_blank" rel="external">戳这里</a></p>
+</blockquote>
+<h2 id="日报制度"><a href="#日报制度" class="headerlink" title="日报制度"></a>日报制度</h2><p>小光想到了当时做程序猿时, 敏捷开发每天站立会议的三个问题:</p>
+<ol>
+<li>昨天完成了什么</li>
+<li>今天要做什么</li>
+<li>有什么困难, 阻力</li>
+</ol>
+<p>心想, 我也可以根据这个弄个日报制度啊, 让各个店长按照这个格式汇报下当天的战绩:<br><img src="/img/14818758848340.jpg" alt=""></p>
+<p><strong>表格:</strong></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Form</span> </span>&#123;</div><div class="line"></div><div class="line">    <span class="keyword">private</span> ArrayList&lt;String&gt; mFormData = <span class="keyword">new</span> ArrayList&lt;&gt;();</div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">write</span><span class="params">(String data)</span> </span>&#123;</div><div class="line">        mFormData.add(data);</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="meta">@Override</span></div><div class="line">    <span class="function"><span class="keyword">public</span> String <span class="title">toString</span><span class="params">()</span> </span>&#123;</div><div class="line">        <span class="keyword">return</span> <span class="string">"表格:"</span> + <span class="keyword">this</span>.hashCode() + <span class="string">", 数据:"</span> + mFormData;</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>每天让各个店子在打烊之前在系统中拿当日的表格(如果还没有, 就创建一个)来填写数据, 然后提交.</p>
+<h2 id="出了问题"><a href="#出了问题" class="headerlink" title="出了问题"></a>出了问题</h2><p>想法挺好, 但是刚刚用上, 就出了问题:</p>
+<p>光谷店店长表妹登录系统, 发现2016-12-16这个文件夹中还没有表格文件, 于是本地创建了一个, 用来填写数据, 准备稍后提交. 然而此时, 花山店的店长小章也登录了系统, 也发现还没有表格文件, 也创建了一个…</p>
+<p>让我们来看下操作:</p>
+<p><strong>表妹:</strong></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Cousins</span> </span>&#123;</div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">public</span> Form <span class="title">submitReport</span><span class="params">()</span> </span>&#123;</div><div class="line">        Form form = <span class="keyword">new</span> Form();</div><div class="line">        form.write(<span class="string">"光谷店数据"</span>);</div><div class="line">        <span class="keyword">return</span> form;</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p><strong>小章:</strong></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">XiaoZhang</span> </span>&#123;</div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">public</span> Form <span class="title">submitReport</span><span class="params">()</span> </span>&#123;</div><div class="line">        Form form = <span class="keyword">new</span> Form();</div><div class="line">        form.write(<span class="string">"花山店数据"</span>);</div><div class="line">        <span class="keyword">return</span> form;</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p><strong>两人的使用流程:</strong></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Demo</span> </span>&#123;</div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</div><div class="line"></div><div class="line">        Cousins cousins = <span class="keyword">new</span> Cousins();</div><div class="line">        Form form = cousins.submitReport();</div><div class="line">        System.out.println(form);</div><div class="line"></div><div class="line">        XiaoZhang xiaoZhang = <span class="keyword">new</span> XiaoZhang();</div><div class="line">        Form form2 = xiaoZhang.submitReport();</div><div class="line">        System.out.println(form2);</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p><strong>来看下结果:</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">表格:1639705018, 数据:[光谷店数据]</div><div class="line">表格:1627674070, 数据:[花山店数据]</div></pre></td></tr></table></figure>
+<p>最终这个文件夹中有了两个(不同的)表格, 小光看起来很是不方便…</p>
+<h2 id="表格应该只能有一份"><a href="#表格应该只能有一份" class="headerlink" title="表格应该只能有一份"></a>表格应该只能有一份</h2><p>表格只能有一份, 小光心想. 那么怎么保证呢, 很简单, 我提前给创建好, 大家通过统一的接口来取这个文件, 而不能自己创建. 这样就不会有问题了:</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">HungryForm</span> <span class="keyword">extends</span> <span class="title">Form</span> </span>&#123;</div><div class="line"></div><div class="line">    <span class="comment">// 提前创建好</span></div><div class="line">    <span class="keyword">private</span> <span class="keyword">static</span> HungryForm sInstance = <span class="keyword">new</span> HungryForm();</div><div class="line"></div><div class="line">    <span class="comment">// 私有化的构造, 避免别人直接创建表格</span></div><div class="line">    <span class="function"><span class="keyword">private</span> <span class="title">HungryForm</span><span class="params">()</span> </span>&#123;&#125;</div><div class="line"></div><div class="line">    <span class="comment">// 店长们通过这个接口来取表格</span></div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> HungryForm <span class="title">getInstance</span><span class="params">()</span> </span>&#123;</div><div class="line">        <span class="keyword">return</span> sInstance;</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p><strong>店长们这样提交报告:</strong></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Cousins</span> </span>&#123;</div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">public</span> Form <span class="title">submitReport</span><span class="params">()</span> </span>&#123;</div><div class="line">        <span class="comment">// 直接新建一个表格</span></div><div class="line">        <span class="comment">// Form form = new Form();</span></div><div class="line"></div><div class="line">        <span class="comment">// 从固定的接口取表格</span></div><div class="line">        Form form = HungryForm.getInstance();</div><div class="line">        form.write(<span class="string">"光谷店数据"</span>);</div><div class="line">        <span class="keyword">return</span> form;</div><div class="line">    &#125;</div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">XiaoZhang</span> </span>&#123;</div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">public</span> Form <span class="title">submitReport</span><span class="params">()</span> </span>&#123;</div><div class="line">        <span class="comment">// 直接新建一个表格</span></div><div class="line">        <span class="comment">// Form form = new Form();</span></div><div class="line"></div><div class="line">        <span class="comment">// 从固定的接口取表格</span></div><div class="line">        Form form = HungryForm.getInstance();</div><div class="line">        form.write(<span class="string">"花山店数据"</span>);</div><div class="line">        <span class="keyword">return</span> form;</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p><strong>提交方式不变:</strong></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Demo</span> </span>&#123;</div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</div><div class="line"></div><div class="line">        Cousins cousins = <span class="keyword">new</span> Cousins();</div><div class="line">        Form form = cousins.submitReport();</div><div class="line">        System.out.println(form);</div><div class="line"></div><div class="line">        XiaoZhang xiaoZhang = <span class="keyword">new</span> XiaoZhang();</div><div class="line">        Form form2 = xiaoZhang.submitReport();</div><div class="line">        System.out.println(form2);</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p><strong>来看下现在的结果:</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">表格:1639705018, 数据:[光谷店数据]</div><div class="line">表格:1639705018, 数据:[光谷店数据, 花山店数据]</div></pre></td></tr></table></figure>
+<p>可以看到两人用的是同一份表格(hashCode一样的), 生成的数据也没有问题了.</p>
+<h2 id="故事之后"><a href="#故事之后" class="headerlink" title="故事之后"></a>故事之后</h2><p>看到这, 同学们应该都看出来了, 小光这就是使用了大名鼎鼎的<strong>单例模式</strong>.<br>照例, 看下类图, 这个应该是最简单的类图了:<br><img src="/img/14818830419580.jpg" alt=""></p>
+<blockquote>
+<p>单例模式<br>保证一个类(HungryForm)仅有一个实例(sInstance), 并提供一个访问该实例的全局访问点(getInstance).<br>这就意味着单例通常有如下两个特点:</p>
+<ol>
+<li>构造函数是私有的(避免别的地方创建它)</li>
+<li>有一个static的方法来对外提供一个该单例的实例.</li>
+</ol>
+</blockquote>
+<h2 id="扩展阅读一"><a href="#扩展阅读一" class="headerlink" title="扩展阅读一"></a>扩展阅读一</h2><p>同学们可能注意到了, 我们在这个单例模式中使用了<strong>Hungry</strong>这个词, 没错, 我们这里实现单例的方式使用的就是<strong>饿汉式</strong>.</p>
+<h4 id="1-饿汉式单例"><a href="#1-饿汉式单例" class="headerlink" title="1, 饿汉式单例"></a>1, 饿汉式单例</h4><blockquote>
+<p>饿汉式单例<br>顾名思义, 就是很饿, 不管三七二十一先创建了一个实例放着, 而不管最终用不用.</p>
+</blockquote>
+<p>然而, 这个单例可能最终并不需要, 如果提前就创建好, 就会浪费内存空间了.<br>例如, 我们这个故事中, 年底假期中, 所有店子都歇业十天, 这十天就没有任何店长会去访问这个表格, 然而小光还是都每天都创建了, 这就造成了空间浪费(假设这个表格数据(对象实例)很大…)</p>
+<h4 id="2-懒汉式单例"><a href="#2-懒汉式单例" class="headerlink" title="2, 懒汉式单例"></a>2, 懒汉式单例</h4><p>那么怎么办呢?<br>我们可以使用<strong>懒汉式单例</strong>:</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">LazyForm</span> <span class="keyword">extends</span> <span class="title">Form</span> </span>&#123;</div><div class="line"></div><div class="line">    <span class="keyword">private</span> <span class="keyword">static</span> LazyForm sInstance;</div><div class="line"></div><div class="line">    <span class="comment">// 私有化的构造, 避免别人直接创建表格</span></div><div class="line">    <span class="function"><span class="keyword">private</span> <span class="title">LazyForm</span><span class="params">()</span> </span>&#123;&#125;</div><div class="line"></div><div class="line">    <span class="comment">// 店长们通过这个接口来取表格</span></div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> LazyForm <span class="title">getInstance</span><span class="params">()</span> </span>&#123;</div><div class="line"></div><div class="line">        <span class="comment">// 在有店长访问该文件时才创建, 通过判断当前文件是否存在(sInstance == null)来避免重复创建</span></div><div class="line">        <span class="keyword">if</span> (sInstance == <span class="keyword">null</span>) &#123;</div><div class="line">            sInstance = <span class="keyword">new</span> LazyForm();</div><div class="line">        &#125;</div><div class="line">        <span class="keyword">return</span> sInstance;</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<blockquote>
+<p>懒汉式单例<br>“懒”, 也就是现在懒得创建, 等有用户要用的时候才创建.</p>
+</blockquote>
+<h4 id="3-线程安全的懒汉式单例"><a href="#3-线程安全的懒汉式单例" class="headerlink" title="3, 线程安全的懒汉式单例"></a>3, 线程安全的懒汉式单例</h4><p>但是这样创建也会有问题啊, 因为他是通过sInstance == null判断当前是否已经存在表格文件的, 假设有两个店长同时调用getInstance来取文件, 同时走到sInstance == null判断这一步, 就会出问题了 — 有可能创建了两个文件(实例), 就达不到单例的目的了.</p>
+<p>所以说这种懒汉式是线程不安全的, 在多线程环境下, 并不能做到单例.</p>
+<p>那么, 该如何做, 既能懒加载, 又线程安全呢?<br>我们都知道Java中多线程环境往往会用到<a href="https://docs.oracle.com/javase/tutorial/essential/concurrency/syncmeth.html" target="_blank" rel="external">synchronized</a>关键字, 通过他来做线程并发性控制.</p>
+<blockquote>
+<p><strong>synchronized</strong>方法控制对类成员变量的访问, 每个类实例对应一把锁, synchronized修饰的方法必须获得调用该方法的类实例的锁方能执行, 否则所属线程阻塞. <strong>方法一旦执行, 就独占该锁. 直到从该方法返回时才将锁释放.</strong> 此后被阻塞的线程方能获得该锁, 重新进入可执行状态.</p>
+</blockquote>
+<p>让我们来看下<strong>线程安全的懒汉式单例:</strong></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">SynchronizedLazyForm</span> <span class="keyword">extends</span> <span class="title">Form</span> </span>&#123;</div><div class="line"></div><div class="line">    <span class="keyword">private</span> <span class="keyword">static</span> SynchronizedLazyForm sInstance;</div><div class="line"></div><div class="line">    <span class="comment">// 私有化的构造, 避免别人直接创建表格</span></div><div class="line">    <span class="function"><span class="keyword">private</span> <span class="title">SynchronizedLazyForm</span><span class="params">()</span> </span>&#123;&#125;</div><div class="line"></div><div class="line">    <span class="comment">// 店长们通过这个接口来取表格</span></div><div class="line">    <span class="comment">// 注意, 这是一个synchronized方法</span></div><div class="line">    <span class="comment">// 参考https://docs.oracle.com/javase/tutorial/essential/concurrency/syncmeth.html</span></div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">synchronized</span> SynchronizedLazyForm <span class="title">getInstance</span><span class="params">()</span> </span>&#123;</div><div class="line"></div><div class="line">        <span class="comment">// 在有店长访问该文件时才创建, 通过判断当前文件是否存在(sInstance == null)来避免重复创建</span></div><div class="line">        <span class="keyword">if</span> (sInstance == <span class="keyword">null</span>) &#123;</div><div class="line">            sInstance = <span class="keyword">new</span> SynchronizedLazyForm();</div><div class="line">        &#125;</div><div class="line">        <span class="keyword">return</span> sInstance;</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<blockquote>
+<p>线程安全的懒汉式单例<br>利用synchronized关键字来修饰对外提供该类唯一实例的接口(getInstance)来确保在一个线程调用该接口时能阻塞(block)另一个线程的调用, 从而达到多线程安全, 避免重复创建单例.</p>
+</blockquote>
+<p>然而, synchronized有很大的性能开销. 而且在这里我们是修饰了getInstance方法, 意味着, 如果getInstance被很多线程频繁调用时, 每次都会做同步检查, 会导致程序性能下降.</p>
+<p>实际上我们要的是单例, 当单例已经存在的时候, 我们是不需要用同步方法来控制的. 一如我们第一种单例的实现—饿汉模式单例, 我们一开始就创建好了单例, 就无需担心线程同步问题.</p>
+<p>但是饿汉模式是提前创建, 那么我们怎么能做到延迟创建, 且线程安全, 且性能有所提升呢?</p>
+<h4 id="4-双重检查锁定DCL-Double-Checked-Locking-单例"><a href="#4-双重检查锁定DCL-Double-Checked-Locking-单例" class="headerlink" title="4, 双重检查锁定DCL(Double-Checked Locking)单例"></a>4, 双重检查锁定DCL(Double-Checked Locking)单例</h4><p>如上所言, 我们想要的是单例, 故而单例已经存在的情况下我们无需做同步检查, 如下实现:</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">DCLForm</span> <span class="keyword">extends</span> <span class="title">Form</span> </span>&#123;</div><div class="line"></div><div class="line">    <span class="comment">// 注意, 这里我们引入了volatile关键字</span></div><div class="line">    <span class="keyword">private</span> <span class="keyword">volatile</span> <span class="keyword">static</span> DCLForm sInstance;</div><div class="line"></div><div class="line">    <span class="comment">// 私有化的构造, 避免别人直接创建表格</span></div><div class="line">    <span class="function"><span class="keyword">private</span> <span class="title">DCLForm</span><span class="params">()</span> </span>&#123;&#125;</div><div class="line"></div><div class="line">    <span class="comment">// 店长们通过这个接口来取表格</span></div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> DCLForm <span class="title">getInstance</span><span class="params">()</span> </span>&#123;</div><div class="line"></div><div class="line">        <span class="comment">// 第一次检查</span></div><div class="line">        <span class="keyword">if</span> (sInstance == <span class="keyword">null</span>) &#123;</div><div class="line">            <span class="comment">// 第一次调用getInstance时, sInstance为空, 进入此分支</span></div><div class="line">            <span class="comment">// 使用synchronized block来确保多线程的安全</span></div><div class="line">            <span class="keyword">synchronized</span> (DCLForm.class) &#123;</div><div class="line">                <span class="comment">// 第二次检查</span></div><div class="line">                <span class="keyword">if</span> (sInstance == <span class="keyword">null</span>) &#123;</div><div class="line">                    sInstance = <span class="keyword">new</span> DCLForm();</div><div class="line">                &#125;</div><div class="line">            &#125;</div><div class="line">        &#125;</div><div class="line">        <span class="keyword">return</span> sInstance;</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<ol>
+<li>舍弃了同步方法</li>
+<li>在getInstance时, 先检查单例是否已经存在, 如果存在了, 我们无需同步操作了, 任何线程过来直接取单例就行, 大大提升了性能.</li>
+<li>若单例不存在(第一次调用时), 使用synchronized同步代码块, 来确保进入的只有一个线程, 在此再做一次单例存在与否的检查, 进而创建出单例.</li>
+</ol>
+<p>这样就保证了:</p>
+<ol>
+<li>在单例还没有创建时, 多个线程同时调用getInsance时, 保证只有一个线程能够执行sInstance = new DCLForm()创建单例.</li>
+<li>在单例已经存在时, getInsance没有加锁, 直接访问, 访问创建好的单例, 从而达到性能提升.</li>
+</ol>
+<blockquote>
+<p>注意<br>这里我们对sInstance使用的<a href="https://docs.oracle.com/javase/specs/jls/se8/html/jls-8.html#jls-8.3.1.4" target="_blank" rel="external">volatile关键字</a><br>具体原因和原理, 请参考<a href="http://www.infoq.com/cn/articles/double-checked-locking-with-delay-initialization" target="_blank" rel="external">这篇文章</a>, 讲的很详细.</p>
+</blockquote>
+<p>然而, 使用volatile关键字的双重检查方案需要JDK5及以上(因为从JDK5开始使用新的JSR-133内存模型规范，这个规范增强了volatile的语义).</p>
+<p>那么我们还有什么更通用的方式能保证多线程单例创建, 以及懒加载方式呢?</p>
+<h4 id="5-静态内部类单例"><a href="#5-静态内部类单例" class="headerlink" title="5, 静态内部类单例"></a>5, 静态内部类单例</h4><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">StaticInnerClassForm</span> <span class="keyword">extends</span> <span class="title">Form</span> </span>&#123;</div><div class="line"></div><div class="line">	<span class="comment">// 私有化的构造, 避免别人直接创建表格</span></div><div class="line">	<span class="function"><span class="keyword">private</span> <span class="title">StaticInnerClassForm</span><span class="params">()</span> </span>&#123;&#125;</div><div class="line">	</div><div class="line">	<span class="comment">// 店长们通过这个接口来取表格</span></div><div class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">static</span> StaticInnerClassForm <span class="title">getInstance</span><span class="params">()</span> </span>&#123;</div><div class="line">	   <span class="keyword">return</span> FormHolder.INSTANCE;</div><div class="line">	&#125;</div><div class="line">	</div><div class="line">	<span class="comment">// 在静态内部类中实例化该单例</span></div><div class="line">	<span class="keyword">private</span> <span class="keyword">static</span> <span class="class"><span class="keyword">class</span> <span class="title">FormHolder</span> </span>&#123;</div><div class="line">	   <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> StaticInnerClassForm INSTANCE = <span class="keyword">new</span> StaticInnerClassForm();</div><div class="line">	&#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>这种方式, 通过JVM的类加载方式(虚拟机会保证一个类的初始化在多线程环境中被正确的加锁、同步), 来保证了多线程并发访问的正确性. </p>
+<p>另外, 由于静态内部类的加载特性 — 在使用时才加载, 这种方式也达成了懒加载的目的.</p>
+<p>显然, 这种方式是一种比较完美的单例模式. 当然, 它也有其弊端, 依赖特定编程语言, 适用于JAVA平台.</p>
+<hr>
+<p>还有很多单例的实现模式, 例如利用JDK 5起的Enum 枚举单例模式, 使用容器类管理的单例模式等, 在此就不一一说了, 网上都比较泛滥了…</p>
+<p>从使用上, 如果是单线程环境的, 个人推荐使用第二种<strong>懒汉式单例</strong>, 简单便捷. 如果考虑多线程同步的话, 推荐使用第五种<strong>静态内部类单例</strong>, 确保同步且懒加载完美结合.</p>
+<hr>
+<p>好了, 小光创建并改善了一套完整的日报系统. 这样, 他每天就可以看到各个分店的战况了, 也能根据各个店的问题, 来及时协调资源解决, 保证各个分店的良好运转了.</p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/设计模式/" rel="tag"># 设计模式</a>
+          
+            <a href="/tags/架构/" rel="tag"># 架构</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2016/12/15/design-pattern/abstract_factory/" rel="next" title="是时候弄一套开分店的标准了---抽象工厂">
+                <i class="fa fa-chevron-left"></i> 是时候弄一套开分店的标准了---抽象工厂
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2016/12/22/design-pattern/template_method/" rel="prev" title="统一热干面的制作流程---模板方法">
+                统一热干面的制作流程---模板方法 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+        <div class="ds-share flat" data-thread-key="2016/12/20/design-pattern/singleton/"
+     data-title="日报表格只有一份---单例模式"
+     data-content=""
+     data-url="http://blog.lmj.wiki/2016/12/20/design-pattern/singleton/">
+  <div class="ds-share-inline">
+    <ul  class="ds-share-icons-16">
+
+      <li data-toggle="ds-share-icons-more"><a class="ds-more" href="javascript:void(0);">分享到：</a></li>
+      <li><a class="ds-weibo" href="javascript:void(0);" data-service="weibo">微博</a></li>
+      <li><a class="ds-qzone" href="javascript:void(0);" data-service="qzone">QQ空间</a></li>
+      <li><a class="ds-qqt" href="javascript:void(0);" data-service="qqt">腾讯微博</a></li>
+      <li><a class="ds-wechat" href="javascript:void(0);" data-service="wechat">微信</a></li>
+
+    </ul>
+    <div class="ds-share-icons-more">
+    </div>
+  </div>
+</div>
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+      <div class="ds-thread" data-thread-key="2016/12/20/design-pattern/singleton/"
+           data-title="日报表格只有一份---单例模式" data-url="http://blog.lmj.wiki/2016/12/20/design-pattern/singleton/">
+      </div>
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          
+            <img class="site-author-image" itemprop="image"
+              src="/img/avatar.jpeg"
+              alt="anly_jun" />
+          
+            <p class="site-author-name" itemprop="name">anly_jun</p>
+            <p class="site-description motion-element" itemprop="description">Android, iOS, Mobile Dev/Test, Web, Python</p>
+        </div>
+
+        <nav class="site-state motion-element">
+
+          
+            <div class="site-state-item site-state-posts">
+            
+              <a href="/archives">
+            
+                <span class="site-state-item-count">55</span>
+                <span class="site-state-item-name">日志</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-categories">
+              <a href="/categories/index.html">
+                <span class="site-state-item-count">6</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-tags">
+              <a href="/tags/index.html">
+                <span class="site-state-item-count">20</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+          <div class="feed-link motion-element">
+            <a href="/atom.xml" rel="alternate">
+              <i class="fa fa-rss"></i>
+              RSS
+            </a>
+          </div>
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#前情提要"><span class="nav-number">1.</span> <span class="nav-text">前情提要</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#日报制度"><span class="nav-number">2.</span> <span class="nav-text">日报制度</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#出了问题"><span class="nav-number">3.</span> <span class="nav-text">出了问题</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#表格应该只能有一份"><span class="nav-number">4.</span> <span class="nav-text">表格应该只能有一份</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#故事之后"><span class="nav-number">5.</span> <span class="nav-text">故事之后</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#扩展阅读一"><span class="nav-number">6.</span> <span class="nav-text">扩展阅读一</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#1-饿汉式单例"><span class="nav-number">6.0.1.</span> <span class="nav-text">1, 饿汉式单例</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2-懒汉式单例"><span class="nav-number">6.0.2.</span> <span class="nav-text">2, 懒汉式单例</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#3-线程安全的懒汉式单例"><span class="nav-number">6.0.3.</span> <span class="nav-text">3, 线程安全的懒汉式单例</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#4-双重检查锁定DCL-Double-Checked-Locking-单例"><span class="nav-number">6.0.4.</span> <span class="nav-text">4, 双重检查锁定DCL(Double-Checked Locking)单例</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#5-静态内部类单例"><span class="nav-number">6.0.5.</span> <span class="nav-text">5, 静态内部类单例</span></a></li></ol></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2017</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">anly_jun</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+  <span class="post-meta-divider">|</span>
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">NexT.Gemini</a> v5.1.2</div>
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.2"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.2"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.2"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.2"></script>
+
+
+
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.2"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.2"></script>
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.2"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.2"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.2"></script>
+
+
+
+  
+
+  
+    
+  
+
+  <script type="text/javascript">
+    var duoshuoQuery = {short_name:"anlyjun"};
+    (function() {
+      var ds = document.createElement('script');
+      ds.type = 'text/javascript';ds.async = true;
+      ds.id = 'duoshuo-script';
+      ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+      ds.charset = 'UTF-8';
+      (document.getElementsByTagName('head')[0]
+      || document.getElementsByTagName('body')[0]).appendChild(ds);
+    })();
+  </script>
+
+  
+    
+    
+    <script src="/lib/ua-parser-js/dist/ua-parser.min.js?v=0.7.9"></script>
+    <script src="/js/src/hook-duoshuo.js"></script>
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

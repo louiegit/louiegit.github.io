@@ -1,0 +1,884 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next gemini use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.2" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="Android,架构,MVP," />
+
+
+
+
+
+  <link rel="alternate" href="/atom.xml" title="ANLY'S BLOG" type="application/atom+xml" />
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.1.2" />
+
+
+
+
+
+
+<meta name="description" content="MVP架构实现的Github客户端(3-功能实现)请先阅读1-准备工作和2-搭建项目架构. 前文搭建了项目的大体架构, 本文以实现github中最常用的搜索repository功能为例, 讲述下功能开发的整个过程以及关于MVP, Dagger2注入, Rx以及Retrofit, OkHttp等在准备工作中提到的一系列开源库的使用.">
+<meta name="keywords" content="Android,架构,MVP">
+<meta property="og:type" content="article">
+<meta property="og:title" content="MVP架构实现的Github客户端(3-功能实现)">
+<meta property="og:url" content="http://blog.lmj.wiki/2016/07/22/mvp/mvp3/index.html">
+<meta property="og:site_name" content="ANLY&#39;S BLOG">
+<meta property="og:description" content="MVP架构实现的Github客户端(3-功能实现)请先阅读1-准备工作和2-搭建项目架构. 前文搭建了项目的大体架构, 本文以实现github中最常用的搜索repository功能为例, 讲述下功能开发的整个过程以及关于MVP, Dagger2注入, Rx以及Retrofit, OkHttp等在准备工作中提到的一系列开源库的使用.">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="http://blog.lmj.wiki/img/22_36_06.gif">
+<meta property="og:image" content="http://blog.lmj.wiki/img/14691122297910.jpg">
+<meta property="og:image" content="http://blog.lmj.wiki/img/14691124995290.jpg">
+<meta property="og:image" content="http://blog.lmj.wiki/img/14691126224351.jpg">
+<meta property="og:image" content="http://blog.lmj.wiki/img/14691130283128.jpg">
+<meta property="og:image" content="http://blog.lmj.wiki/img/14691133030892.jpg">
+<meta property="og:updated_time" content="2017-09-12T15:16:05.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="MVP架构实现的Github客户端(3-功能实现)">
+<meta name="twitter:description" content="MVP架构实现的Github客户端(3-功能实现)请先阅读1-准备工作和2-搭建项目架构. 前文搭建了项目的大体架构, 本文以实现github中最常用的搜索repository功能为例, 讲述下功能开发的整个过程以及关于MVP, Dagger2注入, Rx以及Retrofit, OkHttp等在准备工作中提到的一系列开源库的使用.">
+<meta name="twitter:image" content="http://blog.lmj.wiki/img/22_36_06.gif">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Gemini',
+    version: '5.1.2',
+    sidebar: {"position":"right","display":"post","offset":12,"offset_float":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://blog.lmj.wiki/2016/07/22/mvp/mvp3/"/>
+
+
+
+
+
+  <title>MVP架构实现的Github客户端(3-功能实现) | ANLY'S BLOG</title>
+  
+
+
+
+
+
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?3e4bf02bc6c59d846f194a8afc04ecfc";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-right page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">ANLY'S BLOG</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">看看书, 写写字; 捣鼓捣鼓小技术.</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            关于
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://blog.lmj.wiki/2016/07/22/mvp/mvp3/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="anly_jun">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/img/avatar.jpeg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="ANLY'S BLOG">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">MVP架构实现的Github客户端(3-功能实现)</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2016-07-22T22:14:00+08:00">
+                2016-07-22
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Android/" itemprop="url" rel="index">
+                    <span itemprop="name">Android</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2016/07/22/mvp/mvp3/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count ds-thread-count" data-thread-key="2016/07/22/mvp/mvp3/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h1 id="MVP架构实现的Github客户端-3-功能实现"><a href="#MVP架构实现的Github客户端-3-功能实现" class="headerlink" title="MVP架构实现的Github客户端(3-功能实现)"></a>MVP架构实现的Github客户端(3-功能实现)</h1><p>请先阅读<a href="">1-准备工作</a>和<a href="">2-搭建项目架构</a>.</p>
+<p>前文搭建了项目的大体架构, 本文以实现github中最常用的搜索repository功能为例, 讲述下功能开发的整个过程以及关于MVP, Dagger2注入, Rx以及Retrofit, OkHttp等在<a href="">准备工作</a>中提到的一系列开源库的使用.</p>
+<a id="more"></a>
+<h2 id="1-功能梳理"><a href="#1-功能梳理" class="headerlink" title="1, 功能梳理"></a>1, 功能梳理</h2><p>基本功能类似于Github中的Search功能一致, 包含Repository/User/Issue/Code的搜索, 并可选排序方式(Best match, Most stars等等).</p>
+<blockquote>
+<p>本文以搜索Repository为例, 默认按照Most Stars来排序列举搜索结果. 监听用户输入关键字, 当超过600ms没有输入时自动开始搜索, 按照stars数显示搜索结果.</p>
+<p>目前只是以此功能来演示<a href="">前文</a>的MVP框架, 并不完善~<br><a href="https://github.com/mingjunli/GithubApp" target="_blank" rel="external">源码</a>将持续更新, 完善功能. 欢迎star.</p>
+</blockquote>
+<p>效果如下:<br><img src="/img/22_36_06.gif" alt="22_36_06"></p>
+<h2 id="2-从数据开始-M"><a href="#2-从数据开始-M" class="headerlink" title="2, 从数据开始(M)"></a>2, 从数据开始(M)</h2><h3 id="Github相关API"><a href="#Github相关API" class="headerlink" title="Github相关API"></a>Github相关API</h3><ul>
+<li><a href="https://developer.github.com/v3/search/#search-repositories" target="_blank" rel="external">Github Search Repository API Docs</a></li>
+<li>示例:</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">https://api.github.com/search/repositories?q=tetris+language:assembly&amp;sort=stars&amp;order=desc</div></pre></td></tr></table></figure>
+<p>根据API, 我们可以写Retrofit的接口以及相关Model类:</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">interface</span> <span class="title">RepoService</span> </span>&#123;</div><div class="line"></div><div class="line">    <span class="meta">@GET</span>(<span class="string">"search/repositories"</span>)</div><div class="line">    <span class="function">Observable&lt;SearchResultResp&gt; <span class="title">searchRepo</span><span class="params">(@Query(<span class="string">"q"</span>)</span> String key, @<span class="title">Query</span><span class="params">(<span class="string">"sort"</span>)</span> String sort,</span></div><div class="line"><span class="function">                                            @<span class="title">Query</span><span class="params">(<span class="string">"order"</span>)</span> String order, @<span class="title">Query</span><span class="params">(<span class="string">"page"</span>)</span> <span class="keyword">int</span> page,</span></div><div class="line"><span class="function">                                            @<span class="title">Query</span><span class="params">(<span class="string">"per_page"</span>)</span> <span class="keyword">int</span> pageSize)</span>;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>其中Repo这个Model类就不贴了, 太长.<br>建议大家可以使用Android Studio的插件GsonFormat来生成:<br><img src="/img/14691122297910.jpg" alt="14691122297910"></p>
+<h3 id="Retrofit-OkHttpClient设计"><a href="#Retrofit-OkHttpClient设计" class="headerlink" title="Retrofit/OkHttpClient设计"></a>Retrofit/OkHttpClient设计</h3><p>大家都知道Retrofit一般会是单例, 会设置一个baseUrl.<br>考虑到Github客户端这个应用, 我会加入Trending这个功能, 但是官方并没有提供相关接口. 这个baseUrl就可以不同接口不一样.<br>另外使用的OkHttpClient也可能针对不同接口使用不同的interceptor.<br>在此做了一个小框架, 以便扩展(时刻牢记<strong>开闭原则</strong>).<br><img src="/img/14691124995290.jpg" alt="14691124995290"></p>
+<ul>
+<li>ApiEndpoint 接口提供baseUrl.</li>
+<li>BaseOkHttpClient 提供OkHttpClient实例.</li>
+<li>BaseRetrofit 依赖ApiEndpoint和BaseOkHttpClient, 提供Retrofit实例.</li>
+<li>GithubRepoRetrofit 是基于github的url的Retrofit实现.</li>
+</ul>
+<h3 id="数据层整体结构"><a href="#数据层整体结构" class="headerlink" title="数据层整体结构"></a>数据层整体结构</h3><p>综上, 数据层的整体结构如下:<br><img src="/img/14691126224351.jpg" alt="14691126224351"></p>
+<ul>
+<li>RepoApi 定义业务接口.</li>
+<li>RepoDataSource 实现RepoApi接口, 通过RepoService这个Retrofit格式的Restful接口取数据并可以在此做相应处理.</li>
+</ul>
+<h2 id="3-绘制界面-V"><a href="#3-绘制界面-V" class="headerlink" title="3, 绘制界面(V)"></a>3, 绘制界面(V)</h2><p>这部分就不细说了, 参看<a href="https://github.com/mingjunli/GithubApp" target="_blank" rel="external">代码</a>. 抽象了几个Base类:<br><img src="/img/14691130283128.jpg" alt="14691130283128"></p>
+<h2 id="4-数据关联显示-P"><a href="#4-数据关联显示-P" class="headerlink" title="4, 数据关联显示(P)"></a>4, 数据关联显示(P)</h2><p>Presenter作为M和V的桥梁, 如<a href="http://lmj.wiki/post/android/mvpjia-gou-shi-xian-de-githubke-hu-duan-2-da-jian-xiang-mu-kuang-jia" target="_blank" rel="external">2-搭建项目框架</a>所说, 其拥有V和M的实例:<br><img src="/img/14691133030892.jpg" alt="14691133030892"></p>
+<p>通过BaseMvpPresenter中的attachView来获取View实例, 在其构造函数中关联RepoApi这个M层接口.</p>
+<blockquote>
+<p>在此抽象了一个RxMvpPresenter的基类, 主要用来解决Observable的unsubsribe问题.</p>
+</blockquote>
+<h2 id="5-将MVP注入起来-Dagger2"><a href="#5-将MVP注入起来-Dagger2" class="headerlink" title="5, 将MVP注入起来(Dagger2)"></a>5, 将MVP注入起来(Dagger2)</h2><p>上面介绍完M, V, P这三个角色, 但是他们是怎么关联起来的呢? 或者说怎么实例化的呢? 有请Dagger2出场.</p>
+<blockquote>
+<p>具体的Dagger2的使用请自行Google~, 基本作用如下几点. 我后续也会抽时间整理Dagger2的使用经验, 敬请期待.</p>
+</blockquote>
+<p>下面简单说下我们这个功能中的注入情况:s</p>
+<h3 id="使用-Module和-Providers来对外提供依赖"><a href="#使用-Module和-Providers来对外提供依赖" class="headerlink" title="使用@Module和@Providers来对外提供依赖"></a>使用@Module和@Providers来对外提供依赖</h3><p><a href="">搭建项目框架</a>我们提到di的基本框架中, 就写了一个ApplicationModule用来对外提供Application级别的依赖, 在此我们可以将Retrofit Service放在这里:</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div></pre></td><td class="code"><pre><div class="line"><span class="meta">@Module</span></div><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">ApplicationModule</span> </span>&#123;</div><div class="line">    <span class="keyword">protected</span> <span class="keyword">final</span> Application mApplication;</div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="title">ApplicationModule</span><span class="params">(Application application)</span> </span>&#123;</div><div class="line">        mApplication = application;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="meta">@Provides</span></div><div class="line">    <span class="function">Application <span class="title">provideApplication</span><span class="params">()</span> </span>&#123;</div><div class="line">        <span class="keyword">return</span> mApplication;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="meta">@Provides</span></div><div class="line">    <span class="meta">@ApplicationContext</span></div><div class="line">    <span class="function">Context <span class="title">provideContext</span><span class="params">()</span> </span>&#123;</div><div class="line">        <span class="keyword">return</span> mApplication;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="meta">@Provides</span></div><div class="line">    <span class="meta">@Singleton</span></div><div class="line">    <span class="function">RepoService <span class="title">provideRepoService</span><span class="params">(GithubRepoRetrofit retrofit)</span> </span>&#123;</div><div class="line">        <span class="keyword">return</span> retrofit.get().create(RepoService.class);</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>可以看到我们使用的是GithubRepoRetrofit这个Retrofit示例来创建Service的.<br>那么这个GithubRepoRetrofit是怎么实例化的呢? 往下看…</p>
+<h3 id="构造函数上的-Inject"><a href="#构造函数上的-Inject" class="headerlink" title="构造函数上的@Inject"></a>构造函数上的@Inject</h3><p>当用@Inject来注解一个构造函数时, Dagger2会根据其构造参数来生成一个该实例. 这样做是为了避免定义太多的@Provides.<br>例如:</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div></pre></td><td class="code"><pre><div class="line"><span class="meta">@Inject</span></div><div class="line"><span class="function"><span class="keyword">public</span> <span class="title">GithubRepoRetrofit</span><span class="params">(NormalHttpClient mHttpClient)</span> </span>&#123;</div><div class="line">    <span class="keyword">this</span>.mHttpClient = mHttpClient;</div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="meta">@Inject</span></div><div class="line"><span class="function"><span class="keyword">public</span> <span class="title">NormalHttpClient</span><span class="params">()</span> </span>&#123;</div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="meta">@Inject</span></div><div class="line"><span class="function"><span class="keyword">public</span> <span class="title">SearchPresenter</span><span class="params">(RepoApi api)</span> </span>&#123;</div><div class="line">    <span class="keyword">this</span>.mRepoApi = api;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<h3 id="变量上的-Inject"><a href="#变量上的-Inject" class="headerlink" title="变量上的@Inject"></a>变量上的@Inject</h3><p>上面两个原则用来提供实例, 这个就是用来请求实例的.<br>例如在SearchFragment里面我们需要一个SearchPresenter的实例:</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"><span class="meta">@Inject</span></div><div class="line">SearchPresenter mPresenter;</div></pre></td></tr></table></figure>
+<p>如上即可, 我们无需关注这个Presenter怎么实例化的. 这个给了我们很多想象空间, 我们可以随意替换这个Presenter的实现, 都不需要改动View的代码.</p>
+<h3 id="Component的作用"><a href="#Component的作用" class="headerlink" title="@Component的作用"></a>@Component的作用</h3><p>以上讲了实例的产生和消费, 那么他们是怎么关联的呢? 这就需要@Component了, Component用来做实例关联和inject.<br>所有的@Component类都会在编译时生成一个Dagger开头的类, 里面根据Component定义来提供实例, 和注入关系.</p>
+<p>例如我们的Component:</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div></pre></td><td class="code"><pre><div class="line"><span class="meta">@PerActivity</span></div><div class="line"><span class="meta">@Component</span>(</div><div class="line">        dependencies = ApplicationComponent.class,</div><div class="line">        modules = &#123;ActivityModule.class, RepoModule.class, TrendingRepoModule.class&#125;)</div><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">interface</span> <span class="title">MainComponent</span> <span class="keyword">extends</span> <span class="title">ActivityComponent</span> </span>&#123;</div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">void</span> <span class="title">inject</span><span class="params">(MostStarFragment mostStarFragment)</span></span>;</div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">void</span> <span class="title">inject</span><span class="params">(TrendingFragment trendingFragment)</span></span>;</div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">void</span> <span class="title">inject</span><span class="params">(SearchFragment searchFragment)</span></span>;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>可以看到MainComponent依赖ApplicationComponent, 并从ActivityModule, RepoModule, TrendingRepoModule这三个Module中获取依赖实例.</p>
+<p>另外提供inject关系到MostStarFragment, TrendingFragment, SearchFragment这三个使用者身上, 要使用这个inject关系, 还需在onCreate中inject一下:</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line"><span class="meta">@Override</span></div><div class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">onCreate</span><span class="params">(@Nullable Bundle savedInstanceState)</span> </span>&#123;</div><div class="line">    <span class="keyword">super</span>.onCreate(savedInstanceState);</div><div class="line">    getComponent(MainComponent.class).inject(<span class="keyword">this</span>);</div><div class="line"></div><div class="line">    mPresenter.attachView(<span class="keyword">this</span>);</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<blockquote>
+<p>具体大家可以查看<a href="https://github.com/mingjunli/GithubApp" target="_blank" rel="external">源码</a>以及编译后生成的DaggerMainComponent.</p>
+</blockquote>
+<h2 id="6-RxBinding-RxJava的使用"><a href="#6-RxBinding-RxJava的使用" class="headerlink" title="6, RxBinding/RxJava的使用"></a>6, RxBinding/RxJava的使用</h2><p>在这个功能中, 使用RxBinding对EditText的Text Change事件做了事件流处理, 以便可以很方便的做延时, 过滤, 与查询接口合并等. 具体RxBinding的功能不在此细说了.</p>
+<p>功能使用如下:</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div><div class="line">64</div><div class="line">65</div><div class="line">66</div><div class="line">67</div><div class="line">68</div><div class="line">69</div><div class="line">70</div><div class="line">71</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">bindSearchView</span><span class="params">(EditText searchTextView)</span> </span>&#123;</div><div class="line">    mCompositeSubscription.add(RxTextView.textChanges(searchTextView)</div><div class="line">            .subscribeOn(AndroidSchedulers.mainThread())</div><div class="line">            .filter(<span class="keyword">new</span> Func1&lt;CharSequence, Boolean&gt;() &#123;</div><div class="line">                <span class="meta">@Override</span></div><div class="line">                <span class="function"><span class="keyword">public</span> Boolean <span class="title">call</span><span class="params">(CharSequence charSequence)</span> </span>&#123;</div><div class="line">                    <span class="keyword">return</span> charSequence.length() &gt; <span class="number">0</span>;</div><div class="line">                &#125;</div><div class="line">            &#125;)</div><div class="line">            .debounce(<span class="number">600</span>, TimeUnit.MILLISECONDS)</div><div class="line">            .subscribeOn(Schedulers.io())</div><div class="line">            .switchMap(<span class="keyword">new</span> Func1&lt;CharSequence, Observable&lt;ArrayList&lt;Repo&gt;&gt;&gt;() &#123;</div><div class="line">                <span class="meta">@Override</span></div><div class="line">                <span class="keyword">public</span> Observable&lt;ArrayList&lt;Repo&gt;&gt; call(CharSequence charSequence) &#123;</div><div class="line">                    String key = charSequence.toString();</div><div class="line">                    <span class="keyword">return</span> mRepoApi.searchMostStarredRepo(key, mLanguage)</div><div class="line">                                .onErrorResumeNext(<span class="keyword">new</span> Func1&lt;Throwable, Observable&lt;? extends ArrayList&lt;Repo&gt;&gt;&gt;() &#123;</div><div class="line">                                    <span class="meta">@Override</span></div><div class="line">                                    <span class="keyword">public</span> Observable&lt;? extends ArrayList&lt;Repo&gt;&gt; call(Throwable throwable) &#123;</div><div class="line">                                        getMvpView().showError(throwable);</div><div class="line">                                        AppLog.d(<span class="string">"searchMostStarredRepo onErrorResumeNext:"</span> + throwable);</div><div class="line">                                        <span class="keyword">return</span> Observable.empty();</div><div class="line">                                    &#125;</div><div class="line">                                &#125;)</div><div class="line">                                .doOnSubscribe(<span class="keyword">new</span> Action0() &#123;</div><div class="line">                                    <span class="meta">@Override</span></div><div class="line">                                    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">call</span><span class="params">()</span> </span>&#123;</div><div class="line">                                        mActivity.runOnUiThread(<span class="keyword">new</span> Runnable() &#123;</div><div class="line">                                            <span class="meta">@Override</span></div><div class="line">                                            <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">run</span><span class="params">()</span> </span>&#123;</div><div class="line">                                                getMvpView().showLoading();</div><div class="line">                                            &#125;</div><div class="line">                                        &#125;);</div><div class="line">                                    &#125;</div><div class="line">                                &#125;)</div><div class="line">                                .doOnTerminate(<span class="keyword">new</span> Action0() &#123;</div><div class="line">                                    <span class="meta">@Override</span></div><div class="line">                                    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">call</span><span class="params">()</span> </span>&#123;</div><div class="line">                                        mActivity.runOnUiThread(<span class="keyword">new</span> Runnable() &#123;</div><div class="line">                                            <span class="meta">@Override</span></div><div class="line">                                            <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">run</span><span class="params">()</span> </span>&#123;</div><div class="line">                                                getMvpView().dismissLoading();</div><div class="line">                                            &#125;</div><div class="line">                                        &#125;);</div><div class="line">                                    &#125;</div><div class="line">                                &#125;);</div><div class="line">                &#125;</div><div class="line">            &#125;)</div><div class="line">            .observeOn(AndroidSchedulers.mainThread())</div><div class="line">            .onErrorResumeNext(<span class="keyword">new</span> Func1&lt;Throwable, Observable&lt;? extends ArrayList&lt;Repo&gt;&gt;&gt;() &#123;</div><div class="line">                <span class="meta">@Override</span></div><div class="line">                <span class="keyword">public</span> Observable&lt;? extends ArrayList&lt;Repo&gt;&gt; call(Throwable throwable) &#123;</div><div class="line">                    AppLog.d(<span class="string">"onErrorResumeNext:"</span> + throwable);</div><div class="line">                    getMvpView().showError(throwable);</div><div class="line">                    <span class="keyword">return</span> Observable.empty();</div><div class="line">                &#125;</div><div class="line">            &#125;)</div><div class="line">            .subscribe(<span class="keyword">new</span> ResponseObserver&lt;ArrayList&lt;Repo&gt;&gt;() &#123;</div><div class="line">                <span class="meta">@Override</span></div><div class="line">                <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">onSuccess</span><span class="params">(ArrayList&lt;Repo&gt; repos)</span> </span>&#123;</div><div class="line">                    getMvpView().showContent(repos);</div><div class="line">                &#125;</div><div class="line"></div><div class="line">                <span class="meta">@Override</span></div><div class="line">                <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">onError</span><span class="params">(Throwable e)</span> </span>&#123;</div><div class="line">                    AppLog.d(<span class="string">"onError:"</span> + e);</div><div class="line">                    getMvpView().showError(e);</div><div class="line">                &#125;</div><div class="line">            &#125;));</div><div class="line"></div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>看起来好长, 实际就几步:<br>1, 字符串长度过滤.<br>2, <a href="http://reactivex.io/documentation/operators/debounce.html" target="_blank" rel="external">debounce</a>操作, 即仅在过了一段指定的时间还没发射数据时才发射一个数据<br>3, 与查询接口做<a href="http://reactivex.io/documentation/operators/flatmap.html" target="_blank" rel="external">switchMap</a>操作.</p>
+<h2 id="7-结语"><a href="#7-结语" class="headerlink" title="7, 结语"></a>7, 结语</h2><p>至此, 一个基于Dagger2, RxJava, Retrofit, OkHttp等library的MVP架构的实现已经完成. 这几篇文章只是提供给大家一个架构的方向, 欢迎大家<a href="https://github.com/mingjunli/GithubApp" target="_blank" rel="external">fork</a>.</p>
+<p>另外<a href="https://github.com/mingjunli/GithubApp" target="_blank" rel="external">GithubApp</a>这个工程还会持续更新, 包括功能上和架构, 以及一些新的主流库的使用也会在这个工程上体现, 欢迎关注star.</p>
+<blockquote>
+<p>转载请注明出处, 欢迎大家分享到朋友圈, 微博~</p>
+</blockquote>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/Android/" rel="tag"># Android</a>
+          
+            <a href="/tags/架构/" rel="tag"># 架构</a>
+          
+            <a href="/tags/MVP/" rel="tag"># MVP</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2016/07/22/mvp/mvp2/" rel="next" title="MVP架构实现的Github客户端(2-搭建项目框架)">
+                <i class="fa fa-chevron-left"></i> MVP架构实现的Github客户端(2-搭建项目框架)
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2016/07/26/android/android-app-skill-map/" rel="prev" title="Android App开发技能图谱">
+                Android App开发技能图谱 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+        <div class="ds-share flat" data-thread-key="2016/07/22/mvp/mvp3/"
+     data-title="MVP架构实现的Github客户端(3-功能实现)"
+     data-content=""
+     data-url="http://blog.lmj.wiki/2016/07/22/mvp/mvp3/">
+  <div class="ds-share-inline">
+    <ul  class="ds-share-icons-16">
+
+      <li data-toggle="ds-share-icons-more"><a class="ds-more" href="javascript:void(0);">分享到：</a></li>
+      <li><a class="ds-weibo" href="javascript:void(0);" data-service="weibo">微博</a></li>
+      <li><a class="ds-qzone" href="javascript:void(0);" data-service="qzone">QQ空间</a></li>
+      <li><a class="ds-qqt" href="javascript:void(0);" data-service="qqt">腾讯微博</a></li>
+      <li><a class="ds-wechat" href="javascript:void(0);" data-service="wechat">微信</a></li>
+
+    </ul>
+    <div class="ds-share-icons-more">
+    </div>
+  </div>
+</div>
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+      <div class="ds-thread" data-thread-key="2016/07/22/mvp/mvp3/"
+           data-title="MVP架构实现的Github客户端(3-功能实现)" data-url="http://blog.lmj.wiki/2016/07/22/mvp/mvp3/">
+      </div>
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          
+            <img class="site-author-image" itemprop="image"
+              src="/img/avatar.jpeg"
+              alt="anly_jun" />
+          
+            <p class="site-author-name" itemprop="name">anly_jun</p>
+            <p class="site-description motion-element" itemprop="description">Android, iOS, Mobile Dev/Test, Web, Python</p>
+        </div>
+
+        <nav class="site-state motion-element">
+
+          
+            <div class="site-state-item site-state-posts">
+            
+              <a href="/archives">
+            
+                <span class="site-state-item-count">55</span>
+                <span class="site-state-item-name">日志</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-categories">
+              <a href="/categories/index.html">
+                <span class="site-state-item-count">6</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-tags">
+              <a href="/tags/index.html">
+                <span class="site-state-item-count">20</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+          <div class="feed-link motion-element">
+            <a href="/atom.xml" rel="alternate">
+              <i class="fa fa-rss"></i>
+              RSS
+            </a>
+          </div>
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#MVP架构实现的Github客户端-3-功能实现"><span class="nav-number">1.</span> <span class="nav-text">MVP架构实现的Github客户端(3-功能实现)</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#1-功能梳理"><span class="nav-number">1.1.</span> <span class="nav-text">1, 功能梳理</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-从数据开始-M"><span class="nav-number">1.2.</span> <span class="nav-text">2, 从数据开始(M)</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Github相关API"><span class="nav-number">1.2.1.</span> <span class="nav-text">Github相关API</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Retrofit-OkHttpClient设计"><span class="nav-number">1.2.2.</span> <span class="nav-text">Retrofit/OkHttpClient设计</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#数据层整体结构"><span class="nav-number">1.2.3.</span> <span class="nav-text">数据层整体结构</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-绘制界面-V"><span class="nav-number">1.3.</span> <span class="nav-text">3, 绘制界面(V)</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#4-数据关联显示-P"><span class="nav-number">1.4.</span> <span class="nav-text">4, 数据关联显示(P)</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#5-将MVP注入起来-Dagger2"><span class="nav-number">1.5.</span> <span class="nav-text">5, 将MVP注入起来(Dagger2)</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#使用-Module和-Providers来对外提供依赖"><span class="nav-number">1.5.1.</span> <span class="nav-text">使用@Module和@Providers来对外提供依赖</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#构造函数上的-Inject"><span class="nav-number">1.5.2.</span> <span class="nav-text">构造函数上的@Inject</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#变量上的-Inject"><span class="nav-number">1.5.3.</span> <span class="nav-text">变量上的@Inject</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Component的作用"><span class="nav-number">1.5.4.</span> <span class="nav-text">@Component的作用</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#6-RxBinding-RxJava的使用"><span class="nav-number">1.6.</span> <span class="nav-text">6, RxBinding/RxJava的使用</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#7-结语"><span class="nav-number">1.7.</span> <span class="nav-text">7, 结语</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2017</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">anly_jun</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+  <span class="post-meta-divider">|</span>
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">NexT.Gemini</a> v5.1.2</div>
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.2"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.2"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.2"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.2"></script>
+
+
+
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.2"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.2"></script>
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.2"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.2"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.2"></script>
+
+
+
+  
+
+  
+    
+  
+
+  <script type="text/javascript">
+    var duoshuoQuery = {short_name:"anlyjun"};
+    (function() {
+      var ds = document.createElement('script');
+      ds.type = 'text/javascript';ds.async = true;
+      ds.id = 'duoshuo-script';
+      ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+      ds.charset = 'UTF-8';
+      (document.getElementsByTagName('head')[0]
+      || document.getElementsByTagName('body')[0]).appendChild(ds);
+    })();
+  </script>
+
+  
+    
+    
+    <script src="/lib/ua-parser-js/dist/ua-parser.min.js?v=0.7.9"></script>
+    <script src="/js/src/hook-duoshuo.js"></script>
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

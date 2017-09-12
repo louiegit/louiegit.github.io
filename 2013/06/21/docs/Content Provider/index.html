@@ -1,0 +1,1125 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next gemini use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.2" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="Android,翻译," />
+
+
+
+
+
+  <link rel="alternate" href="/atom.xml" title="ANLY'S BLOG" type="application/atom+xml" />
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.1.2" />
+
+
+
+
+
+
+<meta name="description" content="Content ProviderContent Provider管理结构化数据集的入口。封装数据并提供定义数据安全的机制。Content Provider是进程间数据共享的标准接口。 当你想要使用一个Content Provider来访问数据，你使用Application的Context中的ContentResolver对象作为一个client与provider（实现ContentProvider">
+<meta name="keywords" content="Android,翻译">
+<meta property="og:type" content="article">
+<meta property="og:title" content="[译]Content Provider">
+<meta property="og:url" content="http://blog.lmj.wiki/2013/06/21/docs/Content Provider/index.html">
+<meta property="og:site_name" content="ANLY&#39;S BLOG">
+<meta property="og:description" content="Content ProviderContent Provider管理结构化数据集的入口。封装数据并提供定义数据安全的机制。Content Provider是进程间数据共享的标准接口。 当你想要使用一个Content Provider来访问数据，你使用Application的Context中的ContentResolver对象作为一个client与provider（实现ContentProvider">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2017-09-12T15:16:05.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="[译]Content Provider">
+<meta name="twitter:description" content="Content ProviderContent Provider管理结构化数据集的入口。封装数据并提供定义数据安全的机制。Content Provider是进程间数据共享的标准接口。 当你想要使用一个Content Provider来访问数据，你使用Application的Context中的ContentResolver对象作为一个client与provider（实现ContentProvider">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Gemini',
+    version: '5.1.2',
+    sidebar: {"position":"right","display":"post","offset":12,"offset_float":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://blog.lmj.wiki/2013/06/21/docs/Content Provider/"/>
+
+
+
+
+
+  <title>[译]Content Provider | ANLY'S BLOG</title>
+  
+
+
+
+
+
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?3e4bf02bc6c59d846f194a8afc04ecfc";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-right page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">ANLY'S BLOG</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">看看书, 写写字; 捣鼓捣鼓小技术.</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            关于
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://blog.lmj.wiki/2013/06/21/docs/Content Provider/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="anly_jun">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/img/avatar.jpeg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="ANLY'S BLOG">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">[译]Content Provider</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2013-06-21T17:14:00+08:00">
+                2013-06-21
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Android/" itemprop="url" rel="index">
+                    <span itemprop="name">Android</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2013/06/21/docs/Content Provider/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count ds-thread-count" data-thread-key="2013/06/21/docs/Content Provider/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h2 id="Content-Provider"><a href="#Content-Provider" class="headerlink" title="Content Provider"></a>Content Provider</h2><p>Content Provider管理结构化数据集的入口。封装数据并提供定义数据安全的机制。Content Provider是进程间数据共享的标准接口。</p>
+<p>当你想要使用一个Content Provider来访问数据，你使用Application的Context中的ContentResolver对象作为一个client与provider（实现ContentProvider的类实例）交互。此provider接收client端的数据请求，执行请求并返回结果。</p>
+<p>如果你不想与其他Application共享你的数据，你不需要开发你自己的provider。然而，你要为你的Application提供search suggestion（全局搜索）时你需要实现自己的provider。当你想要从你的应用复制/粘贴复杂数据或文件到另一个应用时你需要实现自己的provider。</p>
+<p>Android本身就包含一些管理数据（诸如audio，video，image或是contacts）的Content Provider。可以查看android.package包的文档。任何Application都可以访问这些provider。</p>
+<a id="more"></a> 
+<h3 id="Content-Provider-Basics"><a href="#Content-Provider-Basics" class="headerlink" title="Content Provider Basics"></a>Content Provider Basics</h3><p>Content Provider管理数据仓库的入口。Provider是Android Application组件之一，通常被用来为UI提供数据。但是，Content Provider的主要目的是被其他Application使用（通过一个provider client）。Provider和Provider client一起提供一个一致的，标准的数据访问接口，且可以处理进程间通信和数据安全访问。</p>
+<p>以下议题包括：</p>
+<ul>
+<li>Content Provider如何运作</li>
+<li>用来通过Content Provider获取数据的API</li>
+<li>用来在Content Provider中insert，delete，update数据的API</li>
+<li>其他一些有利provider运作的API</li>
+</ul>
+<h3 id="Overview"><a href="#Overview" class="headerlink" title="Overview"></a>Overview</h3><p>Content Provider以一个或多个表（类似于关系型数据库中创建的表）的形式为其他Application展示数据。每一行表示一个数据实例，每一列表示一个数据实例的一个单独的部分。</p>
+<p>比如，一个Android平台内置的provider—–用户词典，它保存在用户需要的一些不标准的拼写。如下是其中的表：</p>
+<table>
+<thead>
+<tr>
+<th>word</th>
+<th>app_id</th>
+<th>frequency</th>
+<th>locale</th>
+<th>_ID</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td></td>
+</tr>
+</tbody>
+</table>
+<p>mapreduce|user1|100|en_US|1<br>precompiler|user14|200|fr_FR|2<br>applet|user2|225|fr_CA|3<br>const|user1|255|pt_BR|4<br>int|user5|100|en_UK|5<br>表中，每一行表示一个在标准词典中可能找不到的单词数据实例。每一列表示该单词的一些数据，比如属地。列标题是在provider中存储的列名。在此provider中，_ID作为主钥“primary key”列，provider会自动维护。</p>
+<blockquote>
+<p>一个provider不要求必须有一个primary key，且如果有也不要求一定要使用_ID来作为列名。但是，如果你要将此provider的数据bind到一个ListView，就必须有一列为_ID。具体解释在Displaying query results章节有说明。</p>
+</blockquote>
+<h2 id="Accessing-a-provider"><a href="#Accessing-a-provider" class="headerlink" title="Accessing a provider"></a>Accessing a provider</h2><p>一个Application使用ContentResolver对象来访问一个Content Provider的数据。此对象的方法会调用provider对象（一个ContentProvider子类的实例）的同名方法，ContentResolver提供了基本的“CRUD”（create，retrieve，update，delete）方法操作持久型数据。</p>
+<p>在客户端Application进程的ContentResolver和持有provider的Application中的ContentProvider之间会自动处理进程间通信（IPC）。ContentProvider同样扮演数据仓库和数据表形式之间的一个抽象层。</p>
+<blockquote>
+<p>要访问一个Provider，你的Application通常需要在manifest文件中请求指定的权限（permission）。将会在<a href="">Content Provider Permissions</a>章节详细介绍。</p>
+</blockquote>
+<p>例如：要获取用户词典Provider中的word和local的列表，你可以调用ContentResolver.query()。此query会调用用户词典Provider中定义的ContentProvider.query()。如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line"><span class="comment">// Queries the user dictionary and returns results</span></div><div class="line">mCursor = getContentResolver().query(</div><div class="line">    UserDictionary.Words.CONTENT_URI,   <span class="comment">// The content URI of the words table</span></div><div class="line">    mProjection,                        <span class="comment">// The columns to return for each row</span></div><div class="line">    mSelectionClause                    <span class="comment">// Selection criteria</span></div><div class="line">    mSelectionArgs,                     <span class="comment">// Selection criteria</span></div><div class="line">    mSortOrder);                        <span class="comment">// The sort order for the returned rows</span></div></pre></td></tr></table></figure>
+<p>下表展示了query(Uri,projection,selection,selectionArgs,sortOrder)方法中参数的对应SQL语句中的意思：</p>
+<table>
+<thead>
+<tr>
+<th>query()参数</th>
+<th>SELECT语句的关键字及条件</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td></td>
+</tr>
+</tbody>
+</table>
+<p>Uri|FROM table_name|对应要查询的表名。<br>projection|col,col……|要查询的列名（字段）。<br>selection|WHERE col=value|查询条件<br>selectionArgs|Selection中的？对应value|查询条件中对应的？<br>sortOrder|ORDER BY col…|排序方式</p>
+<h3 id="Content-URIs"><a href="#Content-URIs" class="headerlink" title="Content URIs"></a>Content URIs</h3><p>Content URI是一个标识provider中数据的URI。Content URI包含一个provider的标识名（authority）和一个指定table的名字（path）。当你调用一个方法去访问一个provider中的table时，要包含一个指定table的Content URI作为方法参数。</p>
+<p>在之前的代码中，常量CONTENT_URI表示用户词典Provider中的“word”表。ContentResolver对象解析出此URI的authority，通过此authority去匹配系统中已知的provider，然后将query方法分发给正确的provider执行。</p>
+<p>ContentProvider使用Content URI的path部分去选择访问的table。通常一个provider的每一个对外的table对应的path。</p>
+<p>在之前的代码中，“word”表的URI全写如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">content:<span class="comment">//user_dictionary/words</span></div></pre></td></tr></table></figure>
+<p>User_dictionary是此provider的authority，而words是“word”表对应的path。content://称之为scheme，总是存在的，它表示这是一个Content URI。</p>
+<p>一些provider允许你直接在URI后附着一个ID来访问table的某一行数据。比如，要访问“word”表中的ID为4的数据：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">Uri singleUri = ContentUri.withAppendedId(UserDictionary.Words.CONTENT_URI,<span class="number">4</span>);</div></pre></td></tr></table></figure>
+<p>你会经常使用这种方式（ID指定）来查询某一行数据或是更新，删除。</p>
+<p>注意：Uri和Uri.Builder提供了一些方便的方法来从String构建形式良好的Uri对象。ContentUri中包含了方便的方法去在URI后附着一个ID。上述代码就是使用wirhAppendedId()方法来给URI附着ID的。</p>
+<h3 id="Retrieving-Data-from-the-Provider"><a href="#Retrieving-Data-from-the-Provider" class="headerlink" title="Retrieving Data from the Provider"></a>Retrieving Data from the Provider</h3><p>此段讨论如何从一个provider中检索（retrieve，query）数据。将用户词典Provider作为例子。</p>
+<p>说明：为了清晰起见，此章节中代码调用ContentProvider.query()是在“UI Thread”。实际上，你应该使用异常查询方式（使用单独线程）。其中一种方式就是使用CursorLoader类，（在Loader文档中有详细介绍，译者注Loader是3.0提供的，之前的API不提供）。还有，讲解的代码都是片段而非一个完整的Application。</p>
+<p>从一个Provider中query数据，基本有以下两步：</p>
+<ol>
+<li>请求到此provider的读权限</li>
+<li>定义代码去发送一个query给Provider</li>
+</ol>
+<p>Requesting read access permission</p>
+<p>要访问一个provider，你的Application需要此provider的读权限。你不能在运行时请求此权限，而是要在manifest文件中指明你需要的权限，使用<uses-permission>元素和provider中定义的明确permission name。当你在你的manifest中指明了此元素，你的Application就可以有效请求此权限。当用户安装你的Application时，会被隐式授予此请求权限。</uses-permission></p>
+<p>更多permission相关知识，参看<a href="">Content Provider Permissions章节</a>。</p>
+<p>用户词典Provider在manifest中定义了android.permission.READ_USER_DICTIONARY的权限，所以想要从此Provider中读取数据的Application都必须请求此权限。</p>
+<h3 id="Constructing-the-query"><a href="#Constructing-the-query" class="headerlink" title="Constructing the query"></a>Constructing the query</h3><p>下一步就是构造一个query来从provider检索数据。如下代码定义了一些列的查询参数变量：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div></pre></td><td class="code"><pre><div class="line"><span class="comment">// A "projection" defines the columns that will be returned for each row</span></div><div class="line">String[] mProjection =</div><div class="line">&#123;</div><div class="line">    UserDictionary.Words._ID,    <span class="comment">// Contract class constant for the _ID column name</span></div><div class="line">    UserDictionary.Words.WORD,   <span class="comment">// Contract class constant for the word column name</span></div><div class="line">    UserDictionary.Words.LOCALE  <span class="comment">// Contract class constant for the locale column name</span></div><div class="line">&#125;;</div><div class="line"></div><div class="line"><span class="comment">// Defines a string to contain the selection clause</span></div><div class="line">String mSelectionClause = <span class="keyword">null</span>;</div><div class="line"></div><div class="line"><span class="comment">// Initializes an array to contain selection arguments</span></div><div class="line">String[] mSelectionArgs = &#123;<span class="string">""</span>&#125;;</div></pre></td></tr></table></figure>
+<p>下一段代码展示如何去使用ContentResolver.query()，使用用户词典Provider作为例子。Provider的query类似于SQL的query，包含一系列的返回列，一系列的选择准则，一系列的排序规则。</p>
+<p>返回列称之为projection。</p>
+<p>检索准则的表达式分为一个查询条件（selection clause）和查询参数（selection argument）。查询条件是一个逻辑和Boolean表达式（列名和值匹配）的组合。可以使用查询参数的值去对应查询条件中“？”。</p>
+<p>在下面的代码片段中，如果用户不输入单词，查询语句就会设置为null，这样会查询出provider的所有单词。如果用户输入了一个word，查询语句会设置成“UserDictionary.Words.Word + “ = ?””且“？”被相应替换成用户输入的word值。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div></pre></td><td class="code"><pre><div class="line"><span class="comment">/*</span></div><div class="line"><span class="comment"> * This defines a one-element String array to contain the selection argument.</span></div><div class="line"><span class="comment"> */</span></div><div class="line">String[] mSelectionArgs = &#123;<span class="string">""</span>&#125;;</div><div class="line"></div><div class="line"><span class="comment">// Gets a word from the UI</span></div><div class="line">mSearchString = mSearchWord.getText().toString();</div><div class="line"></div><div class="line"><span class="comment">// Remember to insert code here to check for invalid or malicious input.</span></div><div class="line"></div><div class="line"><span class="comment">// If the word is the empty string, gets everything</span></div><div class="line"><span class="keyword">if</span> (TextUtils.isEmpty(mSearchString)) &#123;</div><div class="line">    <span class="comment">// Setting the selection clause to null will return all words</span></div><div class="line">    mSelectionClause = <span class="keyword">null</span>;</div><div class="line">    mSelectionArgs[<span class="number">0</span>] = <span class="string">""</span>;</div><div class="line"></div><div class="line">&#125; <span class="keyword">else</span> &#123;</div><div class="line">    <span class="comment">// Constructs a selection clause that matches the word that the user entered.</span></div><div class="line">    mSelectionClause = <span class="string">" = ?"</span>;</div><div class="line"></div><div class="line">    <span class="comment">// Moves the user's input string to the selection arguments.</span></div><div class="line">    mSelectionArgs[<span class="number">0</span>] = mSearchString;</div><div class="line"></div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="comment">// Does a query against the table and returns a Cursor object</span></div><div class="line">mCursor = getContentResolver().query(</div><div class="line">    UserDictionary.Words.CONTENT_URI,  <span class="comment">// The content URI of the words table</span></div><div class="line">    mProjection,                       <span class="comment">// The columns to return for each row</span></div><div class="line">    mSelectionClause                   <span class="comment">// Either null, or the word the user entered</span></div><div class="line">    mSelectionArgs,                    <span class="comment">// Either empty, or the string the user entered</span></div><div class="line">    mSortOrder);                       <span class="comment">// The sort order for the returned rows</span></div><div class="line"></div><div class="line"><span class="comment">// Some providers return null if an error occurs, others throw an exception</span></div><div class="line"><span class="keyword">if</span> (<span class="keyword">null</span> == mCursor) &#123;</div><div class="line">    <span class="comment">/*</span></div><div class="line"><span class="comment">     * Insert code here to handle the error. Be sure not to use the cursor! You may want to</span></div><div class="line"><span class="comment">     * call android.util.Log.e() to log this error.</span></div><div class="line"><span class="comment">     *</span></div><div class="line"><span class="comment">     */</span></div><div class="line"><span class="comment">// If the Cursor is empty, the provider found no matches</span></div><div class="line">&#125; <span class="keyword">else</span> <span class="keyword">if</span> (mCursor.getCount() &lt; <span class="number">1</span>) &#123;</div><div class="line"></div><div class="line">    <span class="comment">/*</span></div><div class="line"><span class="comment">     * Insert code here to notify the user that the search was unsuccessful. This isn't necessarily</span></div><div class="line"><span class="comment">     * an error. You may want to offer the user the option to insert a new row, or re-type the</span></div><div class="line"><span class="comment">     * search term.</span></div><div class="line"><span class="comment">     */</span></div><div class="line"></div><div class="line">&#125; <span class="keyword">else</span> &#123;</div><div class="line">    <span class="comment">// Insert code here to do something with the results</span></div><div class="line"></div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>与此query相类似的SQL语句如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">SELECT _ID, word, frequency, locale FROM words WHERE word = &lt;userinput&gt; ORDER BY word ASC;</div></pre></td></tr></table></figure>
+<h3 id="Protecting-against-malicious-input"><a href="#Protecting-against-malicious-input" class="headerlink" title="Protecting against malicious input"></a>Protecting against malicious input</h3><p>如果Provider管理的数据是在一个SQL数据库中，在原始SQL语句中包含不被信任的数据会导致SQL注入。</p>
+<p>看如下的selection clause：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"><span class="comment">// Constructs a selection clause by concatenating the user's input to the column name</span></div><div class="line">String mSelectionClause =  <span class="string">"var = "</span> + mUserInput;</div></pre></td></tr></table></figure>
+<p>如果你这样做，用户就可以在你的SQL语句中串联恶意SQL。例如，用户可能输入“nothing; DROP TABLE <em>;”来代替mUserInput，这样会导致selection clause变成“var = nothing; DROP TABLE </em>;”。因为此selection clause会被当做一个SQL语句，这可能导致provider清除掉SQLite数据库下的所有table（除非provider设置了捕获SQL注入尝试）。</p>
+<p>为了避免这种问题，可以在selection clause中使用“？”作为可代替的参数，而在一个单独的数组中赋值（selection arguments）。当你这样做时，用户的输入会直接绑定到query而不是被解释成SQL语句的一部分。因为它不是被当做一个SQL来对待，所以用户不能注入恶意SQL。如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"><span class="comment">// Constructs a selection clause with a replaceable parameter</span></div><div class="line">String mSelectionClause =  <span class="string">"var = ?"</span>;</div></pre></td></tr></table></figure>
+<p>如此初始化一个selection argument的数组：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"><span class="comment">// Defines an array to contain the selection arguments</span></div><div class="line">String[] selectionArgs = &#123;<span class="string">""</span>&#125;;</div></pre></td></tr></table></figure>
+<p>如此将用户输入放入数组中：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"><span class="comment">// Sets the selection argument to the user's input</span></div><div class="line">selectionArgs[<span class="number">0</span>] = mUserInput;</div></pre></td></tr></table></figure>
+<p>Selection clause使用“？”而对应selection argument数组是一个Select的首选方式，即使provider不是基于SQLite数据库。</p>
+<h2 id="Displaying-query-results"><a href="#Displaying-query-results" class="headerlink" title="Displaying query results"></a>Displaying query results</h2><p>ContentResolver.query()方法通常会返回一个Cursor：包含query的projection指定的列和与query的selection匹配的行。Cursor提供随机读访问其包含的行和列。使用Cursor的方法，你可以遍历结果集中的行，确定每一列的数据类型，获取每一列的数据以及获取结果集的其他属性。一些Cursor实现会在provider的数据变化时自动更新对象，或是在Cursor变化时触发一个Observer的方法，或是二者兼是。</p>
+<p>注意：Provider可能限制访问基于对象性质查询出的列（不理解，需看源码分析）。例如Contacts Provider限制访问一些列给同步适配器，所以它不会返回给一个Activity或Service。</p>
+<p>如果没有行匹配此查询准则，provider会返回一个空的Cursor，cursor的count为0。</p>
+<p>如果出现内部错误，查询的结果取决于特定的provider，可能是null也可能抛出一个Exception。</p>
+<p>因为Cursor是一个行的列表，所以显示Cursor中内容的最好方式是通过一个SimpleCursorAdapter与一个ListView关联。</p>
+<p>下列代码片段是上面代码的延续。创建一个包含Cursor的SimpleCursorAdapter的对象，且设置此对象为ListView的适配器。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div></pre></td><td class="code"><pre><div class="line"><span class="comment">// Defines a list of columns to retrieve from the Cursor and load into an output row</span></div><div class="line">String[] mWordListColumns =</div><div class="line">&#123;</div><div class="line">    UserDictionary.Words.WORD,   <span class="comment">// Contract class constant containing the word column name</span></div><div class="line">    UserDictionary.Words.LOCALE  <span class="comment">// Contract class constant containing the locale column name</span></div><div class="line">&#125;;</div><div class="line"></div><div class="line"><span class="comment">// Defines a list of View IDs that will receive the Cursor columns for each row</span></div><div class="line"><span class="keyword">int</span>[] mWordListItems = &#123; R.id.dictWord, R.id.locale&#125;;</div><div class="line"></div><div class="line"><span class="comment">// Creates a new SimpleCursorAdapter</span></div><div class="line">mCursorAdapter = <span class="keyword">new</span> SimpleCursorAdapter(</div><div class="line">    getApplicationContext(),               <span class="comment">// The application's Context object</span></div><div class="line">    R.layout.wordlistrow,                  <span class="comment">// A layout in XML for one row in the ListView</span></div><div class="line">    mCursor,                               <span class="comment">// The result from the query</span></div><div class="line">    mWordListColumns,                      <span class="comment">// A string array of column names in the cursor</span></div><div class="line">    mWordListItems,                        <span class="comment">// An integer array of view IDs in the row layout</span></div><div class="line">    <span class="number">0</span>);                                    <span class="comment">// Flags (usually none are needed)</span></div><div class="line"></div><div class="line"><span class="comment">// Sets the adapter for the ListView</span></div><div class="line">mWordList.setAdapter(mCursorAdapter);</div></pre></td></tr></table></figure>
+<p>注意：要使一个Cursor支持ListView，此Cursor必须包含一个名为_ID的列。为此，前面查询“word”表时也检索了_ID列，虽然ListView并不显示此列。这个限制也解释了为什么大多数的provider的每个表都有_ID列字段。</p>
+<h3 id="Getting-data-from-query-results"><a href="#Getting-data-from-query-results" class="headerlink" title="Getting data from query results"></a>Getting data from query results</h3><p>除了简单的显示查询的结果，你还可以以其他方式使用它。比如，你可以在用户词典中检索拼写，然后在其他provider中查找。你可以遍历Cursor中的行：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div></pre></td><td class="code"><pre><div class="line"><span class="comment">// Determine the column index of the column named "word"</span></div><div class="line"><span class="keyword">int</span> index = mCursor.getColumnIndex(UserDictionary.Words.WORD);</div><div class="line"></div><div class="line"><span class="comment">/*</span></div><div class="line"><span class="comment"> * Only executes if the cursor is valid. The User Dictionary Provider returns null if</span></div><div class="line"><span class="comment"> * an internal error occurs. Other providers may throw an Exception instead of returning null.</span></div><div class="line"><span class="comment"> */</span></div><div class="line"></div><div class="line"><span class="keyword">if</span> (mCursor != <span class="keyword">null</span>) &#123;</div><div class="line">    <span class="comment">/*</span></div><div class="line"><span class="comment">     * Moves to the next row in the cursor. Before the first movement in the cursor, the</span></div><div class="line"><span class="comment">     * "row pointer" is -1, and if you try to retrieve data at that position you will get an</span></div><div class="line"><span class="comment">     * exception.</span></div><div class="line"><span class="comment">     */</span></div><div class="line">    <span class="keyword">while</span> (mCursor.moveToNext()) &#123;</div><div class="line"></div><div class="line">        <span class="comment">// Gets the value from the column.</span></div><div class="line">        newWord = mCursor.getString(index);</div><div class="line"></div><div class="line">        <span class="comment">// Insert code here to process the retrieved word.</span></div><div class="line"></div><div class="line">        ...</div><div class="line"></div><div class="line">        <span class="comment">// end of while loop</span></div><div class="line">    &#125;</div><div class="line">&#125; <span class="keyword">else</span> &#123;</div><div class="line"></div><div class="line">    <span class="comment">// Insert code here to report an error if the cursor is null or the provider threw an exception.</span></div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>Cursor实现包含了一系列“get”方法去从该对象中检索出不同类型的数据。比如上述代码片段中使用的getString()方法。还有getType()方法来获取指示每列数据类型的值。</p>
+<h2 id="Content-Provider-Permissions"><a href="#Content-Provider-Permissions" class="headerlink" title="Content Provider Permissions"></a>Content Provider Permissions</h2><p>一个provider的Application可以指定一个permission，其他Application要访问此provider的数据就必须包含此permission。这些permission确保用户知道一个Application将会尝试访问哪些数据。基于Provider的要求，其他Application需要请求相应的permission去访问此Provider。终端用户会在他们安装Application看到应用请求的permission。</p>
+<p>一个provider的Application没有指定任何permission，那么其他Application不能访问此provider的数据。然而，此provider的Application的其他组件总是拥有全部的读写权限，无论是否指定permission。</p>
+<p>如前所述，用户词典Provider需要android.permission.READ_USER_DICTIONARY权限从它检索数据，需要另外一个android.permission.WRITE_USER_DICTIONARY权限来插入，更新和删除数据。</p>
+<p>为了获得访问一个Provider的权限，一个Application需要在其manifest文件中指定<uses-permission>元素。当Android Package Manager安装此Application时，用户必须同意此Application请求的所有权限。如果用户同意所有请求的权限，Package Manager继续安装，否则会取消安装。</uses-permission></p>
+<p>如下是访问用户词典Provider定义的permission：</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"><span class="tag">&lt;<span class="name">uses-permission</span> <span class="attr">android:name</span>=<span class="string">"android.permission.READ_USER_DICTIONARY"</span>&gt;</span></div></pre></td></tr></table></figure>
+<p>关于Provider权限的更多细节参看Security and Permissions文档。</p>
+<h2 id="Inserting-Updating-and-Deleting-Data"><a href="#Inserting-Updating-and-Deleting-Data" class="headerlink" title="Inserting, Updating, and Deleting Data"></a>Inserting, Updating, and Deleting Data</h2><p>和检索数据一样，你也可以通过client端与provider的交互去修改数据。你可以调用ContentResolver中的带参方法执行ContentProvider中的相应方法。Provider和client端会自动处理IPC以及安全性。</p>
+<h3 id="Inserting-data"><a href="#Inserting-data" class="headerlink" title="Inserting data"></a>Inserting data</h3><p>插入数据到provider，可以调用ContentResolver.insert()方法。此方法会向provider插入一行数据并返回此行数据的URI。下面的代码段就是展示如何向用户词典provider插入一个word：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div></pre></td><td class="code"><pre><div class="line"><span class="comment">// Defines a new Uri object that receives the result of the insertion</span></div><div class="line">Uri mNewUri;</div><div class="line"></div><div class="line">...</div><div class="line"></div><div class="line"><span class="comment">// Defines an object to contain the new values to insert</span></div><div class="line">ContentValues mNewValues = <span class="keyword">new</span> ContentValues();</div><div class="line"></div><div class="line"><span class="comment">/*</span></div><div class="line"><span class="comment"> * Sets the values of each column and inserts the word. The arguments to the "put"</span></div><div class="line"><span class="comment"> * method are "column name" and "value"</span></div><div class="line"><span class="comment"> */</span></div><div class="line">mNewValues.put(UserDictionary.Words.APP_ID, <span class="string">"example.user"</span>);</div><div class="line">mNewValues.put(UserDictionary.Words.LOCALE, <span class="string">"en_US"</span>);</div><div class="line">mNewValues.put(UserDictionary.Words.WORD, <span class="string">"insert"</span>);</div><div class="line">mNewValues.put(UserDictionary.Words.FREQUENCY, <span class="string">"100"</span>);</div><div class="line"></div><div class="line">mNewUri = getContentResolver().insert(</div><div class="line">    UserDictionary.Word.CONTENT_URI,   <span class="comment">// the user dictionary content URI</span></div><div class="line">    mNewValues                          <span class="comment">// the values to insert</span></div><div class="line">);</div></pre></td></tr></table></figure>
+<p>一行数据由一个单独的ContentValues包含，此ContentValues类似于一个单行的Cursor。此对象中的列不需要是相同的数据类型，如果你不想指定一个值，你可以使用ContentValues.putNull()方法设置一个null值。</p>
+<p>上述代码中没有添加_ID值，这是因为此列是自动维护的。Provider会给每一个新加的行赋予一个唯一的_ID值。Provider通常将此值作为table的主钥（primary key）。</p>
+<p>Insert方法会返回一个表示新加行的URI，格式如下：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">content://user_dictionary/words/&lt;id_value&gt;</div></pre></td></tr></table></figure></p>
+<p><id_value>就是此新加行的_ID。大多数的provider都能自动检测此格式的URI并且在指定行上执行请求。</id_value></p>
+<p>可以使用ContentUri.parseId()来从返回的URI中获取_ID。</p>
+<h3 id="Updating-data"><a href="#Updating-data" class="headerlink" title="Updating data"></a>Updating data</h3><p>要更新一行数据，你要使用一个ContentValues作为更新值，和一个查询条件。然后调用ContentResolver.update()方法。你仅仅需要将你想要更新的列的值加入ContentValues中。如果你想清除某列的内容，可以给它赋予一个null值。</p>
+<p>如下代码展示了修改所有local为en的行的local为null。Update的返回值为更新行的个数：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div></pre></td><td class="code"><pre><div class="line"><span class="comment">// Defines an object to contain the updated values</span></div><div class="line">ContentValues mUpdateValues = <span class="keyword">new</span> ContentValues();</div><div class="line"></div><div class="line"><span class="comment">// Defines selection criteria for the rows you want to update</span></div><div class="line">String mSelectionClause = UserDictionary.Words.LOCALE +  <span class="string">"LIKE ?"</span>;</div><div class="line">String[] mSelectionArgs = &#123;<span class="string">"en_%"</span>&#125;;</div><div class="line"></div><div class="line"><span class="comment">// Defines a variable to contain the number of updated rows</span></div><div class="line"><span class="keyword">int</span> mRowsUpdated = <span class="number">0</span>;</div><div class="line"></div><div class="line">...</div><div class="line"></div><div class="line"><span class="comment">/*</span></div><div class="line"><span class="comment"> * Sets the updated value and updates the selected words.</span></div><div class="line"><span class="comment"> */</span></div><div class="line">mUpdateValues.putNull(UserDictionary.Words.LOCALE);</div><div class="line"></div><div class="line">mRowsUpdated = getContentResolver().update(</div><div class="line">    UserDictionary.Words.CONTENT_URI,   <span class="comment">// the user dictionary content URI</span></div><div class="line">    mUpdateValues                       <span class="comment">// the columns to update</span></div><div class="line">    mSelectionClause                    <span class="comment">// the column to select on</span></div><div class="line">    mSelectionArgs                      <span class="comment">// the value to compare to</span></div><div class="line">);</div></pre></td></tr></table></figure>
+<p>调用ContentResolver.update()方法你也应该过滤用户输入，参考Protecting against malicious input章节。</p>
+<h3 id="Deleting-data"><a href="#Deleting-data" class="headerlink" title="Deleting data"></a>Deleting data</h3><p>删除行类似于查询，你要指定一个你想要删除行的查询条件，delete方法会返回你删除了的行的个数。如下代码展示了删除appid为user的行：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div></pre></td><td class="code"><pre><div class="line"><span class="comment">// Defines selection criteria for the rows you want to delete</span></div><div class="line">String mSelectionClause = UserDictionary.Words.APP_ID + <span class="string">" LIKE ?"</span>;</div><div class="line">String[] mSelectionArgs = &#123;<span class="string">"user"</span>&#125;;</div><div class="line"></div><div class="line"><span class="comment">// Defines a variable to contain the number of rows deleted</span></div><div class="line"><span class="keyword">int</span> mRowsDeleted = <span class="number">0</span>;</div><div class="line"></div><div class="line">...</div><div class="line"></div><div class="line"><span class="comment">// Deletes the words that match the selection criteria</span></div><div class="line">mRowsDeleted = getContentResolver().delete(</div><div class="line">    UserDictionary.Words.CONTENT_URI,   <span class="comment">// the user dictionary content URI</span></div><div class="line">    mSelectionClause                    <span class="comment">// the column to select on</span></div><div class="line">    mSelectionArgs                      <span class="comment">// the value to compare to</span></div><div class="line">);</div></pre></td></tr></table></figure>
+<p>调用ContentResolver.delete()方法你也应该过滤用户输入，参考Protecting against malicious input章节。</p>
+<h2 id="Provider-Data-Types"><a href="#Provider-Data-Types" class="headerlink" title="Provider Data Types"></a>Provider Data Types</h2><p>ContentProvider提供诸多不同的数据类型。例如text，integer，long，float，double。还有一个经常会使用到数据类型是BLOB（Binary Large Object，一个64KB的字节数组）。你可以通过Cursor的“get”方法查看有效的数据类型。</p>
+<p>Provider中的每列的数据类型一般会在其文档中说明。你也可以使用Cursor.getType()来确定数据类型。</p>
+<p>Provider还维护着他们定义的Content URI的MIME数据类型信息。你可以使用MIME类型信息来确定你的Application是否可以处理Provider提供的数据，或是基于MIME类型来选择一个类型去处理。通常在平provider包含复杂数据或是文件。可以调用ContentResolver.getType()去获取相应URI的MIME类型。</p>
+<p>如下MIME Type Reference章节会描述标准MIME和自定义MIME类型的语法。</p>
+<h2 id="Alternative-Forms-of-Provider-Access"><a href="#Alternative-Forms-of-Provider-Access" class="headerlink" title="Alternative Forms of Provider Access"></a>Alternative Forms of Provider Access</h2><p>在Application开发时有三种重要的可选provider访问格式：</p>
+<ul>
+<li>Batch access：你可以在ContentProviderOperation类中绑定一组访问调用，然后通过调用ContentResolver.applyBatch()来应用此Batch。</li>
+<li>Asynchronous queries：你应该在一个单独线程中做query操作。其中一种方式就是使用CursorLoader对象，在Loader文档中有此实例。（注：此是3.0引入，之前的API可以使用AsyncQueryHandler处理）。</li>
+<li>Data access via intents：虽然你不能直接发送一个Intent给provider，但是你可以发送一个Intent给此provider的Application，通常是最好的修改provider数据的方式。</li>
+</ul>
+<h3 id="Batch-access"><a href="#Batch-access" class="headerlink" title="Batch access"></a>Batch access</h3><p>使用Batch方式访问provider对于insert多行数据，或者是在同样一个方法调用中往多个table中insert行，又或者类似事务（transaction）那样跨进程执行一系列操作是非常有用的。</p>
+<p>要以“Batch mode”访问一个Provider，你要创建一组ContentProviderOperation对象，然后调用ContentResolver.applyBatch()发送给ContentProvider。你给此方法传一个provider的authority作为参数而不是一个具体的Content URI，这样你那一系列ContentProviderOperation就可以针对不同的table工作。ContentResolver.applyBatch会放回一个结果集的数组。</p>
+<h3 id="Data-access-via-intents"><a href="#Data-access-via-intents" class="headerlink" title="Data access via intents"></a>Data access via intents</h3><p>Intent提供对一个Content Provider的直接访问。允许用户访问一个provider中数据即使你的Application没有访问权限，无论是从一个有访问权限的Application获得一个结果Intent，或是激活一个有访问权限的Application且让用户在那里执行操作。</p>
+<h2 id="Getting-access-with-temporary-permissions"><a href="#Getting-access-with-temporary-permissions" class="headerlink" title="Getting access with temporary permissions"></a>Getting access with temporary permissions</h2><p>你可以访问你一个provider的数据，即使你没有合适的访问权限，通过发送一个Intent给拥有权限的Application然后接受一个带有“URI”权限的结果Intent。这些指定特定URI的权限持续到接收的Activity finished。拥有永恒权限的Application通过在其结果Intent中设置如下Flag来授予临时权限。</p>
+<ul>
+<li>读权限： FLAG_GRANT_READ_URI_PERMISSION</li>
+<li>写权限：FLAG_GRANT_WRITE_URI_PERMISSION</li>
+</ul>
+<blockquote>
+<p>注意：这些Flag不会授予一般的读写权限给包含此URI的authority。此访问仅限于此URI本身。</p>
+</blockquote>
+<p>Provider在manifest文件中为content URI定义URI权限，在<provider>元素中使用android:grantUriPermission属性，与在<provider>元素中添加<grant-uri-permission>子元素。此URI权限机制会在Security and Permissions文档的“URI Permissions”章节详细介绍。</grant-uri-permission></provider></provider></p>
+<p>例如，你可以在Contacts Provider检索一个Contact的数据，即使你没有READ_CONTACTS的权限。你可能想要在一个Application中发送一封电子贺卡（当一个联系人生日时）。不是请求READ_CONTACTS权限（这会给你访问所有联系人及其信息的权限），你更应该让用户控制你的Application要用到的联系人。你可以使用如下步骤：</p>
+<ol>
+<li>你的Application调用startActivityForResult()发送一个包含Action为“ACTION_PICK”和MIME type为“CONTENT_ITEM_TYPE”的Intent。</li>
+<li>因为此Intent与联系人应用的选择Activity的Intent filter匹配，此Activity会切换到前台。</li>
+<li>在此选择Activity中，用户可以选择一个联系人。一旦选定，此Activity会调用setResult(resultCode, Intent)来初始化一个Intent会传回给你的Application。此Intent包含用户选择的联系人的Content URI，还有额外的flag（FLAG_GRANT_READ_URI_PERMISSION）。此flag会授予你的Application读取此返回的Content URI指定的联系人的信息的权限。之后此选择Activity会调用finish()切换回你的Application。</li>
+<li>你的Activity回到前台，系统会调用你的Activity的onActivityResult方法，此方法接收联系人应用的选择Activity创建的结果Intent。</li>
+<li>使用此结果Intent中的Content URI，你可以从Contacts Provider中读取此联系人的数据，虽然你没有在你的manifest文件中请求访问此Provider的永恒权限。你可以获取此联系人的生日信息以及email地址来发送一个电子贺卡。</li>
+</ol>
+<h2 id="Using-another-application"><a href="#Using-another-application" class="headerlink" title="Using another application"></a>Using another application</h2><p>在你的Application没有访问权限时，一个简单的允许用户修改数据的方式是激活一个拥有权限的Application，然后让用户在那儿工作。</p>
+<p>例如：日历应用接收ACTION_INSERT intent，它允许你激活此应用的insert界面。你可以在此Intent中添加额外数据，这用应用就会使用预填充的界面。因为周期性事件有很复杂的逻辑语法，更好的往Calendar Provider中插入事件的方式是使用ACTION_INSERT激活Calendar应用然后让用户在此应用中insert。</p>
+<h3 id="Contract-Classes"><a href="#Contract-Classes" class="headerlink" title="Contract Classes"></a>Contract Classes</h3><p>Contract类定义了一些协助Application工作的常量，包括content URI、列名、intent Action和provider的其他的特性等。Contract类不是provider自动包含的，provider的开发者需要自己定义他们并让他们对其他开发者可用。Android平台中很多provider拥有相应的Contract类。</p>
+<p>具体实例，参看源码。Contacts Provider的ContactsContract类。</p>
+<h2 id="MIME-Type-Reference"><a href="#MIME-Type-Reference" class="headerlink" title="MIME Type Reference"></a>MIME Type Reference</h2><p>Content Provider可以返回标准的MIME媒体类型，或自定义的MIME类型字符串，或是二者兼并。</p>
+<p>MIME类型有如下格式：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">type/subtype</div></pre></td></tr></table></figure>
+<p>例如：知名的MIME类型text/html，包含text类型和html子类型。如果一个provider返回一个此类型给URI，意味着使用此URI的query会返回一个包含HTML标签的text。</p>
+<p>自定义的MIME类型字符串也称之为“vendor-specific”MIME类型，有更复杂的type和subtype值。此type值通常为</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">vnd.android.cursor.dir</div></pre></td></tr></table></figure>
+<p>来表示多行数据，或者</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">vnd.android.cursor.item</div></pre></td></tr></table></figure>
+<p>来表示单行。</p>
+<p>subtype是provider-specific。Android内置的provider通常有一个简单的subtype。例如，当联系人应用创建一行电话号码的数据时，它会设置MIME类型如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">vnd.android.cursor.item/phone_v2</div></pre></td></tr></table></figure>
+<p>注意，subtype只是简单的phone_v2。</p>
+<p>Provider开发者可以基于provider的authority和table名创建自己的subtype格式。例如：假设一个provider包含列车时刻表，provider的authority是com.example.train，包含Line1、Line2、Line3的table。对于以下content URI：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">content:<span class="comment">//com.example.trains/Line1</span></div></pre></td></tr></table></figure>
+<p>请求table Line1，provider返回如下MIME类型：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">vnd.android.cursor.dir/vnd.example.line1</div></pre></td></tr></table></figure>
+<p>对于这个Content URI：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">content:<span class="comment">//com.example.trains/Line2/5</span></div></pre></td></tr></table></figure>
+<p>请求table Line2的第5行，provider返回如下MIME类型：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">vnd.android.cursor.item/vnd.example.line2</div></pre></td></tr></table></figure>
+<p>大多数provider在其Contract类中定义了他们用到的MIME类型。</p>
+<h2 id="Creating-a-Content-Provider"><a href="#Creating-a-Content-Provider" class="headerlink" title="Creating a Content Provider"></a>Creating a Content Provider</h2><p>Content Provider管理数据仓储的入口。你通过一个或多个类来在你Application实现一个provider，并在manifest文件中添加元素。你的其中一个类实现ContentProvider，它会作为你的provider与其他Application的交互接口。虽然Content Provider意味着你在共享你的数据给其他Application，你自己Application内的Activity也可以通过你的provider允许用户查询和修改数据。</p>
+<p>如下章节会描述创建一个provider的步骤以及可用的一些API。</p>
+<h3 id="Before-You-Start-Building"><a href="#Before-You-Start-Building" class="headerlink" title="Before You Start Building"></a>Before You Start Building</h3><p>在你开始创建一个provider之前，确认以下几点：</p>
+<ol>
+<li>确定你是否需要一个Content Provider。在以下的情况下你需要创建一个provider：<br>a)    你想要提供复杂数据或文件给其他Application<br>b)    你想要允许用户从你的app复制复杂数据给其他app<br>c)    你想要通过Search框架提供一个自定义本地搜索<br>你不需要为一个SQLite DB提供一个provider，如果你仅仅是在你的Application内部使用。</li>
+<li>如果你还没有做以上工作，请阅读Content Provider Basics章节来了解Provider的更多知识。</li>
+</ol>
+<p>下面，如下步骤帮助你创建一个provider：</p>
+<ol>
+<li>设计你的数据的原存储。Content Provider以下面两种方式提供数据：<br>a)    File Data<br>数据通常是file的形式，例如photo，audio，video。在你的App的私有空间存储这些数据。当其他App请求一个文件时，你的provider会提供一个此文件的操作句柄（handle）。</li>
+</ol>
+<p>b)    “Structured Data”<br>数据通常是database，array或类似结构的形式。数据以类似table的行列形式表格存储。一行代表一个数据实体，比如一个人或一个库存条目等。每列代表给数据实体的一些数据，例如人的名字或库存条目的价格等。通常以此方式存储数据的是使用SQLite Database，但你也可以使用其他的持久存储类型。更过Android系统的存储类型信息，参见Designing Data Storage章节。</p>
+<ol>
+<li><p>定义一个ContentProvider的具体实现类并实现其需要的方法。此类是你的数据与Android系统的其他部分的交互接口。更多信息，参见Implementing the ContentProvider Class章节。</p>
+</li>
+<li><p>定义provider的authority字符串，content URI，列名等。如果你想provider的App处理Intent，还要定义Intent Action，extra data，Flag等。还要定义permission作为你的App请求访问你的数据的权限。你应该考虑在一个单独的Contract类中定义以上所有的值，然后，你可以暴露此类给其他开发者。更多content URI的信息，参考Designing Content URIs章节。更多Intent信息，参考Intent and Data Access章节。</p>
+</li>
+<li><p>添加其他可选项，例如实例数据，或是实现AbstractThreadedSyncAdapter使你可以在provider和基于云的数据（云端）进行同步。</p>
+</li>
+</ol>
+<h3 id="Designing-Data-Storage"><a href="#Designing-Data-Storage" class="headerlink" title="Designing Data Storage"></a>Designing Data Storage</h3><p>Content Provider是一个结构化数据的接口。在你创建这个接口之前，你必须决定如何存储你的数据。你可以以你喜欢的任何方式保存数据，然后设计一个读写此数据的接口。</p>
+<p>Android中如下几种数据存储技术是有效的：</p>
+<ul>
+<li>Android系统包含了SQLite数据库的API，Android内置的provider使用SQLite来保存表型（table-oriented）数据。SQLiteOpenHelper类协助你创建database，SQLiteDatabase类是访问数据的基类。</li>
+</ul>
+<p>你不需要使用一个database去实现你的数据仓储。Provider的外观是一系列表格，类似于关系型数据库，但是这不是Provider内部实现的要求。</p>
+<ul>
+<li><p>对于文件存储，Android包含各种面向文件（file-oriented）的API。更多file存储信息，参见Data Storage章节。如果你为媒体相关的数据（例如music，video）设计一个Provider，你可能使用table和file相结合的方式。</p>
+</li>
+<li><p>对于基于网络存储的数据，使用java.net和android.net中的类。你也可以同步网络数据到你的本地数据（比如数据库）中，然后以table或者file的形式提供出来。同步数据可以参考Sample Sync Adapter的Demo。</p>
+</li>
+</ul>
+<h3 id="Data-design-considerations"><a href="#Data-design-considerations" class="headerlink" title="Data design considerations"></a>Data design considerations</h3><p>如下有些建议，当你设计你的provider的数据结构时：</p>
+<ul>
+<li><p>Table数据应该总是有一个主钥（primary key）列，provider将其作为每行数据的唯一数值来维护。你可以使用此行的此值与其他table关联（作为一个外键（foreign key））。虽然你可以使用为此列选择任何名字，但是使用BaseColumns._ID是最好的选择。</p>
+</li>
+<li><p>如果你想要提供一个Bitmap的图片或是其他基于文件的大数据，直接保存在文件中提供出来而不是使用table。如果你这样做了，你需要告诉你的Provider的用户，他们需要使用ContentResolver的file方法去访问这些数据。</p>
+</li>
+<li><p>使用BLOB类型去保存不同大小不同结构的数据。例如，你可以使用BLOB列去保存一个协议缓存或是JSON结构。</p>
+</li>
+</ul>
+<p>你也可以使用BLOB去实现一个schema-independent的表，在这种类型的table中，你定义一个主键列，一个MIME类型的列，还一个或多个BLOB的普通列。这意味着BLOB列的数据通过MIME列来指示。它允许你在一张table的不同行存储不同的数据类型。参见Contacts Provider中的“data”表。</p>
+<h3 id="Designing-Content-URIs"><a href="#Designing-Content-URIs" class="headerlink" title="Designing Content URIs"></a>Designing Content URIs</h3><p>Content URI是一个标识provider中数据的URI。Content URI包含整个provider的标识符（authority）和一个指定table或file的名称（path）。一个可选的id部分指定table的某一行。所有ContentProvider的数据访问方法都有一个Content URI的参数；它允许你确定要访问的table，row或是file。</p>
+<h3 id="Designing-an-authority"><a href="#Designing-an-authority" class="headerlink" title="Designing an authority"></a>Designing an authority</h3><p>一个Provider通常拥有一个单一的authority，作为Android内部名称。为了避免去其他provider冲突，你应该使用你的所有权域名反序（com.android.xxx）作为你的provider的authority的基础。因为此建议同样针对Android的包名，你可以定义你的provider的authority作为包名的扩展。例如，如果你的Android应用包名为com.example.xxx，你应该定义你的provider的authority为com.example.xxx.provider。</p>
+<h3 id="Designing-a-path-structure"><a href="#Designing-a-path-structure" class="headerlink" title="Designing a path structure"></a>Designing a path structure</h3><p>开发者通常在authority后附着一个path来创建一个Content URI去指定一个确定的table。例如，如果你有两个table：table1和table2，你可以使用com.example.xxx.provider/table1和com.example.xxx.provider/table2分别表示。Path不仅限于一个分部（segment），且每级path都不是必须指定一个table。</p>
+<h3 id="Handling-content-URI-IDs"><a href="#Handling-content-URI-IDs" class="headerlink" title="Handling content URI IDs"></a>Handling content URI IDs</h3><p>为了方便，provider提供了直接访问table中单独行的方式，通过一个附着ID的content URI。Provider会将此ID与table中的_ID列进行匹配，并在相应的匹配行中执行操作。</p>
+<p>此设计有利于app访问provider。App对应provider执行一个query，然后使用CursorAdapter在一个ListView中显示结果。CursorAdapter中的Cursor要求必须定义有_ID。</p>
+<p>用户可能选择UI上显示的一行数据去查看或是修改。App会从ListView的Cursor中获取相应的行，取得此行的_ID，加入到content URI后，然后发送访问请求给provider。Provider可以对用户指定的行进行query或modify操作。</p>
+<h3 id="Content-URI-patterns"><a href="#Content-URI-patterns" class="headerlink" title="Content URI patterns"></a>Content URI patterns</h3><p>为了协助更好处理传入的Content URI执行的操作，provider API提供了一个方便的类：UriMatcher，它映射content URI为integer值。你可以使用switch语句来选择执行请求的操作。</p>
+<p>Content URI可以使用以下通配符：</p>
+<ul>
+<li><ul>
+<li>：任意长度的任意有效字符</li>
+</ul>
+</li>
+<li><h1 id="：任意长度的数字字符"><a href="#：任意长度的数字字符" class="headerlink" title="：任意长度的数字字符"></a>：任意长度的数字字符</h1></li>
+</ul>
+<p>假设有一个authority为com.example.app.provider的Provider，以下分别表示：</p>
+<ul>
+<li>content://com.example.app.provider/table1：叫table1的表</li>
+<li>content://com.example.app.provider/table2/dataset1：叫dataset1的表</li>
+<li>content://com.example.app.provider/table2/dataset2：叫dataset2的表</li>
+<li>content://com.example.app.provider/table3：叫table3的表。</li>
+</ul>
+<p>Provider同样可以识别带行ID的URI，例如content://com.example.app.provider/table3/1表示table3中_ID为1的行。</p>
+<p>以下content URI也是可以的：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">content:<span class="comment">//com.example.app.provider/*</span></div><div class="line">```	</div><div class="line"></div><div class="line">匹配provider中的任意URI</div><div class="line"></div><div class="line">```java</div><div class="line">content:<span class="comment">//com.example.app.provider/table2/*</span></div></pre></td></tr></table></figure>
+<p>匹配dataset1和dataset2表，但是不匹配table1和table3</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div><div class="line">64</div><div class="line">65</div><div class="line">66</div><div class="line">67</div><div class="line">68</div><div class="line">69</div><div class="line">70</div></pre></td><td class="code"><pre><div class="line">content:<span class="comment">//com.example.app.provider/table3/#</span></div><div class="line">```	</div><div class="line"></div><div class="line">匹配table3中的一行</div><div class="line"></div><div class="line">底下的代码片段展示了UriMatcher的方法是如何工作的。此段代码分别不同处理代表整个table的URI和代表单独行的URI。</div><div class="line">addURI()方法映射一个authority和path为一个integer值。match()方法为一个URI放回一个integer值。Switch语句判断此integer值来分别处理：</div><div class="line"></div><div class="line">```java</div><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">ExampleProvider</span> <span class="keyword">extends</span> <span class="title">ContentProvider</span> </span>&#123;</div><div class="line">...</div><div class="line">    <span class="comment">// Creates a UriMatcher object.</span></div><div class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> UriMatcher sUriMatcher;</div><div class="line">...</div><div class="line">    <span class="comment">/*</span></div><div class="line"><span class="comment">     * The calls to addURI() go here, for all of the content URI patterns that the provider</span></div><div class="line"><span class="comment">     * should recognize. For this snippet, only the calls for table 3 are shown.</span></div><div class="line"><span class="comment">     */</span></div><div class="line">...</div><div class="line">    <span class="comment">/*</span></div><div class="line"><span class="comment">     * Sets the integer value for multiple rows in table 3 to 1. Notice that no wildcard is used</span></div><div class="line"><span class="comment">     * in the path</span></div><div class="line"><span class="comment">     */</span></div><div class="line">    sUriMatcher.addURI(<span class="string">"com.example.app.provider"</span>, <span class="string">"table3"</span>, <span class="number">1</span>);</div><div class="line"></div><div class="line">    <span class="comment">/*</span></div><div class="line"><span class="comment">     * Sets the code for a single row to 2. In this case, the "#" wildcard is</span></div><div class="line"><span class="comment">     * used. "content://com.example.app.provider/table3/3" matches, but</span></div><div class="line"><span class="comment">     * "content://com.example.app.provider/table3 doesn't.</span></div><div class="line"><span class="comment">     */</span></div><div class="line">    sUriMatcher.addURI(<span class="string">"com.example.app.provider"</span>, <span class="string">"table3/#"</span>, <span class="number">2</span>);</div><div class="line">...</div><div class="line">    <span class="comment">// Implements ContentProvider.query()</span></div><div class="line">    <span class="function"><span class="keyword">public</span> Cursor <span class="title">query</span><span class="params">(</span></span></div><div class="line"><span class="function"><span class="params">        Uri uri,</span></span></div><div class="line"><span class="function"><span class="params">        String[] projection,</span></span></div><div class="line"><span class="function"><span class="params">        String selection,</span></span></div><div class="line"><span class="function"><span class="params">        String[] selectionArgs,</span></span></div><div class="line"><span class="function"><span class="params">        String sortOrder)</span> </span>&#123;</div><div class="line">...</div><div class="line">        <span class="comment">/*</span></div><div class="line"><span class="comment">         * Choose the table to query and a sort order based on the code returned for the incoming</span></div><div class="line"><span class="comment">         * URI. Here, too, only the statements for table 3 are shown.</span></div><div class="line"><span class="comment">         */</span></div><div class="line">        <span class="keyword">switch</span> (sUriMatcher.match(uri)) &#123;</div><div class="line"></div><div class="line"></div><div class="line">            <span class="comment">// If the incoming URI was for all of table3</span></div><div class="line">            <span class="keyword">case</span> <span class="number">1</span>:</div><div class="line"></div><div class="line">                <span class="keyword">if</span> (TextUtils.isEmpty(sortOrder)) sortOrder = <span class="string">"_ID ASC"</span>;</div><div class="line">                <span class="keyword">break</span>;</div><div class="line"></div><div class="line">            <span class="comment">// If the incoming URI was for a single row</span></div><div class="line">            <span class="keyword">case</span> <span class="number">2</span>:</div><div class="line"></div><div class="line">                <span class="comment">/*</span></div><div class="line"><span class="comment">                 * Because this URI was for a single row, the _ID value part is</span></div><div class="line"><span class="comment">                 * present. Get the last path segment from the URI; this is the _ID value.</span></div><div class="line"><span class="comment">                 * Then, append the value to the WHERE clause for the query</span></div><div class="line"><span class="comment">                 */</span></div><div class="line">                selection = selection + <span class="string">"_ID = "</span> uri.getLastPathSegment();</div><div class="line">                <span class="keyword">break</span>;</div><div class="line"></div><div class="line">            <span class="keyword">default</span>:</div><div class="line">            ...</div><div class="line">                <span class="comment">// If the URI is not recognized, you should do some error handling here.</span></div><div class="line">        &#125;</div><div class="line">        <span class="comment">// call the code to actually do the query</span></div><div class="line">    &#125;</div></pre></td></tr></table></figure>
+<p>另外一个类ContentUris提供了一些方便的方法来操作Content URI的id部分。Uri和Uri.Builder类提供了一些方法来解析Uri对象和新建一个Uri对象。</p>
+<h3 id="Implementing-the-ContentProvider-Class"><a href="#Implementing-the-ContentProvider-Class" class="headerlink" title="Implementing the ContentProvider Class"></a>Implementing the ContentProvider Class</h3><p>ContentProvider通过处理其他App的请求来管理数据入口。所有形式的访问最终会调到ContentProvider，然后通过ContentProvider的具体方法来访问。</p>
+<h4 id="Required-methods"><a href="#Required-methods" class="headerlink" title="Required methods"></a>Required methods</h4><p>ContentProvider抽象类定义6个抽象方法，你必须在你的具体实现类中实现它们。所有这些方法除了onCreate都被client app用来调用去访问你的provider。</p>
+<ul>
+<li><p>query<br>从你的Provider中检索数据。使用参数来确定要查询的table，返回的行和列，以及结果集的排序方式。返回的数据是一个Cursor。</p>
+</li>
+<li><p>insert<br>往你的Provider中插入一行数据。使用参数来确定具体的table和对应列值。返回一个URI代表新插入的那行数据。</p>
+</li>
+<li><p>update<br>更新你的Provider中的已有行。使用参数来确定更新的table，要更新的行，以及更新的对应列值。返回一个int表示更新了多少行。</p>
+</li>
+<li><p>delete<br>从你的Provider中删除行。使用参数确定对应的table，以及需要删除的行。返回一个int表示删除了多少行。</p>
+</li>
+<li><p>getType<br>返回一个Content URI的对应MIME类型。此方法在Implementing Content Provider MIME Types有详细说明。</p>
+</li>
+<li><p>onCreate<br>初始化你的Provider。Android系统会调用此方法后立即创建你的Provider。注意：你的Provider不会被创建直到一个ContentResolver对应视图去访问你的Provider。此处很重要，通俗的说，数据库是在第一次请求时创建的，而不是开启应用时就创建了。</p>
+</li>
+</ul>
+<p>实现上述方法时要注意以下几点：</p>
+<ul>
+<li>所有以上方法除了onCreate可以被多个线程同时调用，所以它们必须是线程安全的。更多多线程的细节，参见Processes and Threads文档。</li>
+<li>避免在onCreate中执行长时间的操作。延迟初始化任务知道真正需要。参看Implementing the onCreate method章节。</li>
+<li>虽然你必须实现这些方法，你的代码可以不做任何处理除了返回预期的数据类型。例如，你可能想要阻止其他App往table中insert数据，你可以实现insert方法只是返回0而不做其他实现。</li>
+</ul>
+<h4 id="Implementing-the-query-method"><a href="#Implementing-the-query-method" class="headerlink" title="Implementing the query() method"></a>Implementing the query() method</h4><p>ContentResolver.query()方法必须返回一个Cursor对象，如果失败则抛出一个Exception。如果你使用SQLite数据库作为数据存储。你可以通过SQLiteDatabase类的query方法简单的返回一个Cursor。如果这个query没有匹配任何行，你应该返回一个Cursor实例（其getCount方法返回0）。仅仅在query过程中发生内部错误时你应该放回null。</p>
+<p>如果你不是使用SQLite数据库作为数据存储，使用Cursor的一个具体子类。例如，MatrixCursor实现Cursor，每行是一个对象数组。使用此类，addRow()方法添加一个新行。</p>
+<p>Android系统必须可以跨进程与一个Exception关联（也就是说跨进程捕获Exception）。Android在处理query错误时，通常抛出以下类型的Exception：</p>
+<ul>
+<li>IllegalArgumentException（通常在无效URI时抛出此异常）</li>
+<li>NullPointerException</li>
+</ul>
+<h4 id="Implementing-the-insert-method"><a href="#Implementing-the-insert-method" class="headerlink" title="Implementing the insert() method"></a>Implementing the insert() method</h4><p>Insert方法往对应的table中插入一行数据，使用ContentValues值对参数。如果某一列在ContentValues参数中没有定义，你可能需要提供一个默认值，不管是在provider代码还是数据库架构中。</p>
+<p>此方法应该返回新增行的URI。可以使用withAppendedId()方法在此table对应的URI后附着主键_ID。</p>
+<h4 id="Implementing-the-delete-method"><a href="#Implementing-the-delete-method" class="headerlink" title="Implementing the delete() method"></a>Implementing the delete() method</h4><p>实现此delete方法，并不是必须要将数据从数据存储中实际删除。如果你在你的Provider中使用了同步适配器，你应该考虑标记要删除的行一个“delete flag”而不是彻底的删除此行。同步适配器可以监测这些将要被删除的行数据，在删除provider中数据之前将server中的对应数据删除。</p>
+<h4 id="Implementing-the-update-method"><a href="#Implementing-the-update-method" class="headerlink" title="Implementing the update() method"></a>Implementing the update() method</h4><p>Update方法拥有一个和insert方法相同的ContentValues参数，和delete，query相同的selection，selectionArgs参数。这可以允许你在这些方法之间重用代码。</p>
+<h4 id="Implementing-the-onCreate-method"><a href="#Implementing-the-onCreate-method" class="headerlink" title="Implementing the onCreate() method"></a>Implementing the onCreate() method</h4><p>Android在启动provider时会调用其onCreate方法。你应该在此方法中仅仅执行快速初始化任务，推迟数据库创建和数据加载到provider实际接收到数据请求时。如果你在onCreate中执行长时间操作，将会使provider的启动变慢。依次，会使provider与其他App之间的响应变慢。</p>
+<p>例如：如果你使用SQLite数据库，你可以在ContentProvider.onCreate方法中创建一个SQLiteOpenHelper对象，然后在你第一次打开数据库时创建table。为了达成这样，你第一次调用getWritableDatabase方法时，会自动调用SQLiteOpenHelper.onCreate方法。</p>
+<p>如下的代码片段展示了ContentProvider.onCreate和SQLiteOpenHelper.onCreate之间的交互。第一段是ContentProvider.onCreate的实现。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div><div class="line">64</div><div class="line">65</div><div class="line">66</div><div class="line">67</div><div class="line">68</div><div class="line">69</div><div class="line">70</div><div class="line">71</div><div class="line">72</div><div class="line">73</div><div class="line">74</div><div class="line">75</div><div class="line">76</div><div class="line">77</div><div class="line">78</div><div class="line">79</div><div class="line">80</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">ExampleProvider</span> <span class="keyword">extends</span> <span class="title">ContentProvider</span></span></div><div class="line"><span class="class"></span></div><div class="line"><span class="class">    /*</span></div><div class="line"><span class="class">     * <span class="title">Defines</span> <span class="title">a</span> <span class="title">handle</span> <span class="title">to</span> <span class="title">the</span> <span class="title">database</span> <span class="title">helper</span> <span class="title">object</span>. <span class="title">The</span> <span class="title">MainDatabaseHelper</span> <span class="title">class</span> <span class="title">is</span> <span class="title">defined</span></span></div><div class="line"><span class="class">     * <span class="title">in</span> <span class="title">a</span> <span class="title">following</span> <span class="title">snippet</span>.</span></div><div class="line"><span class="class">     */</span></div><div class="line"><span class="class">    <span class="title">private</span> <span class="title">MainDatabaseHelper</span> <span class="title">mOpenHelper</span></span>;</div><div class="line"></div><div class="line">    <span class="comment">// Defines the database name</span></div><div class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> String DBNAME = <span class="string">"mydb"</span>;</div><div class="line"></div><div class="line">    <span class="comment">// Holds the database object</span></div><div class="line">    <span class="keyword">private</span> SQLiteDatabase db;</div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">onCreate</span><span class="params">()</span> </span>&#123;</div><div class="line"></div><div class="line">        <span class="comment">/*</span></div><div class="line"><span class="comment">         * Creates a new helper object. This method always returns quickly.</span></div><div class="line"><span class="comment">         * Notice that the database itself isn't created or opened</span></div><div class="line"><span class="comment">         * until SQLiteOpenHelper.getWritableDatabase is called</span></div><div class="line"><span class="comment">         */</span></div><div class="line">        mOpenHelper = <span class="keyword">new</span> SQLiteOpenHelper(</div><div class="line">            getContext(),        <span class="comment">// the application context</span></div><div class="line">            DBNAME,              <span class="comment">// the name of the database)</span></div><div class="line">            <span class="keyword">null</span>,                <span class="comment">// uses the default SQLite cursor</span></div><div class="line">            <span class="number">1</span>                    <span class="comment">// the version number</span></div><div class="line">        );</div><div class="line"></div><div class="line">        <span class="keyword">return</span> <span class="keyword">true</span>;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    ...</div><div class="line"></div><div class="line">    <span class="comment">// Implements the provider's insert method</span></div><div class="line">    <span class="function"><span class="keyword">public</span> Cursor <span class="title">insert</span><span class="params">(Uri uri, ContentValues values)</span> </span>&#123;</div><div class="line">        <span class="comment">// Insert code here to determine which table to open, handle error-checking, and so forth</span></div><div class="line"></div><div class="line">        ...</div><div class="line"></div><div class="line">        <span class="comment">/*</span></div><div class="line"><span class="comment">         * Gets a writeable database. This will trigger its creation if it doesn't already exist.</span></div><div class="line"><span class="comment">         *</span></div><div class="line"><span class="comment">         */</span></div><div class="line">        db = mOpenHelper.getWritableDatabase();</div><div class="line">    &#125;</div><div class="line">&#125;</div><div class="line">下面是SQLiteOpenHelper.onCreate的实现：</div><div class="line">...</div><div class="line"><span class="comment">// A string that defines the SQL statement for creating a table</span></div><div class="line"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> String SQL_CREATE_MAIN = <span class="string">"CREATE TABLE "</span> +</div><div class="line">    <span class="string">"main "</span> +                       <span class="comment">// Table's name</span></div><div class="line">    <span class="string">"("</span> +                           <span class="comment">// The columns in the table</span></div><div class="line">    <span class="string">" _ID INTEGER PRIMARY KEY, "</span> +</div><div class="line">    <span class="string">" WORD TEXT"</span></div><div class="line">    <span class="string">" FREQUENCY INTEGER "</span> +</div><div class="line">    <span class="string">" LOCALE TEXT )"</span>;</div><div class="line">...</div><div class="line"><span class="comment">/**</span></div><div class="line"><span class="comment"> * Helper class that actually creates and manages the provider's underlying data repository.</span></div><div class="line"><span class="comment"> */</span></div><div class="line"><span class="keyword">protected</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="class"><span class="keyword">class</span> <span class="title">MainDatabaseHelper</span> <span class="keyword">extends</span> <span class="title">SQLiteOpenHelper</span> </span>&#123;</div><div class="line"></div><div class="line">    <span class="comment">/*</span></div><div class="line"><span class="comment">     * Instantiates an open helper for the provider's SQLite data repository</span></div><div class="line"><span class="comment">     * Do not do database creation and upgrade here.</span></div><div class="line"><span class="comment">     */</span></div><div class="line">    MainDatabaseHelper(Context context) &#123;</div><div class="line">        <span class="keyword">super</span>(context, DBNAME, <span class="keyword">null</span>, <span class="number">1</span>);</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="comment">/*</span></div><div class="line"><span class="comment">     * Creates the data repository. This is called when the provider attempts to open the</span></div><div class="line"><span class="comment">     * repository and SQLite reports that it doesn't exist.</span></div><div class="line"><span class="comment">     */</span></div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">onCreate</span><span class="params">(SQLiteDatabase db)</span> </span>&#123;</div><div class="line"></div><div class="line">        <span class="comment">// Creates the main table</span></div><div class="line">        db.execSQL(SQL_CREATE_MAIN);</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<h4 id="Implementing-ContentProvider-MIME-Types"><a href="#Implementing-ContentProvider-MIME-Types" class="headerlink" title="Implementing ContentProvider MIME Types"></a>Implementing ContentProvider MIME Types</h4><p>ContentProvider类提供了两个方法来返回一个MIME类型。</p>
+<ul>
+<li><p>getType<br>实现一个Provider必须实现的方法。</p>
+</li>
+<li><p>getStreamType<br>如果你的provider提供file，你可能要实现此方法。</p>
+</li>
+</ul>
+<h4 id="MIME-types-for-tables"><a href="#MIME-types-for-tables" class="headerlink" title="MIME types for tables"></a>MIME types for tables</h4><p>getType放回一个MIME格式的String，描述content URI参数对应返回的数据的类型。此URI参数可能是一个模式而非一个具体的URI。在这种情况下，你要返回与此模式匹配的Content URI的数据类型。</p>
+<p>常见的数据类型例如text，html或jpeg。getType方法应该返回数据的<a href="http://www.iana.org/assignments/media-types/index.html" target="_blank" rel="external">标准MIME类型</a>.</p>
+<p>由于Content URI表示table数据中一行或多行。getType应该返回Android供应商指定的MIME格式：</p>
+<ul>
+<li>类型部分：vnd</li>
+<li>子类型部分：</li>
+<li>单行数据：android.cursor.item/</li>
+<li>多行数据：android.cursor.dir/</li>
+<li>Provider指定部分：vnd.<name>.<type></type></name></li>
+<li>你提供name和type。Name的值应该是全局唯一的，type应该对应URI模式唯一。一个好的定义name方式是使用你的公司名或你的App的包名，type的话，选择代表URI关联的table的String是一个好选择。</li>
+</ul>
+<p>例如，一个Provider的authority为com.example.app.provider，且有一个暴露的table名为table1。那么table1中多行数据的MIME为：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">vnd.android.cursor.dir/vnd.com.example.provider.table1</div></pre></td></tr></table></figure>
+<p>table1中的单行数据：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">vnd.android.cursor.item/vnd.com.example.provider.table1</div></pre></td></tr></table></figure>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/Android/" rel="tag"># Android</a>
+          
+            <a href="/tags/翻译/" rel="tag"># 翻译</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2013/05/28/docs/Tasks and Back Stack/" rel="next" title="[译]Tasks and Back Stack">
+                <i class="fa fa-chevron-left"></i> [译]Tasks and Back Stack
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2013/06/25/docs/Processes and Threads/" rel="prev" title="[译]Processes and Threads">
+                [译]Processes and Threads <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+        <div class="ds-share flat" data-thread-key="2013/06/21/docs/Content Provider/"
+     data-title="[译]Content Provider"
+     data-content=""
+     data-url="http://blog.lmj.wiki/2013/06/21/docs/Content Provider/">
+  <div class="ds-share-inline">
+    <ul  class="ds-share-icons-16">
+
+      <li data-toggle="ds-share-icons-more"><a class="ds-more" href="javascript:void(0);">分享到：</a></li>
+      <li><a class="ds-weibo" href="javascript:void(0);" data-service="weibo">微博</a></li>
+      <li><a class="ds-qzone" href="javascript:void(0);" data-service="qzone">QQ空间</a></li>
+      <li><a class="ds-qqt" href="javascript:void(0);" data-service="qqt">腾讯微博</a></li>
+      <li><a class="ds-wechat" href="javascript:void(0);" data-service="wechat">微信</a></li>
+
+    </ul>
+    <div class="ds-share-icons-more">
+    </div>
+  </div>
+</div>
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+      <div class="ds-thread" data-thread-key="2013/06/21/docs/Content Provider/"
+           data-title="[译]Content Provider" data-url="http://blog.lmj.wiki/2013/06/21/docs/Content Provider/">
+      </div>
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          
+            <img class="site-author-image" itemprop="image"
+              src="/img/avatar.jpeg"
+              alt="anly_jun" />
+          
+            <p class="site-author-name" itemprop="name">anly_jun</p>
+            <p class="site-description motion-element" itemprop="description">Android, iOS, Mobile Dev/Test, Web, Python</p>
+        </div>
+
+        <nav class="site-state motion-element">
+
+          
+            <div class="site-state-item site-state-posts">
+            
+              <a href="/archives">
+            
+                <span class="site-state-item-count">55</span>
+                <span class="site-state-item-name">日志</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-categories">
+              <a href="/categories/index.html">
+                <span class="site-state-item-count">6</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-tags">
+              <a href="/tags/index.html">
+                <span class="site-state-item-count">20</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+          <div class="feed-link motion-element">
+            <a href="/atom.xml" rel="alternate">
+              <i class="fa fa-rss"></i>
+              RSS
+            </a>
+          </div>
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#Content-Provider"><span class="nav-number">1.</span> <span class="nav-text">Content Provider</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Content-Provider-Basics"><span class="nav-number">1.1.</span> <span class="nav-text">Content Provider Basics</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Overview"><span class="nav-number">1.2.</span> <span class="nav-text">Overview</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Accessing-a-provider"><span class="nav-number">2.</span> <span class="nav-text">Accessing a provider</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Content-URIs"><span class="nav-number">2.1.</span> <span class="nav-text">Content URIs</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Retrieving-Data-from-the-Provider"><span class="nav-number">2.2.</span> <span class="nav-text">Retrieving Data from the Provider</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Constructing-the-query"><span class="nav-number">2.3.</span> <span class="nav-text">Constructing the query</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Protecting-against-malicious-input"><span class="nav-number">2.4.</span> <span class="nav-text">Protecting against malicious input</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Displaying-query-results"><span class="nav-number">3.</span> <span class="nav-text">Displaying query results</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Getting-data-from-query-results"><span class="nav-number">3.1.</span> <span class="nav-text">Getting data from query results</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Content-Provider-Permissions"><span class="nav-number">4.</span> <span class="nav-text">Content Provider Permissions</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Inserting-Updating-and-Deleting-Data"><span class="nav-number">5.</span> <span class="nav-text">Inserting, Updating, and Deleting Data</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Inserting-data"><span class="nav-number">5.1.</span> <span class="nav-text">Inserting data</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Updating-data"><span class="nav-number">5.2.</span> <span class="nav-text">Updating data</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Deleting-data"><span class="nav-number">5.3.</span> <span class="nav-text">Deleting data</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Provider-Data-Types"><span class="nav-number">6.</span> <span class="nav-text">Provider Data Types</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Alternative-Forms-of-Provider-Access"><span class="nav-number">7.</span> <span class="nav-text">Alternative Forms of Provider Access</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Batch-access"><span class="nav-number">7.1.</span> <span class="nav-text">Batch access</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Data-access-via-intents"><span class="nav-number">7.2.</span> <span class="nav-text">Data access via intents</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Getting-access-with-temporary-permissions"><span class="nav-number">8.</span> <span class="nav-text">Getting access with temporary permissions</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Using-another-application"><span class="nav-number">9.</span> <span class="nav-text">Using another application</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Contract-Classes"><span class="nav-number">9.1.</span> <span class="nav-text">Contract Classes</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#MIME-Type-Reference"><span class="nav-number">10.</span> <span class="nav-text">MIME Type Reference</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Creating-a-Content-Provider"><span class="nav-number">11.</span> <span class="nav-text">Creating a Content Provider</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Before-You-Start-Building"><span class="nav-number">11.1.</span> <span class="nav-text">Before You Start Building</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Designing-Data-Storage"><span class="nav-number">11.2.</span> <span class="nav-text">Designing Data Storage</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Data-design-considerations"><span class="nav-number">11.3.</span> <span class="nav-text">Data design considerations</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Designing-Content-URIs"><span class="nav-number">11.4.</span> <span class="nav-text">Designing Content URIs</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Designing-an-authority"><span class="nav-number">11.5.</span> <span class="nav-text">Designing an authority</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Designing-a-path-structure"><span class="nav-number">11.6.</span> <span class="nav-text">Designing a path structure</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Handling-content-URI-IDs"><span class="nav-number">11.7.</span> <span class="nav-text">Handling content URI IDs</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Content-URI-patterns"><span class="nav-number">11.8.</span> <span class="nav-text">Content URI patterns</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#：任意长度的数字字符"><span class="nav-number"></span> <span class="nav-text">：任意长度的数字字符</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Implementing-the-ContentProvider-Class"><span class="nav-number">0.1.</span> <span class="nav-text">Implementing the ContentProvider Class</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#Required-methods"><span class="nav-number">0.1.1.</span> <span class="nav-text">Required methods</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Implementing-the-query-method"><span class="nav-number">0.1.2.</span> <span class="nav-text">Implementing the query() method</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Implementing-the-insert-method"><span class="nav-number">0.1.3.</span> <span class="nav-text">Implementing the insert() method</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Implementing-the-delete-method"><span class="nav-number">0.1.4.</span> <span class="nav-text">Implementing the delete() method</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Implementing-the-update-method"><span class="nav-number">0.1.5.</span> <span class="nav-text">Implementing the update() method</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Implementing-the-onCreate-method"><span class="nav-number">0.1.6.</span> <span class="nav-text">Implementing the onCreate() method</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Implementing-ContentProvider-MIME-Types"><span class="nav-number">0.1.7.</span> <span class="nav-text">Implementing ContentProvider MIME Types</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#MIME-types-for-tables"><span class="nav-number">0.1.8.</span> <span class="nav-text">MIME types for tables</span></a></li></ol></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2017</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">anly_jun</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+  <span class="post-meta-divider">|</span>
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">NexT.Gemini</a> v5.1.2</div>
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.2"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.2"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.2"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.2"></script>
+
+
+
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.2"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.2"></script>
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.2"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.2"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.2"></script>
+
+
+
+  
+
+  
+    
+  
+
+  <script type="text/javascript">
+    var duoshuoQuery = {short_name:"anlyjun"};
+    (function() {
+      var ds = document.createElement('script');
+      ds.type = 'text/javascript';ds.async = true;
+      ds.id = 'duoshuo-script';
+      ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+      ds.charset = 'UTF-8';
+      (document.getElementsByTagName('head')[0]
+      || document.getElementsByTagName('body')[0]).appendChild(ds);
+    })();
+  </script>
+
+  
+    
+    
+    <script src="/lib/ua-parser-js/dist/ua-parser.min.js?v=0.7.9"></script>
+    <script src="/js/src/hook-duoshuo.js"></script>
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

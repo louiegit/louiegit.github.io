@@ -1,0 +1,874 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next gemini use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.2" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="Tools," />
+
+
+
+
+
+  <link rel="alternate" href="/atom.xml" title="ANLY'S BLOG" type="application/atom+xml" />
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.1.2" />
+
+
+
+
+
+
+<meta name="description" content="前言转眼使用Mac平台开发已经一年有余，自进入程序猿这个职业以来，从职业之初的J2EE，到Android App，再到Android ROM开发，到如今的专注于移动端，开发系统也一路从Windows到Ubuntu，再到Mac OSX，这其中不仅仅是操作系统平台的变迁，也见证了一个程序猿的职业生涯发展历程。在此也不敢妄谈这些操作系统的好坏，只是根据不同阶段不同开发的选择而已。">
+<meta name="keywords" content="Tools">
+<meta property="og:type" content="article">
+<meta property="og:title" content="我的Mac常用应用与配置">
+<meta property="og:url" content="http://blog.lmj.wiki/2016/01/05/tools/mac_dev_env/index.html">
+<meta property="og:site_name" content="ANLY&#39;S BLOG">
+<meta property="og:description" content="前言转眼使用Mac平台开发已经一年有余，自进入程序猿这个职业以来，从职业之初的J2EE，到Android App，再到Android ROM开发，到如今的专注于移动端，开发系统也一路从Windows到Ubuntu，再到Mac OSX，这其中不仅仅是操作系统平台的变迁，也见证了一个程序猿的职业生涯发展历程。在此也不敢妄谈这些操作系统的好坏，只是根据不同阶段不同开发的选择而已。">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="http://blog.lmj.wiki/img/11.png">
+<meta property="og:image" content="http://blog.lmj.wiki/img/1@2x.png">
+<meta property="og:image" content="http://blog.lmj.wiki/img/main.png">
+<meta property="og:updated_time" content="2017-09-12T15:16:05.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="我的Mac常用应用与配置">
+<meta name="twitter:description" content="前言转眼使用Mac平台开发已经一年有余，自进入程序猿这个职业以来，从职业之初的J2EE，到Android App，再到Android ROM开发，到如今的专注于移动端，开发系统也一路从Windows到Ubuntu，再到Mac OSX，这其中不仅仅是操作系统平台的变迁，也见证了一个程序猿的职业生涯发展历程。在此也不敢妄谈这些操作系统的好坏，只是根据不同阶段不同开发的选择而已。">
+<meta name="twitter:image" content="http://blog.lmj.wiki/img/11.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Gemini',
+    version: '5.1.2',
+    sidebar: {"position":"right","display":"post","offset":12,"offset_float":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://blog.lmj.wiki/2016/01/05/tools/mac_dev_env/"/>
+
+
+
+
+
+  <title>我的Mac常用应用与配置 | ANLY'S BLOG</title>
+  
+
+
+
+
+
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?3e4bf02bc6c59d846f194a8afc04ecfc";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-right page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">ANLY'S BLOG</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">看看书, 写写字; 捣鼓捣鼓小技术.</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            关于
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://blog.lmj.wiki/2016/01/05/tools/mac_dev_env/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="anly_jun">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/img/avatar.jpeg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="ANLY'S BLOG">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">我的Mac常用应用与配置</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2016-01-05T10:09:00+08:00">
+                2016-01-05
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Tools/" itemprop="url" rel="index">
+                    <span itemprop="name">Tools</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2016/01/05/tools/mac_dev_env/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count ds-thread-count" data-thread-key="2016/01/05/tools/mac_dev_env/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>转眼使用Mac平台开发已经一年有余，自进入程序猿这个职业以来，从职业之初的J2EE，到Android App，再到Android ROM开发，到如今的专注于移动端，开发系统也一路从Windows到Ubuntu，再到Mac OSX，这其中不仅仅是操作系统平台的变迁，也见证了一个程序猿的职业生涯发展历程。在此也不敢妄谈这些操作系统的好坏，只是根据不同阶段不同开发的选择而已。</p>
+<a id="more"></a>
+<h2 id="Mac-OS-X"><a href="#Mac-OS-X" class="headerlink" title="Mac OS X"></a>Mac OS X</h2><h3 id="功能键"><a href="#功能键" class="headerlink" title="功能键"></a>功能键</h3><p>默认情况下，Mac上的功能键F1~F12优先是用来控制快捷功能的，例如键盘亮度，屏幕亮度，音量等。需要使用正常的F1~F12的功能时，需要同时按住Fn，这个对于一个编程人员来说是极不方便的。例如我们常用的F3跳转到方法、变量声明处。。。等等。<br>可在”设置”—“键盘”中将其设置成标准功能键功能：<br><img src="/img/11.png" alt="11"></p>
+<h3 id="快捷键"><a href="#快捷键" class="headerlink" title="快捷键"></a>快捷键</h3><p><a href="https://support.apple.com/zh-cn/HT201236" target="_blank" rel="external">常用Mac OS X快捷键</a></p>
+<h3 id="截屏"><a href="#截屏" class="headerlink" title="截屏"></a>截屏</h3><p>开发以及日常工作中，我们经常需要对屏幕进行截图。常用的有对整个屏幕截图和选取区域截图：</p>
+<ul>
+<li>全屏截图（Shift+Command+3）</li>
+<li>选取截图（Shift+Command+4）</li>
+<li><a href="http://zh.wikihow.com/%E5%9C%A8Mac-OS-X%E4%B8%8A%E6%88%AA%E5%8F%96%E5%B1%8F%E5%B9%95%E6%88%AA%E5%9B%BE" target="_blank" rel="external">如何在Mac OS X上截取屏幕截图</a></li>
+</ul>
+<h3 id="输入法"><a href="#输入法" class="headerlink" title="输入法"></a>输入法</h3><p>个人推荐<a href="http://srf.baidu.com/input/mac.html" target="_blank" rel="external">百度输入法</a>，之前也用过一段时间的搜狗，感觉还是百度输入法功能相对更强大点。</p>
+<h2 id="开发环境"><a href="#开发环境" class="headerlink" title="开发环境"></a>开发环境</h2><p>目前个人主要使用Mac还是用来做Android App的开发，偶尔写点iOS和python的小程序，做些项目管理的事情。故而Mac的配置多与此相关.</p>
+<h3 id="IDE"><a href="#IDE" class="headerlink" title="IDE"></a>IDE</h3><h4 id="Android-Studio"><a href="#Android-Studio" class="headerlink" title="Android Studio"></a>Android Studio</h4><p>自从Google宣布Eclipse不再支持后，Android Studio已经成为Android官方的唯一IDE了。而且从这一年多的使用过程来看，Android Studio已经到2.0版本，越来越强大，而且越来越好用了，个人也是极力推荐的。</p>
+<ul>
+<li><a href="">搭建Android开发环境</a>，包含JAVA环境搭建。</li>
+<li><a href="">Android Studio常用配置</a></li>
+</ul>
+<h4 id="Xcode"><a href="#Xcode" class="headerlink" title="Xcode"></a>Xcode</h4><p>使用Mac开发，Xcode也是必然要安装的，一个是偶尔会写写iOS的程序，另外一个有些软件特别是某些破解程序也需要Xcode的运行环境,主要是Command Line Tools.</p>
+<h4 id="PyCharm"><a href="#PyCharm" class="headerlink" title="PyCharm"></a><a href="http://www.jetbrains.com/pycharm" target="_blank" rel="external">PyCharm</a></h4><p>作为一个业余的Python程序员，更多的还是依赖IDE来做python编程。PyCharm有两个版本，Professional和Community，其中Community是免费的。个人在使用过程中觉得已然够用。<br><a href="http://www.jetbrains.com/pycharm/download/" target="_blank" rel="external">下载地址</a></p>
+<h3 id="常用工具"><a href="#常用工具" class="headerlink" title="常用工具"></a>常用工具</h3><h4 id="Homebrew"><a href="#Homebrew" class="headerlink" title="Homebrew"></a><a href="http://brew.sh/" target="_blank" rel="external">Homebrew</a></h4><p><a href="http://brew.sh/" target="_blank" rel="external">Homebrew</a>是Mac上大名鼎鼎的包管理工具，从Ubuntu系统迁移过来的人对此简直毫无抵抗力。<br>安装方式也很简单，可参看<a href="http://brew.sh/" target="_blank" rel="external">官网</a>。<br>有了homebrew，我们就可以像“apt-get”一样安装包工具了：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">brew install mysql</div></pre></td></tr></table></figure>
+<blockquote>
+<p>安装 brew 的时候会自动下载和安装 Apple 的 Command Line Tools。</p>
+</blockquote>
+<h4 id="Homebrew-Cask"><a href="#Homebrew-Cask" class="headerlink" title="Homebrew Cask"></a><a href="http://caskroom.io/" target="_blank" rel="external">Homebrew Cask</a></h4><p><a href="http://caskroom.io/" target="_blank" rel="external">Homebrew Cask</a>可以让你使用命令行来安装OS X应用。几乎所有常用的应用都可以通过”brew-cask”来安装，而且是从应用的官网上下载。如果你不知道应用在“brew-cask”中的 ID，可以先用“brew cask search”命令搜索。<br>Homebrew Cask可以理解为是Homebrew的增强版，二者的区别是Homebrew是下载源码然后make install的方式安装，主要针对开源的工具类的应用，而Homebrew Cask实际上我们普通的下载dmg/pkg包安装的命令行版本，它下载的是编译好的应用包，所以它几乎可以用来安装所有的应用，例如安装Chrome：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">brew cask install google-chrome</div></pre></td></tr></table></figure>
+<p>Homebrew Cask的安装方式请参看<a href="http://caskroom.io/" target="_blank" rel="external">官网</a>。</p>
+<h4 id="iTerm2"><a href="#iTerm2" class="headerlink" title="iTerm2"></a><a href="https://www.iterm2.com/" target="_blank" rel="external">iTerm2</a></h4><p><a href="https://www.iterm2.com/" target="_blank" rel="external">iTerm2</a>是OS X中Terminal的替代品，个人认为简直就是程序员必备。<br>有了Homebrew Cask，我们安装iTerm2也更简单了：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">brew cask install iterm2</div></pre></td></tr></table></figure>
+<p>iTerm2提供了很多Terminal不具备的<a href="https://www.iterm2.com/features.html" target="_blank" rel="external">特性</a>，具体的使用可以读一读官方提供的<a href="https://www.iterm2.com/documentation.html" target="_blank" rel="external">使用文档</a>。</p>
+<h4 id="Oh-My-Zsh"><a href="#Oh-My-Zsh" class="headerlink" title="Oh My Zsh"></a><a href="http://ohmyz.sh/" target="_blank" rel="external">Oh My Zsh</a></h4><p>有了iTerm2，我们的命令行工具还不能称之为强大，需要配合上<a href="http://ohmyz.sh/" target="_blank" rel="external">Oh My Zsh</a>这把尖刀，它可以让你从黑白时代立马跨入多彩的世界，而且有<a href="https://github.com/robbyrussell/oh-my-zsh/wiki/Plugins-Overview" target="_blank" rel="external">很多很好用的插件</a>，来帮助我们简化命令，让我们爱上命令行操作。<br>安装方式如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">$ sh -c &quot;$(curl -fsSL https://raw.github.com/robbyrussell/oh-my-zsh/master/tools/install.sh)&quot;</div></pre></td></tr></table></figure>
+<h4 id="Python"><a href="#Python" class="headerlink" title="Python"></a><a href="https://www.python.org/downloads/mac-osx/" target="_blank" rel="external">Python</a></h4><p>Python环境也是必须要有的，写点小脚本啦，还有作为Android程序员，下载Android Source Code也是需要Python环境的。<br>我们可以在官网下载Mac OSX相对应的版本安装，当然有了Homebrew，最快捷的安装方式当然是：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">brew install python</div></pre></td></tr></table></figure>
+<p>另外，python开发环境中pip工具也是必不可少的，安装方式如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">sudo easy_install pip</div></pre></td></tr></table></figure>
+<p>pip是Python的包管理工具。</p>
+<h4 id="Git"><a href="#Git" class="headerlink" title="Git"></a><a href="http://git-scm.com/" target="_blank" rel="external">Git</a></h4><p>随着技术发展，版本管理工具中Git已经是越来越流行，它强大的功能，敏捷的命令行操作方式以及与SVN等集中式版本管理库的根本区别，也让它在我们当今随处办公、敏捷开发的趋势中脱颖而出了。所以个人认为Git已经是程序员技能库里面必不可少的了。<br>安装方式也可以使用brew方式：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">brew install git</div></pre></td></tr></table></figure>
+<ul>
+<li><a href="http://mingjun.farbox.com/post/gong-ju/gitbie-ming" target="_blank" rel="external">Git常用别名</a></li>
+<li><a href="http://www.liaoxuefeng.com/wiki/0013739516305929606dd18361248578c67b8067c8c017b000/" target="_blank" rel="external">Git教程</a></li>
+</ul>
+<h4 id="Mou"><a href="#Mou" class="headerlink" title="Mou"></a><a href="http://25.io/mou/" target="_blank" rel="external">Mou</a></h4><p>作为一个程序员，写文档必然推荐Markdown。<a href="http://25.io/mou/" target="_blank" rel="external">Mou</a>是一个OS X下针对程序员使用的免费的Markdown编辑器。具有实时预览，自动补全，自动保存等功能，界面也非常友好。<br><img src="/img/1@2x.png" alt="1@2x"></p>
+<h4 id="CheatSheet"><a href="#CheatSheet" class="headerlink" title="CheatSheet"></a><a href="https://www.mediaatelier.com/CheatSheet/" target="_blank" rel="external">CheatSheet</a></h4><p>刚刚迁移到Mac系统时可能对各种快捷键都不熟悉，不习惯。<a href="https://www.mediaatelier.com/CheatSheet/" target="_blank" rel="external">CheatSheet</a>能够显示当前程序的快捷键列表，默认长按Command ⌘键即可显示：<br><img src="/img/main.png" alt="main"></p>
+<p>免费应用，可以直接在官网下载安装,或者：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">brew cask install cheatsheet</div></pre></td></tr></table></figure>
+<h4 id="Sublime-Text"><a href="#Sublime-Text" class="headerlink" title="Sublime Text"></a><a href="http://www.sublimetext.com/3" target="_blank" rel="external">Sublime Text</a></h4><p>在Windows系统用Notepad或是EditPlus作为文本编辑器习惯了，<a href="http://www.sublimetext.com/3" target="_blank" rel="external">Sublime Text</a>我认为是OS X平台上与上述编辑器最接近我的需求的，且Sublime Text的功能可能还更强大，因为其有<a href="http://www.tuicool.com/articles/VjiQraV" target="_blank" rel="external">众多的插件支持</a>。<br>安装方式，我们可以在官网下载安装，也可以直接使用brew cask安装：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">brew cask install sublime-text</div></pre></td></tr></table></figure>
+<h2 id="日常工作"><a href="#日常工作" class="headerlink" title="日常工作"></a>日常工作</h2><h3 id="Microsoft-Office-2016"><a href="#Microsoft-Office-2016" class="headerlink" title="Microsoft Office 2016"></a>Microsoft Office 2016</h3><p>Office套件，包含word，excel，ppt和outlook，装机必备。<br><a href="http://pan.baidu.com/s/1mgRq0Ms" target="_blank" rel="external">破解版</a><br>密码：wgf4</p>
+<h3 id="OmniGraffle"><a href="#OmniGraffle" class="headerlink" title="OmniGraffle"></a>OmniGraffle</h3><p><a href="http://pan.baidu.com/s/1gephiPP" target="_blank" rel="external">下载地址</a><br>密码：8nb9</p>
+<h3 id="Evernote"><a href="#Evernote" class="headerlink" title="Evernote"></a>Evernote</h3><p>笔记应用，也可以使用有道云笔记。</p>
+<h3 id="Chrome"><a href="#Chrome" class="headerlink" title="Chrome"></a>Chrome</h3><p>默认浏览器Safari的替代者。</p>
+<h3 id="XMind"><a href="#XMind" class="headerlink" title="XMind"></a>XMind</h3><p>思维导图应用。有更好的，但是这个有免费版，且够用。</p>
+<h2 id="项目管理"><a href="#项目管理" class="headerlink" title="项目管理"></a>项目管理</h2><h3 id="OmniPlan"><a href="#OmniPlan" class="headerlink" title="OmniPlan"></a>OmniPlan</h3><p>非常好的项目管理软件，爱不释手。<br><a href="http://pan.baidu.com/s/1jHlDlzS" target="_blank" rel="external">下载地址</a><br>密码：kgmb</p>
+<h2 id="其他工具"><a href="#其他工具" class="headerlink" title="其他工具"></a>其他工具</h2><h3 id="科学上网"><a href="#科学上网" class="headerlink" title="科学上网"></a>科学上网</h3><h4 id="GoAgentX"><a href="#GoAgentX" class="headerlink" title="GoAgentX"></a>GoAgentX</h4><p>百度上搜不到相关信息，请参考<a href="https://github.com/OldFrank/GoAgentX" target="_blank" rel="external">Github上的相关Project</a></p>
+<h3 id="虚拟机"><a href="#虚拟机" class="headerlink" title="虚拟机"></a>虚拟机</h3><h4 id="Parallels-Desktop"><a href="#Parallels-Desktop" class="headerlink" title="Parallels Desktop"></a>Parallels Desktop</h4><p><a href="http://pan.baidu.com/s/1hqWirek" target="_blank" rel="external">破解版下载地址</a><br>密码：32n6</p>
+<h3 id="抓包工具"><a href="#抓包工具" class="headerlink" title="抓包工具"></a>抓包工具</h3><h4 id="Charles"><a href="#Charles" class="headerlink" title="Charles"></a><a href="http://www.charlesproxy.com/" target="_blank" rel="external">Charles</a></h4><p><a href="http://www.gfzj.us/2014/12/20/charlse-sn-download.html" target="_blank" rel="external">破解方式</a></p>
+<h3 id="数据库工具"><a href="#数据库工具" class="headerlink" title="数据库工具"></a>数据库工具</h3><h4 id="SQLite-Professional"><a href="#SQLite-Professional" class="headerlink" title="SQLite Professional"></a>SQLite Professional</h4><h3 id="NTFS磁盘工具"><a href="#NTFS磁盘工具" class="headerlink" title="NTFS磁盘工具"></a>NTFS磁盘工具</h3><p>Windows下的磁盘格式大部分都是NTFS的，而Mac平台默认不支持，故而可能导致我们的U盘，移动硬盘等在Mac上无法识别，或是可读不可写。<br>在此推荐如下工具：</p>
+<h4 id="tuxerantfs"><a href="#tuxerantfs" class="headerlink" title="tuxerantfs"></a>tuxerantfs</h4><p><a href="http://pan.baidu.com/s/1skogOjF" target="_blank" rel="external">下载地址</a><br>密码：nc8a</p>
+<blockquote>
+<p>转载请注明出处, 欢迎大家分享到朋友圈, 微博~</p>
+</blockquote>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/Tools/" rel="tag"># Tools</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2015/12/31/android/retrofit2-log/" rel="next" title="Retrofit的Log输出">
+                <i class="fa fa-chevron-left"></i> Retrofit的Log输出
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2016/05/31/algorithm/merge_sort/" rel="prev" title="归并排序">
+                归并排序 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+        <div class="ds-share flat" data-thread-key="2016/01/05/tools/mac_dev_env/"
+     data-title="我的Mac常用应用与配置"
+     data-content=""
+     data-url="http://blog.lmj.wiki/2016/01/05/tools/mac_dev_env/">
+  <div class="ds-share-inline">
+    <ul  class="ds-share-icons-16">
+
+      <li data-toggle="ds-share-icons-more"><a class="ds-more" href="javascript:void(0);">分享到：</a></li>
+      <li><a class="ds-weibo" href="javascript:void(0);" data-service="weibo">微博</a></li>
+      <li><a class="ds-qzone" href="javascript:void(0);" data-service="qzone">QQ空间</a></li>
+      <li><a class="ds-qqt" href="javascript:void(0);" data-service="qqt">腾讯微博</a></li>
+      <li><a class="ds-wechat" href="javascript:void(0);" data-service="wechat">微信</a></li>
+
+    </ul>
+    <div class="ds-share-icons-more">
+    </div>
+  </div>
+</div>
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+      <div class="ds-thread" data-thread-key="2016/01/05/tools/mac_dev_env/"
+           data-title="我的Mac常用应用与配置" data-url="http://blog.lmj.wiki/2016/01/05/tools/mac_dev_env/">
+      </div>
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          
+            <img class="site-author-image" itemprop="image"
+              src="/img/avatar.jpeg"
+              alt="anly_jun" />
+          
+            <p class="site-author-name" itemprop="name">anly_jun</p>
+            <p class="site-description motion-element" itemprop="description">Android, iOS, Mobile Dev/Test, Web, Python</p>
+        </div>
+
+        <nav class="site-state motion-element">
+
+          
+            <div class="site-state-item site-state-posts">
+            
+              <a href="/archives">
+            
+                <span class="site-state-item-count">55</span>
+                <span class="site-state-item-name">日志</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-categories">
+              <a href="/categories/index.html">
+                <span class="site-state-item-count">6</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-tags">
+              <a href="/tags/index.html">
+                <span class="site-state-item-count">20</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+          <div class="feed-link motion-element">
+            <a href="/atom.xml" rel="alternate">
+              <i class="fa fa-rss"></i>
+              RSS
+            </a>
+          </div>
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#前言"><span class="nav-number">1.</span> <span class="nav-text">前言</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Mac-OS-X"><span class="nav-number">2.</span> <span class="nav-text">Mac OS X</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#功能键"><span class="nav-number">2.1.</span> <span class="nav-text">功能键</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#快捷键"><span class="nav-number">2.2.</span> <span class="nav-text">快捷键</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#截屏"><span class="nav-number">2.3.</span> <span class="nav-text">截屏</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#输入法"><span class="nav-number">2.4.</span> <span class="nav-text">输入法</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#开发环境"><span class="nav-number">3.</span> <span class="nav-text">开发环境</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#IDE"><span class="nav-number">3.1.</span> <span class="nav-text">IDE</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#Android-Studio"><span class="nav-number">3.1.1.</span> <span class="nav-text">Android Studio</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Xcode"><span class="nav-number">3.1.2.</span> <span class="nav-text">Xcode</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#PyCharm"><span class="nav-number">3.1.3.</span> <span class="nav-text">PyCharm</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#常用工具"><span class="nav-number">3.2.</span> <span class="nav-text">常用工具</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#Homebrew"><span class="nav-number">3.2.1.</span> <span class="nav-text">Homebrew</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Homebrew-Cask"><span class="nav-number">3.2.2.</span> <span class="nav-text">Homebrew Cask</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#iTerm2"><span class="nav-number">3.2.3.</span> <span class="nav-text">iTerm2</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Oh-My-Zsh"><span class="nav-number">3.2.4.</span> <span class="nav-text">Oh My Zsh</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Python"><span class="nav-number">3.2.5.</span> <span class="nav-text">Python</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Git"><span class="nav-number">3.2.6.</span> <span class="nav-text">Git</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Mou"><span class="nav-number">3.2.7.</span> <span class="nav-text">Mou</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#CheatSheet"><span class="nav-number">3.2.8.</span> <span class="nav-text">CheatSheet</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Sublime-Text"><span class="nav-number">3.2.9.</span> <span class="nav-text">Sublime Text</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#日常工作"><span class="nav-number">4.</span> <span class="nav-text">日常工作</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Microsoft-Office-2016"><span class="nav-number">4.1.</span> <span class="nav-text">Microsoft Office 2016</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#OmniGraffle"><span class="nav-number">4.2.</span> <span class="nav-text">OmniGraffle</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Evernote"><span class="nav-number">4.3.</span> <span class="nav-text">Evernote</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Chrome"><span class="nav-number">4.4.</span> <span class="nav-text">Chrome</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#XMind"><span class="nav-number">4.5.</span> <span class="nav-text">XMind</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#项目管理"><span class="nav-number">5.</span> <span class="nav-text">项目管理</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#OmniPlan"><span class="nav-number">5.1.</span> <span class="nav-text">OmniPlan</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#其他工具"><span class="nav-number">6.</span> <span class="nav-text">其他工具</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#科学上网"><span class="nav-number">6.1.</span> <span class="nav-text">科学上网</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#GoAgentX"><span class="nav-number">6.1.1.</span> <span class="nav-text">GoAgentX</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#虚拟机"><span class="nav-number">6.2.</span> <span class="nav-text">虚拟机</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#Parallels-Desktop"><span class="nav-number">6.2.1.</span> <span class="nav-text">Parallels Desktop</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#抓包工具"><span class="nav-number">6.3.</span> <span class="nav-text">抓包工具</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#Charles"><span class="nav-number">6.3.1.</span> <span class="nav-text">Charles</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#数据库工具"><span class="nav-number">6.4.</span> <span class="nav-text">数据库工具</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#SQLite-Professional"><span class="nav-number">6.4.1.</span> <span class="nav-text">SQLite Professional</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#NTFS磁盘工具"><span class="nav-number">6.5.</span> <span class="nav-text">NTFS磁盘工具</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#tuxerantfs"><span class="nav-number">6.5.1.</span> <span class="nav-text">tuxerantfs</span></a></li></ol></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2017</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">anly_jun</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+  <span class="post-meta-divider">|</span>
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">NexT.Gemini</a> v5.1.2</div>
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.2"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.2"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.2"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.2"></script>
+
+
+
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.2"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.2"></script>
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.2"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.2"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.2"></script>
+
+
+
+  
+
+  
+    
+  
+
+  <script type="text/javascript">
+    var duoshuoQuery = {short_name:"anlyjun"};
+    (function() {
+      var ds = document.createElement('script');
+      ds.type = 'text/javascript';ds.async = true;
+      ds.id = 'duoshuo-script';
+      ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+      ds.charset = 'UTF-8';
+      (document.getElementsByTagName('head')[0]
+      || document.getElementsByTagName('body')[0]).appendChild(ds);
+    })();
+  </script>
+
+  
+    
+    
+    <script src="/lib/ua-parser-js/dist/ua-parser.min.js?v=0.7.9"></script>
+    <script src="/js/src/hook-duoshuo.js"></script>
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

@@ -1,0 +1,946 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next gemini use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.2" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="Android,架构,MVP," />
+
+
+
+
+
+  <link rel="alternate" href="/atom.xml" title="ANLY'S BLOG" type="application/atom+xml" />
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.1.2" />
+
+
+
+
+
+
+<meta name="description" content="MVP架构实现的Github客户端(1-准备工作)承上关于App重构的几个方面主要也是说的架构重构, 本系列尝试以开发一个Github客户端为例, 记录个人在开发一个App项目过程中的一个基本流程, 以及所采用的架构, 技术的运用, 在此过程也会说明下如何规避上文提到的一些代码,架构等问题.">
+<meta name="keywords" content="Android,架构,MVP">
+<meta property="og:type" content="article">
+<meta property="og:title" content="MVP架构实现的Github客户端(1-准备工作)">
+<meta property="og:url" content="http://blog.lmj.wiki/2016/07/22/mvp/mvp1/index.html">
+<meta property="og:site_name" content="ANLY&#39;S BLOG">
+<meta property="og:description" content="MVP架构实现的Github客户端(1-准备工作)承上关于App重构的几个方面主要也是说的架构重构, 本系列尝试以开发一个Github客户端为例, 记录个人在开发一个App项目过程中的一个基本流程, 以及所采用的架构, 技术的运用, 在此过程也会说明下如何规避上文提到的一些代码,架构等问题.">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="http://blog.lmj.wiki/img/851999-c4de0d7fa6b09211.png">
+<meta property="og:updated_time" content="2017-09-12T15:16:05.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="MVP架构实现的Github客户端(1-准备工作)">
+<meta name="twitter:description" content="MVP架构实现的Github客户端(1-准备工作)承上关于App重构的几个方面主要也是说的架构重构, 本系列尝试以开发一个Github客户端为例, 记录个人在开发一个App项目过程中的一个基本流程, 以及所采用的架构, 技术的运用, 在此过程也会说明下如何规避上文提到的一些代码,架构等问题.">
+<meta name="twitter:image" content="http://blog.lmj.wiki/img/851999-c4de0d7fa6b09211.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Gemini',
+    version: '5.1.2',
+    sidebar: {"position":"right","display":"post","offset":12,"offset_float":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://blog.lmj.wiki/2016/07/22/mvp/mvp1/"/>
+
+
+
+
+
+  <title>MVP架构实现的Github客户端(1-准备工作) | ANLY'S BLOG</title>
+  
+
+
+
+
+
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?3e4bf02bc6c59d846f194a8afc04ecfc";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-right page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">ANLY'S BLOG</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">看看书, 写写字; 捣鼓捣鼓小技术.</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            关于
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://blog.lmj.wiki/2016/07/22/mvp/mvp1/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="anly_jun">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/img/avatar.jpeg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="ANLY'S BLOG">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">MVP架构实现的Github客户端(1-准备工作)</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2016-07-22T22:04:00+08:00">
+                2016-07-22
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Android/" itemprop="url" rel="index">
+                    <span itemprop="name">Android</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2016/07/22/mvp/mvp1/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count ds-thread-count" data-thread-key="2016/07/22/mvp/mvp1/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h1 id="MVP架构实现的Github客户端-1-准备工作"><a href="#MVP架构实现的Github客户端-1-准备工作" class="headerlink" title="MVP架构实现的Github客户端(1-准备工作)"></a>MVP架构实现的Github客户端(1-准备工作)</h1><p>承上<a href="">关于App重构的几个方面</a>主要也是说的架构重构, 本系列尝试以开发一个Github客户端为例, 记录个人在开发一个App项目过程中的一个基本流程, 以及所采用的架构, 技术的运用, 在此过程也会说明下如何规避上文提到的一些代码,架构等问题.</p>
+<a id="more"></a>
+<h2 id="1-架构选择"><a href="#1-架构选择" class="headerlink" title="1, 架构选择"></a>1, 架构选择</h2><p>毋庸置疑, MVP架构是目前开发Android App最火的架构, 可能MVVM更加吸引人, 但是MVP更加成熟且易于上手. 相比与Activity/Fragment包揽一切的传统开发架构又更加灵活, 便于产品的更新迭代(特别是UI上的变化, 你懂的, 这也是产品们最喜欢变动的部分).<br>故此次开发的Github客户端将采用MVP架构:</p>
+<p><img src="/img/851999-c4de0d7fa6b09211.png" alt="851999-c4de0d7fa6b09211"></p>
+<ul>
+<li>Model<ul>
+<li>对外提供业务数据API.</li>
+<li>内部实现本地数据, 网络数据的存取等.</li>
+<li>只有Presenter可以访问, 与View隔离</li>
+</ul>
+</li>
+<li>Presenter    <ul>
+<li>持有View对象, 对View进行操作</li>
+<li>持有Model层提供的数据接口对象, 可通过依赖注入解耦此部分.</li>
+<li>从数据接口对象中获取数据并处理, 更新View.</li>
+</ul>
+</li>
+<li>View<ul>
+<li>UI层, 包含所有UI相关组件.</li>
+<li>持有对应的Presenter的对象, 可通过依赖注入解耦此部分.</li>
+<li>由Presenter来负责更新UI.</li>
+</ul>
+</li>
+</ul>
+<h2 id="2-服务器API熟悉"><a href="#2-服务器API熟悉" class="headerlink" title="2, 服务器API熟悉"></a>2, 服务器API熟悉</h2><p>当前大部分的App是需要与服务器交互的, 在开发之前, 我们也需要简单了解下Github提供的API.<br>因为Github提供了详尽的<a href="https://developer.github.com/guides/getting-started/" target="_blank" rel="external">开发指南</a>, 在此就不详述了.    </p>
+<blockquote>
+<p><strong>值得一提的是, Github API的标准的Restful架构的API, 这个是大赞的~</strong></p>
+</blockquote>
+<h2 id="3-开源库选择"><a href="#3-开源库选择" class="headerlink" title="3, 开源库选择"></a>3, 开源库选择</h2><p>快速开发一个项目, 且抱着不重复造轮子的思想, 选择一些开源库辅助开发是很必要的. 当然, 同类的开源库可能很多, 选择上可能更多是个人喜好和使用习惯的问题, 在此不做比较(可以哪天单立个开源库选择的话题讨论下).<br>以下根据个人经验和当前项目的情况初步选择的一些库:</p>
+<h3 id="网络请求"><a href="#网络请求" class="headerlink" title="网络请求"></a>网络请求</h3><ol>
+<li>Retrofit<ul>
+<li>一个类型安全(<a href="https://en.wikipedia.org/w/index.php?title=Type_safety&amp;redirect=no" target="_blank" rel="external">Type-Safety</a>）的基于<a href="http://www.ruanyifeng.com/blog/2011/09/restful" target="_blank" rel="external">RESTful</a>架构的Android（Java）客户端实现。基于<a href="http://a.codekk.com/detail/Android/Trinea/%E5%85%AC%E5%85%B1%E6%8A%80%E6%9C%AF%E7%82%B9%E4%B9%8B%20Java%20%E6%B3%A8%E8%A7%A3%20Annotation" target="_blank" rel="external">注解</a>，<a href="http://a.codekk.com/detail/Android/Caij/%E5%85%AC%E5%85%B1%E6%8A%80%E6%9C%AF%E7%82%B9%E4%B9%8B%20Java%20%E5%8A%A8%E6%80%81%E4%BB%A3%E7%90%86" target="_blank" rel="external">动态代理</a>等技术。</li>
+<li><a href="https://github.com/square/retrofit" target="_blank" rel="external">源码地址</a></li>
+<li><a href="http://square.github.io/retrofit/" target="_blank" rel="external">官方教程</a></li>
+<li>项目中使用此框架来做服务器接口交互。</li>
+<li>Retrofit只是一个<a href="http://www.ruanyifeng.com/blog/2011/09/restful" target="_blank" rel="external">RESTful</a>的架构，可以通过它定义和服务器的接口形态，然而真正的HTTP请求还是需要借助HttpConnection或其他方式去完成的，这就用到了同由<a href="http://square.github.io/" target="_blank" rel="external">Square组织</a>开发的OkHttp。</li>
+</ul>
+</li>
+<li>OkHttp<ul>
+<li>一个<a href="https://zh.wikipedia.org/wiki/%E8%B6%85%E6%96%87%E6%9C%AC%E4%BC%A0%E8%BE%93%E5%8D%8F%E8%AE%AE" target="_blank" rel="external">HTTP</a> &amp; <a href="https://zh.wikipedia.org/wiki/SPDY" target="_blank" rel="external">SPDY</a>的Android(Java)客户端实现。目前Android4.4的源码中HttpURLConnection已经替换成OkHttp实现，所以当前OkHttp是我们项目中Http请求的一个最常用的库。</li>
+<li><a href="https://github.com/square/okhttp" target="_blank" rel="external">源码地址</a></li>
+<li><a href="https://github.com/square/okhttp" target="_blank" rel="external">官方教程</a></li>
+<li><a href="http://frodoking.github.io/2015/03/12/android-okhttp/" target="_blank" rel="external">源码解析</a></li>
+</ul>
+</li>
+</ol>
+<h3 id="图片加载"><a href="#图片加载" class="headerlink" title="图片加载"></a>图片加载</h3><p>图片加载的库也有很多, 老牌的<a href="https://github.com/nostra13/Android-Universal-Image-Loader" target="_blank" rel="external">UIL(Universal-Image-Loader)</a>, google推的<a href="https://github.com/bumptech/glide" target="_blank" rel="external">Glide</a>, Square组织的<a href="https://github.com/square/picasso" target="_blank" rel="external">Picasso</a>, 以及facebook新晋的<a href="https://github.com/facebook/fresco" target="_blank" rel="external">Fresco</a>.<br>各有千秋, 关于这几个的比较可以参考<a href="http://stackoverflow.com/questions/29363321/picasso-v-s-imageloader-v-s-fresco-vs-glide" target="_blank" rel="external">StackOverFlow上的这个问题</a>.<br>在此个人选择Glide.</p>
+<ol>
+<li>Glide<ul>
+<li>Glide本意是滑行，专注于快速Scroll中的图片加载问题，当然也完全可以作为Remote Image的加载库。Google在开发者论坛推荐的，并应用在Google的很多开源项目上。</li>
+<li>是一个快速且有效的开源媒体管理以及图片加载的Android    框架，包含媒体解码，内存、磁盘缓存以及资源池等。</li>
+<li>支持获取、解码、显示视频、图片、GIF动态图。</li>
+<li><a href="https://github.com/bumptech/glide" target="_blank" rel="external">源码地址</a></li>
+<li><a href="https://github.com/bumptech/glide/wiki" target="_blank" rel="external">官方教程</a></li>
+</ul>
+</li>
+<li>另外, 个人习惯, 为了拥抱变化, 我会在Glide的基础上再封装一层, 以便可以很方便的替换成其他的库. 如下:<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">ImageLoader</span> </span>&#123;</div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">load</span><span class="params">(Context context, Uri uri, ImageView view)</span> </span>&#123;</div><div class="line">        Glide.with(context)</div><div class="line">                .load(uri)</div><div class="line">                .centerCrop()</div><div class="line">                .into(view);</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+</li>
+</ol>
+<p>如需替换成Picasso, 仅仅修改ImageLoader这个文件即可, 由于Picasso的调用方式和Glide几乎一样, 我们要做的可能只是将Glide换成Picasso而已, 如下:<br><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line"><span class="comment">// 将Glide换成Picasso</span></div><div class="line"><span class="comment">// Glide.with(context)</span></div><div class="line">Picasso.with(context)</div><div class="line">...</div></pre></td></tr></table></figure></p>
+<h3 id="Rx支持"><a href="#Rx支持" class="headerlink" title="Rx支持"></a>Rx支持</h3><ol>
+<li>RxJava<ul>
+<li>一个使用Observable序列实现包含异步和基于事件的编程方式框架。</li>
+<li>扩展自<a href="https://en.wikipedia.org/wiki/Observer_pattern" target="_blank" rel="external">观察者模式</a>，实现数据、事件序列，并提供了很多Operators可以随意转换Observable，而无需顾虑线程安全，并发同步等。</li>
+<li><a href="https://github.com/ReactiveX/RxJava" target="_blank" rel="external">源码地址</a></li>
+<li><a href="https://github.com/ReactiveX/RxJava/wiki" target="_blank" rel="external">官方教程</a></li>
+<li><a href="http://gank.io/post/560e15be2dca930e00da1083#toc_7" target="_blank" rel="external">给 Android 开发者的 RxJava 详解</a></li>
+<li><a href="https://mcxiaoke.gitbooks.io/rxdocs/content/" target="_blank" rel="external">ReactiveX文档中文翻译</a></li>
+<li><a href="https://github.com/lzyzsd/Awesome-RxJava" target="_blank" rel="external">Awesome-RxJava</a></li>
+</ul>
+</li>
+<li>RxAndroid<ul>
+<li>RxJava的Android扩展</li>
+<li><a href="https://github.com/ReactiveX/RxAndroid" target="_blank" rel="external">源码地址</a></li>
+<li><a href="https://github.com/ReactiveX/RxAndroid/wiki" target="_blank" rel="external">官方教程</a></li>
+</ul>
+</li>
+<li>RxLifecycle<ul>
+<li>基于RxJava的Activity、Fragment生命周期控制组件。结合RxJava请求使用可以根据Activity、Fragment生命周期自动完成事件序列。避免需要手动调用unsubscribe。</li>
+<li><a href="https://github.com/trello/RxLifecycle" target="_blank" rel="external">源码地址</a></li>
+<li><a href="https://github.com/trello/RxLifecycle" target="_blank" rel="external">官方教程</a></li>
+</ul>
+</li>
+<li>RxBinding    <ul>
+<li>Jake大神的大作, 用来将View的事件转换成Rx模式 <strong>(大家可以跟随项目见证它的妙处)</strong>.</li>
+<li><a href="https://github.com/JakeWharton/RxBinding" target="_blank" rel="external">源码地址</a></li>
+</ul>
+</li>
+</ol>
+<h3 id="依赖注入"><a href="#依赖注入" class="headerlink" title="依赖注入"></a>依赖注入</h3><p>这个一般会选择大名鼎鼎的Dagger了, 现在使用的基本都是google fork修改之后的Dagger2.</p>
+<ol>
+<li>Dagger2<ul>
+<li>依赖注入框架</li>
+<li><a href="https://github.com/google/dagger" target="_blank" rel="external">源码地址</a></li>
+<li><a href="http://google.github.io/dagger/" target="_blank" rel="external">官方教程</a></li>
+</ul>
+</li>
+</ol>
+<h3 id="数据库相关"><a href="#数据库相关" class="headerlink" title="数据库相关"></a>数据库相关</h3><p>这个也有很多选择, 个人一般使用GreenDAO, 主要是其编译生成类文件, 比较清晰, 便于看清原理.</p>
+<ol>
+<li>GreenDAO<ul>
+<li>GreenRobot组织开发的一个轻量快速的Android ORM数据库实现。</li>
+<li><a href="https://github.com/greenrobot/greenDAO" target="_blank" rel="external">源码地址</a></li>
+<li><a href="http://greenrobot.org/greendao/" target="_blank" rel="external">官方教程</a>  </li>
+</ul>
+</li>
+</ol>
+<p>另外, 最近<a href="https://realm.io/" target="_blank" rel="external">Realm</a>, 极其火爆, 说是基于移动设备打造的数据库, 抛弃SQLite的存在, 可以在练手项目中尝试下.</p>
+<h3 id="辅助"><a href="#辅助" class="headerlink" title="辅助"></a>辅助</h3><ol>
+<li>Logger<ul>
+<li>漂亮的Log输出库。</li>
+<li><a href="https://github.com/orhanobut/logger" target="_blank" rel="external">源码地址</a></li>
+<li><a href="https://github.com/orhanobut/logger" target="_blank" rel="external">官方教程</a>    </li>
+</ul>
+</li>
+<li>LeakCanary<ul>
+<li>内存溢出检测库。</li>
+<li><a href="https://github.com/square/leakcanary" target="_blank" rel="external">源码地址</a></li>
+<li><a href="https://github.com/square/leakcanary" target="_blank" rel="external">官方教程</a>    </li>
+</ul>
+</li>
+<li>DBinspector<ul>
+<li>数据库查看库。</li>
+<li><a href="https://github.com/infinum/android_dbinspector" target="_blank" rel="external">源码地址</a></li>
+<li><a href="https://github.com/infinum/android_dbinspector" target="_blank" rel="external">官方教程</a> </li>
+</ul>
+</li>
+</ol>
+<p>还有项目过程中还会根据实际情况增减一些库, 到时再说.<br>另外可能会引入一些注入自定义View, 动画等相关的库, 也是根据产品的实际情况而定.</p>
+<p>至此, 一个App项目的前期工作基本就绪了(当然, 这个是作为一个简单的自研项目而言, 如果是公司产品, 还需更多的产品方面的准备, 在此单论技术方面).<br>接下来, 就会开始搭建项目框架了, 敬请期待.</p>
+<blockquote>
+<p>转载请注明出处, 欢迎大家分享到朋友圈, 微博~</p>
+</blockquote>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/Android/" rel="tag"># Android</a>
+          
+            <a href="/tags/架构/" rel="tag"># 架构</a>
+          
+            <a href="/tags/MVP/" rel="tag"># MVP</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2016/07/13/android/app-refactor/" rel="next" title="关于App重构的几个方面">
+                <i class="fa fa-chevron-left"></i> 关于App重构的几个方面
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2016/07/22/mvp/mvp2/" rel="prev" title="MVP架构实现的Github客户端(2-搭建项目框架)">
+                MVP架构实现的Github客户端(2-搭建项目框架) <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+        <div class="ds-share flat" data-thread-key="2016/07/22/mvp/mvp1/"
+     data-title="MVP架构实现的Github客户端(1-准备工作)"
+     data-content=""
+     data-url="http://blog.lmj.wiki/2016/07/22/mvp/mvp1/">
+  <div class="ds-share-inline">
+    <ul  class="ds-share-icons-16">
+
+      <li data-toggle="ds-share-icons-more"><a class="ds-more" href="javascript:void(0);">分享到：</a></li>
+      <li><a class="ds-weibo" href="javascript:void(0);" data-service="weibo">微博</a></li>
+      <li><a class="ds-qzone" href="javascript:void(0);" data-service="qzone">QQ空间</a></li>
+      <li><a class="ds-qqt" href="javascript:void(0);" data-service="qqt">腾讯微博</a></li>
+      <li><a class="ds-wechat" href="javascript:void(0);" data-service="wechat">微信</a></li>
+
+    </ul>
+    <div class="ds-share-icons-more">
+    </div>
+  </div>
+</div>
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+      <div class="ds-thread" data-thread-key="2016/07/22/mvp/mvp1/"
+           data-title="MVP架构实现的Github客户端(1-准备工作)" data-url="http://blog.lmj.wiki/2016/07/22/mvp/mvp1/">
+      </div>
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          
+            <img class="site-author-image" itemprop="image"
+              src="/img/avatar.jpeg"
+              alt="anly_jun" />
+          
+            <p class="site-author-name" itemprop="name">anly_jun</p>
+            <p class="site-description motion-element" itemprop="description">Android, iOS, Mobile Dev/Test, Web, Python</p>
+        </div>
+
+        <nav class="site-state motion-element">
+
+          
+            <div class="site-state-item site-state-posts">
+            
+              <a href="/archives">
+            
+                <span class="site-state-item-count">55</span>
+                <span class="site-state-item-name">日志</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-categories">
+              <a href="/categories/index.html">
+                <span class="site-state-item-count">6</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-tags">
+              <a href="/tags/index.html">
+                <span class="site-state-item-count">20</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+          <div class="feed-link motion-element">
+            <a href="/atom.xml" rel="alternate">
+              <i class="fa fa-rss"></i>
+              RSS
+            </a>
+          </div>
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#MVP架构实现的Github客户端-1-准备工作"><span class="nav-number">1.</span> <span class="nav-text">MVP架构实现的Github客户端(1-准备工作)</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#1-架构选择"><span class="nav-number">1.1.</span> <span class="nav-text">1, 架构选择</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-服务器API熟悉"><span class="nav-number">1.2.</span> <span class="nav-text">2, 服务器API熟悉</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-开源库选择"><span class="nav-number">1.3.</span> <span class="nav-text">3, 开源库选择</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#网络请求"><span class="nav-number">1.3.1.</span> <span class="nav-text">网络请求</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#图片加载"><span class="nav-number">1.3.2.</span> <span class="nav-text">图片加载</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Rx支持"><span class="nav-number">1.3.3.</span> <span class="nav-text">Rx支持</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#依赖注入"><span class="nav-number">1.3.4.</span> <span class="nav-text">依赖注入</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#数据库相关"><span class="nav-number">1.3.5.</span> <span class="nav-text">数据库相关</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#辅助"><span class="nav-number">1.3.6.</span> <span class="nav-text">辅助</span></a></li></ol></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2017</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">anly_jun</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+  <span class="post-meta-divider">|</span>
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">NexT.Gemini</a> v5.1.2</div>
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.2"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.2"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.2"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.2"></script>
+
+
+
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.2"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.2"></script>
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.2"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.2"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.2"></script>
+
+
+
+  
+
+  
+    
+  
+
+  <script type="text/javascript">
+    var duoshuoQuery = {short_name:"anlyjun"};
+    (function() {
+      var ds = document.createElement('script');
+      ds.type = 'text/javascript';ds.async = true;
+      ds.id = 'duoshuo-script';
+      ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+      ds.charset = 'UTF-8';
+      (document.getElementsByTagName('head')[0]
+      || document.getElementsByTagName('body')[0]).appendChild(ds);
+    })();
+  </script>
+
+  
+    
+    
+    <script src="/lib/ua-parser-js/dist/ua-parser.min.js?v=0.7.9"></script>
+    <script src="/js/src/hook-duoshuo.js"></script>
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

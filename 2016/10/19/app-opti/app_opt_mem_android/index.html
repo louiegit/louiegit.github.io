@@ -1,0 +1,894 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next gemini use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.2" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="Android,App优化," />
+
+
+
+
+
+  <link rel="alternate" href="/atom.xml" title="ANLY'S BLOG" type="application/atom+xml" />
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.1.2" />
+
+
+
+
+
+
+<meta name="description" content="引言前文我们普及了下关于GC的一些事, 对GC的一些个概念, 流程有个大概的了解. 在Application的启动流程一文中, 我们有提到, Android中每个App默认情况下是运行在一个独立进程中的, 而这个独立进程正是从Zygote孵化出来的VM进程. 也就是说, 每个App是运行在独立的VM空间的. 那么Android是怎么管理这些App的内存的呢, 这些独立运行的VM中的内存管理又是怎样">
+<meta name="keywords" content="Android,App优化">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Android是如何管理App内存的--Android内存优化第二弹">
+<meta property="og:url" content="http://blog.lmj.wiki/2016/10/19/app-opti/app_opt_mem_android/index.html">
+<meta property="og:site_name" content="ANLY&#39;S BLOG">
+<meta property="og:description" content="引言前文我们普及了下关于GC的一些事, 对GC的一些个概念, 流程有个大概的了解. 在Application的启动流程一文中, 我们有提到, Android中每个App默认情况下是运行在一个独立进程中的, 而这个独立进程正是从Zygote孵化出来的VM进程. 也就是说, 每个App是运行在独立的VM空间的. 那么Android是怎么管理这些App的内存的呢, 这些独立运行的VM中的内存管理又是怎样">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2017-09-12T15:16:05.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Android是如何管理App内存的--Android内存优化第二弹">
+<meta name="twitter:description" content="引言前文我们普及了下关于GC的一些事, 对GC的一些个概念, 流程有个大概的了解. 在Application的启动流程一文中, 我们有提到, Android中每个App默认情况下是运行在一个独立进程中的, 而这个独立进程正是从Zygote孵化出来的VM进程. 也就是说, 每个App是运行在独立的VM空间的. 那么Android是怎么管理这些App的内存的呢, 这些独立运行的VM中的内存管理又是怎样">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Gemini',
+    version: '5.1.2',
+    sidebar: {"position":"right","display":"post","offset":12,"offset_float":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://blog.lmj.wiki/2016/10/19/app-opti/app_opt_mem_android/"/>
+
+
+
+
+
+  <title>Android是如何管理App内存的--Android内存优化第二弹 | ANLY'S BLOG</title>
+  
+
+
+
+
+
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?3e4bf02bc6c59d846f194a8afc04ecfc";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-right page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">ANLY'S BLOG</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">看看书, 写写字; 捣鼓捣鼓小技术.</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            关于
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://blog.lmj.wiki/2016/10/19/app-opti/app_opt_mem_android/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="anly_jun">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/img/avatar.jpeg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="ANLY'S BLOG">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">Android是如何管理App内存的--Android内存优化第二弹</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2016-10-19T22:10:00+08:00">
+                2016-10-19
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Android/" itemprop="url" rel="index">
+                    <span itemprop="name">Android</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2016/10/19/app-opti/app_opt_mem_android/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count ds-thread-count" data-thread-key="2016/10/19/app-opti/app_opt_mem_android/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h2 id="引言"><a href="#引言" class="headerlink" title="引言"></a>引言</h2><p><a href="http://www.jianshu.com/p/5db05db4f5ab" target="_blank" rel="external">前文</a>我们普及了下关于GC的一些事, 对GC的一些个概念, 流程有个大概的了解. 在<a href="http://www.jianshu.com/p/a5532ecc8377" target="_blank" rel="external">Application的启动流程</a>一文中, 我们有提到, Android中每个App默认情况下是运行在一个独立进程中的, 而这个独立进程正是从Zygote孵化出来的VM进程. 也就是说, 每个App是运行在独立的VM空间的. 那么Android是怎么管理这些App的内存的呢, 这些独立运行的VM中的内存管理又是怎样的呢?</p>
+<p>今天我们就来聊下Android中的内存管理.</p>
+<a id="more"></a>
+<h2 id="1-Dalvik-amp-ART"><a href="#1-Dalvik-amp-ART" class="headerlink" title="1, Dalvik &amp; ART"></a>1, Dalvik &amp; ART</h2><p>Android在4.4之前一直使用的Dalvik虚拟机作为App的运行VM的, 4.4中引入了ART作为开发者备选, 5.0起正式将ART作为默认VM了.</p>
+<p>我们首先来简单了解下二者:</p>
+<h3 id="1-1-Dalvik"><a href="#1-1-Dalvik" class="headerlink" title="1.1 Dalvik"></a>1.1 Dalvik</h3><p>如果只是想简单了解, 个人觉得<a href="http://baike.baidu.com/link?url=BhfCH56rRge9OpH9VXJD2inNFQxtlBsmQxW_stel7FSUNOJZBS0R1nKuCiOzlMnUiBfOvENDi1Dxfm7JDq4_RK" target="_blank" rel="external">百度百科上这个Dalvik的介绍</a>基本就满足要求了.</p>
+<p>如果大家想深入, 可以看下<strong>老罗的Android之旅</strong>中<a href="http://blog.csdn.net/luoshengyang/article/details/8852432" target="_blank" rel="external">Dalvik的相关博文</a>, 从代码层面上分析了Dalvik的启动, 运行机制等. 值得一看.</p>
+<p>需要说明的是, Dalvik采用的是JIT技术, 在应用程序启动时, JIT通过进行连续的性能分析来优化程序代码的执行, 在程序运行的过程中, Dalvik在不断的进行将字节码编译成机器码的工作.</p>
+<h3 id="1-2-ART"><a href="#1-2-ART" class="headerlink" title="1.2 ART"></a>1.2 ART</h3><p>ART 取自 Android RunTime. Android用其取代Dalvik, 主要目的就是为了提升运行性能. 所以, ART相比Dalvik有几个关键的提升:</p>
+<h4 id="引入AOT-ahead-of-time-预编译技术"><a href="#引入AOT-ahead-of-time-预编译技术" class="headerlink" title="引入AOT(ahead-of-time)预编译技术"></a>引入AOT(ahead-of-time)预编译技术</h4><p>在安装apk的过程中, ART会使用<strong>dex2oat</strong>程序所有的字节码预编译成了机器码. 应用程序运行过程中无需进行实时的编译工作, 只需要进行直接调用. 故而提高了应用程序的运行效率.</p>
+<h4 id="GC效率"><a href="#GC效率" class="headerlink" title="GC效率"></a>GC效率</h4><ul>
+<li>由原来的两次<strong>GC暂停</strong>减少为一次.</li>
+<li>以较少的<strong>GC时间</strong>回收最近分配的, 短命的对象.</li>
+<li>提升GC工程学, 使并发GC更及时.</li>
+<li>压缩GC, 以减少后台内存使用和内存碎片.</li>
+</ul>
+<h4 id="开发和调试"><a href="#开发和调试" class="headerlink" title="开发和调试"></a>开发和调试</h4><ul>
+<li>支持内存/方法执行的采样分析.</li>
+<li>支持更多的调试技.</li>
+<li>在Crash report中提供更多信息.</li>
+</ul>
+<h2 id="2-Android的内存管理方式"><a href="#2-Android的内存管理方式" class="headerlink" title="2, Android的内存管理方式"></a>2, Android的内存管理方式</h2><p>ART和Dalvik都是使用<a href="https://en.wikipedia.org/wiki/Paging" target="_blank" rel="external">paging</a>和<a href="http://en.wikipedia.org/wiki/Memory-mapped_files" target="_blank" rel="external">memory-mapping(mmapping)</a>来管理内存的. 这就意味着, 任何被分配的内存都会持续存在, 唯一的释放这块内存的方式就是释放对象引用(<strong>让对象GC Root不可达</strong>), 故而让GC程序来回收内存.</p>
+<h3 id="2-1-App的内存分配和回收"><a href="#2-1-App的内存分配和回收" class="headerlink" title="2.1 App的内存分配和回收"></a>2.1 App的内存分配和回收</h3><p>对于每个App进程来说, Heap内存被限制在一个虚拟的内存区间内. 且定义了逻辑上的使用的Heap Size, 这个Heap Size在系统限制的最大值之内是随着应用的使用情况而变化的.</p>
+<p>Heap内存的逻辑大小和实际物理内存的大小是不相同的. 后面我们在使用Memory Monitor等内存分析工具分析内存时, 会看到一个叫做Proportional Set Size (PSS)的值, 这个值才是系统认为的你的App所占用的物理内存大小.</p>
+<p>这个PSS值也就是实际物理内存大小, 统计包括了你的应用进程所占用的内存大小, 和共享内存中占用的内存大小(比例分配方式计算).</p>
+<p>Android VM不会压缩Heap内存的逻辑大小, 故而无法通过碎片整理的方式来释放Heap空间, 而只能通过回收Heap尾部的空内存块来压缩逻辑内存大小.</p>
+<p>这时, 我们的GC就出场了, GC之后, VM会遍历Heap找到不被使用的pages, 通过<a href="http://www.cnblogs.com/beifei/archive/2011/06/10/2077829.html" target="_blank" rel="external">madvise</a>函数将其返回给内核, 从而释放这块被逻辑Heap使用的物理内存.</p>
+<h3 id="2-2-App内存限制"><a href="#2-2-App内存限制" class="headerlink" title="2.2 App内存限制"></a>2.2 App内存限制</h3><p>Android是一个多任务系统, 为了保证多任务的运行, Android给每个App可使用的Heap大小设定了一个限定值.</p>
+<p>这个值是系统设置的prop值, 系统编译时内置的, 保存在system/build.prop中. 一般国内的手机厂商都会做修改, 根据手机配置不同而不同, 可以通过如下命令查看:</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"><span class="meta">$</span> adb shell</div><div class="line">shell@hwH60:/ $ cat /system/build.prop</div></pre></td></tr></table></figure>
+<p>以手头的Huawei 荣耀6为例, heap size相关的prop如下:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">dalvik.vm.heapstartsize=8m</div><div class="line">dalvik.vm.heapgrowthlimit=192m</div><div class="line">dalvik.vm.heapsize=512m</div><div class="line">dalvik.vm.heaptargetutilization=0.75</div><div class="line">dalvik.vm.heapminfree=2m</div><div class="line">dalvik.vm.heapmaxfree=8m</div></pre></td></tr></table></figure>
+<p>其中:</p>
+<p><strong>dalvik.vm.heapstartsize</strong></p>
+<p>– App启动后, 系统分配给它的Heap初始大小. 随着App使用可增加.</p>
+<p><strong>dalvik.vm.heapgrowthlimit</strong></p>
+<p>– 默认情况下, App可使用的Heap的最大值, 超过这个值就会产生OOM.</p>
+<p><strong>dalvik.vm.heapsize</strong></p>
+<p>– 如果App的manifest文件中配置了largeHeap属性, 如下.则App可使用的Heap的最大值为此项设定值.</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line"><span class="tag">&lt;<span class="name">application</span></span></div><div class="line"><span class="tag">    <span class="attr">android:largeHeap</span>=<span class="string">"true"</span>&gt;</span></div><div class="line">    ...</div><div class="line"><span class="tag">&lt;/<span class="name">application</span>&gt;</span></div></pre></td></tr></table></figure>
+<p><strong>dalvik.vm.heaptargetutilization</strong></p>
+<p>– 当前理想的堆内存利用率. GC后, Dalvik的Heap内存会进行相应的调整, 调整到当前存活的对象的大小和 / Heap大小 接近这个选项的值, 即这里的0.75. 注意, 这只是一个参考值.</p>
+<p><strong>dalvik.vm.heapminfree</strong></p>
+<p>– 单次Heap内存调整的最小值.</p>
+<p><strong>dalvik.vm.heapmaxfree</strong></p>
+<p>– 单次Heap内存调整的最大值.</p>
+<blockquote>
+<p>也可以直接使用getprop查看单项prop:</p>
+</blockquote>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"><span class="meta">$</span> adb shell getprop dalvik.vm.heapsize</div><div class="line">512m</div></pre></td></tr></table></figure>
+<h3 id="2-3-切换App时的内存管理机制"><a href="#2-3-切换App时的内存管理机制" class="headerlink" title="2.3 切换App时的内存管理机制"></a>2.3 切换App时的内存管理机制</h3><h4 id="Android的进程级别"><a href="#Android的进程级别" class="headerlink" title="Android的进程级别"></a>Android的进程级别</h4><p>Android 系统会尽可能长时间地保持应用进程, 但为了新建进程或运行更重要的进程, 最终需要清除旧进程来回收内存. 为了确定保留或终止哪些进程, 系统会根据进程中正在运行的组件以及这些组件的状态, 将每个进程设定了一个重要级别. 必要时, 系统会首先消除重要性最低的进程, 然后是重要性略低的进程, 依此类推, 以回收系统资源.</p>
+<p>依据重要程度从大到小依次分为5级:</p>
+<p><strong>前台进程</strong></p>
+<p>用户当前操作所必需的进程. 如果一个进程满足以下任一条件, 即视为前台进程：</p>
+<ul>
+<li>托管用户正在交互的 Activity（已调用 Activity 的 onResume() 方法）</li>
+<li>托管某个 Service，后者绑定到用户正在交互的 Activity</li>
+<li>托管正在“前台”运行的 Service（服务已调用 startForeground()）</li>
+<li>托管正执行一个生命周期回调的 * Service（onCreate()、onStart() 或 onDestroy()）</li>
+<li>托管正执行其 onReceive() 方法的 BroadcastReceiver</li>
+</ul>
+<p>只有在内在不足以支持它们同时继续运行这一万不得已的情况下，系统才会终止它们。 此时，设备往往已达到内存分页状态，因此需要终止一些前台进程来确保用户界面正常响应。</p>
+<p><strong>可见进程</strong></p>
+<p>没有任何前台组件、但仍会影响用户在屏幕上所见内容的进程。 如果一个进程满足以下任一条件，即视为可见进程：</p>
+<ul>
+<li>托管不在前台、但仍对用户可见的 Activity（已调用其 onPause() 方法）。例如，如果前台 Activity 启动了一个对话框，允许在其后显示上一 Activity，则有可能会发生这种情况</li>
+<li>托管绑定到可见（或前台）Activity 的 Service<br>可见进程被视为是极其重要的进程，除非为了维持所有前台进程同时运行而必须终止，否则系统不会终止这些进程。</li>
+</ul>
+<p><strong>服务进程</strong></p>
+<p>正在运行已使用 startService() 方法启动的服务且不属于上述两个更高类别进程的进程。尽管服务进程与用户所见内容没有直接关联，但是它们通常在执行一些用户关心的操作（例如，在后台播放音乐或从网络下载数据）。因此，除非内存不足以维持所有前台进程和可见进程同时运行，否则系统会让服务进程保持运行状态。</p>
+<p><strong>后台进程</strong></p>
+<p>包含目前对用户不可见的 Activity 的进程（已调用 Activity 的 onStop() 方法）。这些进程对用户体验没有直接影响，系统可能随时终止它们，以回收内存供前台进程、可见进程或服务进程使用。 通常会有很多后台进程在运行，因此它们会保存在 LRU （最近最少使用）列表中，以确保包含用户最近查看的 Activity 的进程最后一个被终止。如果某个 Activity 正确实现了生命周期方法，并保存了其当前状态，则终止其进程不会对用户体验产生明显影响，因为当用户导航回该 Activity 时，Activity 会恢复其所有可见状态。</p>
+<p><strong>空进程</strong></p>
+<p>不含任何活动应用组件的进程。保留这种进程的的唯一目的是用作缓存，以缩短下次在其中运行组件所需的启动时间。 为使总体系统资源在进程缓存和底层内核缓存之间保持平衡，系统往往会终止这些进程。</p>
+<h4 id="切换App的内存管理"><a href="#切换App的内存管理" class="headerlink" title="切换App的内存管理"></a>切换App的内存管理</h4><p>当用户切换App时, 被切换到后台的App所使用的内存并未因此删除, 该App进程被缓存到一个LRU缓存中, 以便用户切换回来时, 能更快的启动App, 让多任务更流畅.</p>
+<p>但是, 当系统内存不够用的时候, 就会根据LRU特性, 以及上面说到的进程级别(同时也会考虑该App进程占用的内存大小)来决定杀死哪些进程, 来回收内存, 以便执行当前任务.</p>
+<blockquote>
+<p>所以, 如果我们为了不要让系统kill掉我们的App, 可以从进程级别, 内存消耗量等几个方面进行优化.</p>
+</blockquote>
+<h2 id="结语"><a href="#结语" class="headerlink" title="结语"></a>结语</h2><p>本文加上<a href="http://www.jianshu.com/p/5db05db4f5ab" target="_blank" rel="external">GC那些事儿</a>, 我们讲了两篇的理论知识, 相信大家对Android的内存管理有了个大体的了解, 后面将介绍一些内存分析工具以及使用, 结合实际来说明怎么分析内存问题.</p>
+<h2 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h2><ul>
+<li><a href="https://developer.android.com/topic/performance/memory-overview.html" target="_blank" rel="external">Overview of Android Memory Management</a></li>
+<li><a href="https://developer.android.com/guide/components/processes-and-threads.html" target="_blank" rel="external">Processes and Threads</a></li>
+<li><a href="https://source.android.com/devices/tech/dalvik/" target="_blank" rel="external">ART and Dalvik</a></li>
+</ul>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/Android/" rel="tag"># Android</a>
+          
+            <a href="/tags/App优化/" rel="tag"># App优化</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2016/10/11/app-opti/app_opt_mem_gc/" rel="next" title="GC那些事儿--Android内存优化第一弹">
+                <i class="fa fa-chevron-left"></i> GC那些事儿--Android内存优化第一弹
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2016/10/25/app-opti/app_opt_mat/" rel="prev" title="Tools, 出来接活了--Android内存优化第三弹">
+                Tools, 出来接活了--Android内存优化第三弹 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+        <div class="ds-share flat" data-thread-key="2016/10/19/app-opti/app_opt_mem_android/"
+     data-title="Android是如何管理App内存的--Android内存优化第二弹"
+     data-content=""
+     data-url="http://blog.lmj.wiki/2016/10/19/app-opti/app_opt_mem_android/">
+  <div class="ds-share-inline">
+    <ul  class="ds-share-icons-16">
+
+      <li data-toggle="ds-share-icons-more"><a class="ds-more" href="javascript:void(0);">分享到：</a></li>
+      <li><a class="ds-weibo" href="javascript:void(0);" data-service="weibo">微博</a></li>
+      <li><a class="ds-qzone" href="javascript:void(0);" data-service="qzone">QQ空间</a></li>
+      <li><a class="ds-qqt" href="javascript:void(0);" data-service="qqt">腾讯微博</a></li>
+      <li><a class="ds-wechat" href="javascript:void(0);" data-service="wechat">微信</a></li>
+
+    </ul>
+    <div class="ds-share-icons-more">
+    </div>
+  </div>
+</div>
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+      <div class="ds-thread" data-thread-key="2016/10/19/app-opti/app_opt_mem_android/"
+           data-title="Android是如何管理App内存的--Android内存优化第二弹" data-url="http://blog.lmj.wiki/2016/10/19/app-opti/app_opt_mem_android/">
+      </div>
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          
+            <img class="site-author-image" itemprop="image"
+              src="/img/avatar.jpeg"
+              alt="anly_jun" />
+          
+            <p class="site-author-name" itemprop="name">anly_jun</p>
+            <p class="site-description motion-element" itemprop="description">Android, iOS, Mobile Dev/Test, Web, Python</p>
+        </div>
+
+        <nav class="site-state motion-element">
+
+          
+            <div class="site-state-item site-state-posts">
+            
+              <a href="/archives">
+            
+                <span class="site-state-item-count">55</span>
+                <span class="site-state-item-name">日志</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-categories">
+              <a href="/categories/index.html">
+                <span class="site-state-item-count">6</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-tags">
+              <a href="/tags/index.html">
+                <span class="site-state-item-count">20</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+          <div class="feed-link motion-element">
+            <a href="/atom.xml" rel="alternate">
+              <i class="fa fa-rss"></i>
+              RSS
+            </a>
+          </div>
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#引言"><span class="nav-number">1.</span> <span class="nav-text">引言</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#1-Dalvik-amp-ART"><span class="nav-number">2.</span> <span class="nav-text">1, Dalvik & ART</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-1-Dalvik"><span class="nav-number">2.1.</span> <span class="nav-text">1.1 Dalvik</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#1-2-ART"><span class="nav-number">2.2.</span> <span class="nav-text">1.2 ART</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#引入AOT-ahead-of-time-预编译技术"><span class="nav-number">2.2.1.</span> <span class="nav-text">引入AOT(ahead-of-time)预编译技术</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#GC效率"><span class="nav-number">2.2.2.</span> <span class="nav-text">GC效率</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#开发和调试"><span class="nav-number">2.2.3.</span> <span class="nav-text">开发和调试</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-Android的内存管理方式"><span class="nav-number">3.</span> <span class="nav-text">2, Android的内存管理方式</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#2-1-App的内存分配和回收"><span class="nav-number">3.1.</span> <span class="nav-text">2.1 App的内存分配和回收</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-2-App内存限制"><span class="nav-number">3.2.</span> <span class="nav-text">2.2 App内存限制</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-3-切换App时的内存管理机制"><span class="nav-number">3.3.</span> <span class="nav-text">2.3 切换App时的内存管理机制</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#Android的进程级别"><span class="nav-number">3.3.1.</span> <span class="nav-text">Android的进程级别</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#切换App的内存管理"><span class="nav-number">3.3.2.</span> <span class="nav-text">切换App的内存管理</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#结语"><span class="nav-number">4.</span> <span class="nav-text">结语</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#参考"><span class="nav-number">5.</span> <span class="nav-text">参考</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2017</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">anly_jun</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+  <span class="post-meta-divider">|</span>
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">NexT.Gemini</a> v5.1.2</div>
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.2"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.2"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.2"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.2"></script>
+
+
+
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.2"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.2"></script>
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.2"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.2"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.2"></script>
+
+
+
+  
+
+  
+    
+  
+
+  <script type="text/javascript">
+    var duoshuoQuery = {short_name:"anlyjun"};
+    (function() {
+      var ds = document.createElement('script');
+      ds.type = 'text/javascript';ds.async = true;
+      ds.id = 'duoshuo-script';
+      ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+      ds.charset = 'UTF-8';
+      (document.getElementsByTagName('head')[0]
+      || document.getElementsByTagName('body')[0]).appendChild(ds);
+    })();
+  </script>
+
+  
+    
+    
+    <script src="/lib/ua-parser-js/dist/ua-parser.min.js?v=0.7.9"></script>
+    <script src="/js/src/hook-duoshuo.js"></script>
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

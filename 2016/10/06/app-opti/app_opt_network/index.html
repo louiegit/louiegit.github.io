@@ -1,0 +1,923 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next gemini use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.2" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="Android,App优化," />
+
+
+
+
+
+  <link rel="alternate" href="/atom.xml" title="ANLY'S BLOG" type="application/atom+xml" />
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.1.2" />
+
+
+
+
+
+
+<meta name="description" content="引言互联网时代, App作为于用户交互的端, 可以说实际上是一个界面, 产品的业务, 服务都是由Server提供的. 而App与Server的交互依赖于网络, 故而网络优化, 也是我们的App优化中不可缺少的一个优化项.">
+<meta name="keywords" content="Android,App优化">
+<meta property="og:type" content="article">
+<meta property="og:title" content="App优化之网络优化">
+<meta property="og:url" content="http://blog.lmj.wiki/2016/10/06/app-opti/app_opt_network/index.html">
+<meta property="og:site_name" content="ANLY&#39;S BLOG">
+<meta property="og:description" content="引言互联网时代, App作为于用户交互的端, 可以说实际上是一个界面, 产品的业务, 服务都是由Server提供的. 而App与Server的交互依赖于网络, 故而网络优化, 也是我们的App优化中不可缺少的一个优化项.">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="http://blog.lmj.wiki/img/14758501930312.jpg">
+<meta property="og:image" content="http://blog.lmj.wiki/img/14760229679986.jpg">
+<meta property="og:image" content="http://blog.lmj.wiki/img/14760236084638.jpg">
+<meta property="og:image" content="http://blog.lmj.wiki/img/14760235474046.jpg">
+<meta property="og:image" content="http://blog.lmj.wiki/img/ios_network.png">
+<meta property="og:updated_time" content="2017-09-12T15:16:05.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="App优化之网络优化">
+<meta name="twitter:description" content="引言互联网时代, App作为于用户交互的端, 可以说实际上是一个界面, 产品的业务, 服务都是由Server提供的. 而App与Server的交互依赖于网络, 故而网络优化, 也是我们的App优化中不可缺少的一个优化项.">
+<meta name="twitter:image" content="http://blog.lmj.wiki/img/14758501930312.jpg">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Gemini',
+    version: '5.1.2',
+    sidebar: {"position":"right","display":"post","offset":12,"offset_float":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://blog.lmj.wiki/2016/10/06/app-opti/app_opt_network/"/>
+
+
+
+
+
+  <title>App优化之网络优化 | ANLY'S BLOG</title>
+  
+
+
+
+
+
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?3e4bf02bc6c59d846f194a8afc04ecfc";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-right page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">ANLY'S BLOG</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">看看书, 写写字; 捣鼓捣鼓小技术.</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            关于
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://blog.lmj.wiki/2016/10/06/app-opti/app_opt_network/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="anly_jun">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/img/avatar.jpeg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="ANLY'S BLOG">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">App优化之网络优化</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2016-10-06T14:47:00+08:00">
+                2016-10-06
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Android/" itemprop="url" rel="index">
+                    <span itemprop="name">Android</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2016/10/06/app-opti/app_opt_network/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count ds-thread-count" data-thread-key="2016/10/06/app-opti/app_opt_network/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h2 id="引言"><a href="#引言" class="headerlink" title="引言"></a>引言</h2><p>互联网时代, App作为于用户交互的端, 可以说实际上是一个界面, 产品的业务, 服务都是由Server提供的. 而App与Server的交互依赖于网络, 故而网络优化, 也是我们的App优化中不可缺少的一个优化项.</p>
+<a id="more"></a>
+<h2 id="1-网络连接对用户的影响"><a href="#1-网络连接对用户的影响" class="headerlink" title="1, 网络连接对用户的影响"></a>1, 网络连接对用户的影响</h2><p>App的网络连接对于用户来说, 影响很多, 且多数情况下都很直观, 直接影响用户对这个App的使用体验. 其中较为重要的几点:</p>
+<ul>
+<li><p><strong>流量</strong><br>  App的流量消耗对用户来说是比较敏感的, 毕竟流量是花钱的嘛. 现在大部分人的手机上都有安装流量监控的工具App, 用来监控App的流量使用. 如果我们的App这方面没有控制好, 会给用户不好的使用体验.</p>
+</li>
+<li><p><strong>电量</strong><br>  电量相对于用户来说, 没有那么明显. 一般用户可能不会太注意. 但是如<a href="http://www.jianshu.com/p/c55ef05c0047" target="_blank" rel="external">前文电量优化</a>中说的那样, 网络连接(radio)是对电量影响很大的一个因素. 所以我们也要加以注意.</p>
+</li>
+<li><p><strong>用户等待</strong><br>  也就是用户体验, 良好的用户体验, 才是我们留住用户的第一步. 如果App请求等待时间长, 会给用户网络卡, 应用反应慢的感觉, 如果有对比, 有替代品, 我们的App很可能就会被用户无情抛弃.</p>
+</li>
+</ul>
+<h2 id="2-分析网络连接的工具"><a href="#2-分析网络连接的工具" class="headerlink" title="2, 分析网络连接的工具"></a>2, 分析网络连接的工具</h2><h3 id="2-1-Network-Monitor"><a href="#2-1-Network-Monitor" class="headerlink" title="2.1 Network Monitor"></a>2.1 Network Monitor</h3><p>Android Studio内置的Monitor工具中就有一个Network Monitor:</p>
+<p><img src="/img/14758501930312.jpg" alt=""></p>
+<p>其中: </p>
+<ul>
+<li>Rx — R(ecive) 表示下行流量, 即下载接收.</li>
+<li>Tx — T(ransmit) 表示上行流量, 即上传发送. </li>
+</ul>
+<p><strong>怎么使用Network Monitor?</strong></p>
+<p>Network monitor实时跟踪选定应用的数据请求情况. 我们可以连上手机, 选定调试应用进程, 然后在App上操作我们需要分析的页面请求.</p>
+<p>例如, 上图就是以<a href="https://github.com/mingjunli/GithubApp" target="_blank" rel="external">CoderPub</a>为例, 针对从repo列表界面进入repo详情界面的监控数据.</p>
+<p>可以看到从10s到30s之间, 20s时间内发生了多次数据请求, 且22s到27s之间的请求数据量还很大.</p>
+<p>分析代码可以看到, 在请求repo详情的时候是打包了很多请求的:</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div></pre></td><td class="code"><pre><div class="line"><span class="meta">@Override</span></div><div class="line"><span class="function"><span class="keyword">public</span> Observable&lt;RepoDetail&gt; <span class="title">getRepoDetail</span><span class="params">(String owner, String name)</span> </span>&#123;</div><div class="line">    <span class="keyword">return</span> Observable.zip(mRepoService.get(owner, name),</div><div class="line">            mRepoService.contributors(owner, name),</div><div class="line">            mRepoService.listForks(owner, name, <span class="string">"newest"</span>),</div><div class="line">            mRepoService.readme(owner, name),</div><div class="line">            isStarred(owner, name),</div><div class="line">            <span class="keyword">new</span> Func5&lt;Repo, ArrayList&lt;User&gt;, ArrayList&lt;Repo&gt;, Content, Boolean, RepoDetail&gt;() &#123;</div><div class="line">                <span class="meta">@Override</span></div><div class="line">                <span class="function"><span class="keyword">public</span> RepoDetail <span class="title">call</span><span class="params">(Repo repo, ArrayList&lt;User&gt; users, ArrayList&lt;Repo&gt; forks, Content readme, Boolean isStarred)</span> </span>&#123;</div><div class="line">                    RepoDetail detail = <span class="keyword">new</span> RepoDetail();</div><div class="line"></div><div class="line">                    repo.setStarred(isStarred);</div><div class="line">                    detail.setBaseRepo(repo);</div><div class="line">                    detail.setForks(forks);</div><div class="line"></div><div class="line">                    <span class="comment">// because the readme content is encode with Base64 by github.</span></div><div class="line">                    readme.content = StringUtil.base64Decode(readme.content);</div><div class="line">                    detail.setReadme(readme);</div><div class="line"></div><div class="line">                    detail.setContributors(users);</div><div class="line">                    <span class="keyword">return</span> detail;</div><div class="line">                &#125;</div><div class="line">            &#125;);</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>这也验证了14s到20s间的四次数据请求, 另外由于repo详情界面会显示作者以及贡献者的图片, 而图片的数据量相对大, 故而23s到27s间有多次数据量很大的请求发生.</p>
+<blockquote>
+<p>这个实际是有很多优化空间的, 我们稍后再说.</p>
+</blockquote>
+<h3 id="2-2-网络代理工具"><a href="#2-2-网络代理工具" class="headerlink" title="2.2 网络代理工具"></a>2.2 网络代理工具</h3><p>一般来说, 网络代理工具有两个作用:</p>
+<ol>
+<li>截获网络请求响应包, 分析网络请求</li>
+<li>设置代理网络, 移动App开发中一般用来做不同网络环境的测试, 例如Wifi/4G/3G/弱网等.</li>
+</ol>
+<p>代理工具很多, 诸如<a href="https://www.wireshark.org/" target="_blank" rel="external">Wireshark</a>, <a href="http://www.telerik.com/fiddler" target="_blank" rel="external">Fiddler</a>, <a href="https://www.charlesproxy.com/" target="_blank" rel="external">Charles</a>等, 在此不一一细说了, 使用方法自行问谷歌度娘. :)</p>
+<h2 id="3-哪些方面取优化网络连接"><a href="#3-哪些方面取优化网络连接" class="headerlink" title="3, 哪些方面取优化网络连接"></a>3, 哪些方面取优化网络连接</h2><p>第一节说到了网络请求对App和用户的影响, 那么我们怎么从哪些方面去优化网络进而减少甚至消灭这些影响呢?</p>
+<p>简单来说, 两个方面:</p>
+<ul>
+<li><p><strong>减少Radio活跃时间</strong></p>
+<ul>
+<li>也就是减少网络数据获取的频次.</li>
+<li>这就减少了radio的电量消耗, 控制电量使用.</li>
+</ul>
+</li>
+<li><p><strong>减少获取数据包的大小</strong></p>
+<ul>
+<li>可以减少流量消耗</li>
+<li>也可以让每次请求更快, 在网络情况不好的情况下也有良好表现, 提升用户体验.</li>
+</ul>
+</li>
+</ul>
+<p><strong>那么, 具体应该从哪些方面着手呢?</strong></p>
+<h3 id="3-1-接口设计"><a href="#3-1-接口设计" class="headerlink" title="3.1 接口设计"></a>3.1 接口设计</h3><h4 id="API设计"><a href="#API设计" class="headerlink" title="API设计"></a>API设计</h4><p>App与Server之间的API设计要考虑网络请求的频次, 资源的状态等. 以便App可以以较少的请求来完成业务需求和界面的展示.</p>
+<p>例如, 注册登录. 正常会有两个API, 注册和登录, 但是设计API时我们应该给注册接口包含一个隐式的登录. 来避免App在注册后还得请求一次登录接口(有可能失败, 从而导致业务流程失败).</p>
+<p>再例如, 上文提到的获取repo详情, 实际上请求了4个接口, 请求了repo的信息, forks列表, contributors列表, readme, 这是因为github提供的接口是尽量单一职责的. 然而在我们的实际开发中, 我们的Server除了提供这些单一职责的小接口外, 最好还能组合一个满足客户端业务需求的repo详情接口出来.</p>
+<h4 id="Gzip压缩"><a href="#Gzip压缩" class="headerlink" title="Gzip压缩"></a>Gzip压缩</h4><p>使用Gzip来压缩request和response, 减少传输数据量, 从而减少流量消耗.</p>
+<h4 id="考虑使用Protocol-Buffer代替JSON"><a href="#考虑使用Protocol-Buffer代替JSON" class="headerlink" title="考虑使用Protocol Buffer代替JSON"></a>考虑使用Protocol Buffer代替JSON</h4><p>从前我们传输数据使用XML, 后来使用JSON代替了XML, 很大程度上也是为了可读性和减少数据量(当然还有映射成POJO的方便程度).</p>
+<p><a href="https://github.com/google/protobuf/" target="_blank" rel="external">Protocol Buffer</a>是Google推出的一种数据交换格式. </p>
+<p>如果我们的接口每次传输的数据量很大的话, 可以考虑下protobuf, 会比JSON数据量小很多. </p>
+<p>当然相比来说, JSON也有其优势, 可读性更高.</p>
+<blockquote>
+<p>本文以网络流量优化的角度推荐protobuf作为一个选择, 具体还需更具实际情况考虑.</p>
+</blockquote>
+<h4 id="图片的Size"><a href="#图片的Size" class="headerlink" title="图片的Size"></a>图片的Size</h4><p>上面Network Monitor中看到的22s到27s之间的有多次请求, 且数据量还很大. 就是在获取图片资源.</p>
+<p>图片相对于接口请求来说, 数据量要大得多. 故而也是我们需要优化的一个点.</p>
+<p>我们可以在获取图片时告知服务器需要的图片的宽高, 以便服务器给出合适的图片, 避免浪费. </p>
+<p>我们现在很多公司的图片资源都是使用第三方的云存储服务的(七牛, 阿里云存储之类的).</p>
+<p>以七牛为例, 可以在请求图片的url中添加诸如质量, 格式, width, height等path来获取合适的图片资源:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">imageView2/&lt;mode&gt;/w/&lt;LongEdge&gt;</div><div class="line">                 /h/&lt;ShortEdge&gt;</div><div class="line">                 /format/&lt;Format&gt;</div><div class="line">                 /interlace/&lt;Interlace&gt;</div><div class="line">                 /q/&lt;Quality&gt;</div><div class="line">                 /ignore-error/&lt;ignoreError&gt;</div></pre></td></tr></table></figure>
+<blockquote>
+<p>参考<a href="http://developer.qiniu.com/code/v6/api/kodo-api/image/imageview2.html" target="_blank" rel="external">七牛官方文档</a>.</p>
+</blockquote>
+<h3 id="3-2-网络缓存"><a href="#3-2-网络缓存" class="headerlink" title="3.2 网络缓存"></a>3.2 网络缓存</h3><p>适当的缓存, 既可以让我们的应用看起来更快, 也能避免一些不必要的流量消耗.</p>
+<p>关于Android App的网络缓存, 请参考<a href="http://www.jianshu.com/p/faa46bbe8a2e" target="_blank" rel="external">MVP架构实现的Github客户端(4-加入网络缓存)</a>一文.</p>
+<h3 id="3-3-打包网络请求"><a href="#3-3-打包网络请求" class="headerlink" title="3.3 打包网络请求"></a>3.3 打包网络请求</h3><p>当接口设计不能满足我们的业务需求时. 例如可能一个界面需要请求多个接口, 或是网络良好, 处于Wifi状态下时我们想获取更多的数据等.</p>
+<p>这时就可以打包一些网络请求, 例如请求列表的同时, 获取Header点击率较高的的item项的详情数据.</p>
+<blockquote>
+<p>可以通过一些统计数据来帮助我们定位用户接下来的操作是高概率的, 提前获取这部分的数据.</p>
+</blockquote>
+<h3 id="3-4-监听相关状态"><a href="#3-4-监听相关状态" class="headerlink" title="3.4 监听相关状态"></a>3.4 监听相关状态</h3><p>通过监听设备的状态:</p>
+<ul>
+<li>休眠状态</li>
+<li>充电状态</li>
+<li>网络状态</li>
+</ul>
+<p>结合<a href="https://developer.android.com/reference/android/app/job/JobScheduler.html" target="_blank" rel="external">JobScheduler</a>来根据实际情况做网络请求. 比方说Splash闪屏广告图片, 我们可以在连接到Wifi时下载缓存到本地; 新闻类的App可以在充电, Wifi状态下做离线缓存.</p>
+<h3 id="3-5-弱网测试-amp-优化"><a href="#3-5-弱网测试-amp-优化" class="headerlink" title="3.5 弱网测试&amp;优化"></a>3.5 弱网测试&amp;优化</h3><p>除了正常的网络优化, 我们还需考虑到弱网情况下, App的表现.</p>
+<h3 id="3-5-1-弱网测试"><a href="#3-5-1-弱网测试" class="headerlink" title="3.5.1 弱网测试"></a>3.5.1 弱网测试</h3><p>有几种方式来模拟弱网进行测试.</p>
+<h4 id="Android-Emulator"><a href="#Android-Emulator" class="headerlink" title="Android Emulator"></a>Android Emulator</h4><p>创建和启动Android模拟器可以设置网络速度和延迟:</p>
+<p><strong>创建时</strong>:<br><img src="/img/14760229679986.jpg" alt=""></p>
+<p><strong>启动时</strong>, 使用emulator命令:</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"><span class="meta">$</span>emulator -netdelay gprs -netspeed gsm -avd Nexus_5_API_22</div></pre></td></tr></table></figure>
+<p>具体参数参考<a href="https://developer.android.com/studio/run/emulator-commandline.html#netdelay" target="_blank" rel="external">这里</a>和<a href="https://developer.android.com/studio/run/emulator-commandline.html#netspeed" target="_blank" rel="external">这里</a>, 需要翻墙.</p>
+<h4 id="使用网络代理工具"><a href="#使用网络代理工具" class="headerlink" title="使用网络代理工具"></a>使用网络代理工具</h4><p>以<a href="https://www.charlesproxy.com/" target="_blank" rel="external">Charles</a>为例:<br>保持手机和PC处于同一个局域网, 在手机端wifi设置高级设置中设置代理方式为手动, 代理ip填写PC端ip地址, 端口号默认8888.</p>
+<p><img src="/img/14760236084638.jpg" alt=""></p>
+<p><img src="/img/14760235474046.jpg" alt=""></p>
+<h4 id="其他模拟弱网方式"><a href="#其他模拟弱网方式" class="headerlink" title="其他模拟弱网方式"></a>其他模拟弱网方式</h4><p>如果你恰好也是iOS的开发者, Apple提供了<a href="http://nshipster.cn/network-link-conditioner/" target="_blank" rel="external">Network Link Conditioner</a>, 非常好用.</p>
+<p>可以模拟的网络情况与上述类似:<br><img src="/img/ios_network.png" alt="ios_network"></p>
+<p>如果你使用Linux环境开发, 还可以试下facebook出的<a href="http://facebook.github.io/augmented-traffic-control/" target="_blank" rel="external">ATC</a>.</p>
+<h3 id="3-5-2-弱网优化"><a href="#3-5-2-弱网优化" class="headerlink" title="3.5.2 弱网优化"></a>3.5.2 弱网优化</h3><p>利用上述工具模拟弱网, 在弱网情况下体验我们的App. 一般来说, 网络延迟在60ms内, 是OK的, 超过200ms就比较糟糕了. 我们需要做的是在比较糟糕的网络环境下还能给用户较好的体验.</p>
+<p>弱网优化, 本质上是在弱网的情况下能让用户流畅的使用我们的App. 我们要做的就是结合上述的优化项:</p>
+<ul>
+<li>压缩/减少数据传输量</li>
+<li>利用缓存减少网络传输</li>
+<li>针对弱网(移动网络), 不自动加载图片</li>
+<li>界面先反馈, 请求延迟提交<br>  例如, 用户点赞操作, 可以直接给出界面的点赞成功的反馈, 使用<a href="https://developer.android.com/reference/android/app/job/JobScheduler.html" target="_blank" rel="external"><strong>JobScheduler</strong></a>在网络情况较好的时候打包请求.</li>
+</ul>
+<hr>
+<p>网络优化, 是App优化中相当重要的一项优化. 除了客户端, 接口的优化外, 很多一部分优化还依赖于服务器端, 包括服务器端的代码开发, 部署方式等. 跟你的服务器开发/运维工程师一起聊聊这个话题吧:)</p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/Android/" rel="tag"># Android</a>
+          
+            <a href="/tags/App优化/" rel="tag"># App优化</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2016/09/25/app-opti/app_opt_battery/" rel="next" title="App优化之电池省着用">
+                <i class="fa fa-chevron-left"></i> App优化之电池省着用
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2016/10/11/app-opti/app_opt_mem_gc/" rel="prev" title="GC那些事儿--Android内存优化第一弹">
+                GC那些事儿--Android内存优化第一弹 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+        <div class="ds-share flat" data-thread-key="2016/10/06/app-opti/app_opt_network/"
+     data-title="App优化之网络优化"
+     data-content=""
+     data-url="http://blog.lmj.wiki/2016/10/06/app-opti/app_opt_network/">
+  <div class="ds-share-inline">
+    <ul  class="ds-share-icons-16">
+
+      <li data-toggle="ds-share-icons-more"><a class="ds-more" href="javascript:void(0);">分享到：</a></li>
+      <li><a class="ds-weibo" href="javascript:void(0);" data-service="weibo">微博</a></li>
+      <li><a class="ds-qzone" href="javascript:void(0);" data-service="qzone">QQ空间</a></li>
+      <li><a class="ds-qqt" href="javascript:void(0);" data-service="qqt">腾讯微博</a></li>
+      <li><a class="ds-wechat" href="javascript:void(0);" data-service="wechat">微信</a></li>
+
+    </ul>
+    <div class="ds-share-icons-more">
+    </div>
+  </div>
+</div>
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+      <div class="ds-thread" data-thread-key="2016/10/06/app-opti/app_opt_network/"
+           data-title="App优化之网络优化" data-url="http://blog.lmj.wiki/2016/10/06/app-opti/app_opt_network/">
+      </div>
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          
+            <img class="site-author-image" itemprop="image"
+              src="/img/avatar.jpeg"
+              alt="anly_jun" />
+          
+            <p class="site-author-name" itemprop="name">anly_jun</p>
+            <p class="site-description motion-element" itemprop="description">Android, iOS, Mobile Dev/Test, Web, Python</p>
+        </div>
+
+        <nav class="site-state motion-element">
+
+          
+            <div class="site-state-item site-state-posts">
+            
+              <a href="/archives">
+            
+                <span class="site-state-item-count">55</span>
+                <span class="site-state-item-name">日志</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-categories">
+              <a href="/categories/index.html">
+                <span class="site-state-item-count">6</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-tags">
+              <a href="/tags/index.html">
+                <span class="site-state-item-count">20</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+          <div class="feed-link motion-element">
+            <a href="/atom.xml" rel="alternate">
+              <i class="fa fa-rss"></i>
+              RSS
+            </a>
+          </div>
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#引言"><span class="nav-number">1.</span> <span class="nav-text">引言</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#1-网络连接对用户的影响"><span class="nav-number">2.</span> <span class="nav-text">1, 网络连接对用户的影响</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-分析网络连接的工具"><span class="nav-number">3.</span> <span class="nav-text">2, 分析网络连接的工具</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#2-1-Network-Monitor"><span class="nav-number">3.1.</span> <span class="nav-text">2.1 Network Monitor</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-2-网络代理工具"><span class="nav-number">3.2.</span> <span class="nav-text">2.2 网络代理工具</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-哪些方面取优化网络连接"><span class="nav-number">4.</span> <span class="nav-text">3, 哪些方面取优化网络连接</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#3-1-接口设计"><span class="nav-number">4.1.</span> <span class="nav-text">3.1 接口设计</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#API设计"><span class="nav-number">4.1.1.</span> <span class="nav-text">API设计</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Gzip压缩"><span class="nav-number">4.1.2.</span> <span class="nav-text">Gzip压缩</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#考虑使用Protocol-Buffer代替JSON"><span class="nav-number">4.1.3.</span> <span class="nav-text">考虑使用Protocol Buffer代替JSON</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#图片的Size"><span class="nav-number">4.1.4.</span> <span class="nav-text">图片的Size</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-2-网络缓存"><span class="nav-number">4.2.</span> <span class="nav-text">3.2 网络缓存</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-3-打包网络请求"><span class="nav-number">4.3.</span> <span class="nav-text">3.3 打包网络请求</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-4-监听相关状态"><span class="nav-number">4.4.</span> <span class="nav-text">3.4 监听相关状态</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-5-弱网测试-amp-优化"><span class="nav-number">4.5.</span> <span class="nav-text">3.5 弱网测试&优化</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-5-1-弱网测试"><span class="nav-number">4.6.</span> <span class="nav-text">3.5.1 弱网测试</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#Android-Emulator"><span class="nav-number">4.6.1.</span> <span class="nav-text">Android Emulator</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#使用网络代理工具"><span class="nav-number">4.6.2.</span> <span class="nav-text">使用网络代理工具</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#其他模拟弱网方式"><span class="nav-number">4.6.3.</span> <span class="nav-text">其他模拟弱网方式</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-5-2-弱网优化"><span class="nav-number">4.7.</span> <span class="nav-text">3.5.2 弱网优化</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2017</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">anly_jun</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+  <span class="post-meta-divider">|</span>
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">NexT.Gemini</a> v5.1.2</div>
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.2"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.2"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.2"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.2"></script>
+
+
+
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.2"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.2"></script>
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.2"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.2"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.2"></script>
+
+
+
+  
+
+  
+    
+  
+
+  <script type="text/javascript">
+    var duoshuoQuery = {short_name:"anlyjun"};
+    (function() {
+      var ds = document.createElement('script');
+      ds.type = 'text/javascript';ds.async = true;
+      ds.id = 'duoshuo-script';
+      ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+      ds.charset = 'UTF-8';
+      (document.getElementsByTagName('head')[0]
+      || document.getElementsByTagName('body')[0]).appendChild(ds);
+    })();
+  </script>
+
+  
+    
+    
+    <script src="/lib/ua-parser-js/dist/ua-parser.min.js?v=0.7.9"></script>
+    <script src="/js/src/hook-duoshuo.js"></script>
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

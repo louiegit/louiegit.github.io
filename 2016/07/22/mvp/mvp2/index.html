@@ -1,0 +1,879 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next gemini use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.2" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="Android,架构,MVP," />
+
+
+
+
+
+  <link rel="alternate" href="/atom.xml" title="ANLY'S BLOG" type="application/atom+xml" />
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.1.2" />
+
+
+
+
+
+
+<meta name="description" content="MVP架构实现的Github客户端(2-搭建项目框架)请先阅读MVP架构实现的Github客户端(1-准备工作). 本文承接上文, 主要介绍项目框架搭建. 废话少说, 放码过来">
+<meta name="keywords" content="Android,架构,MVP">
+<meta property="og:type" content="article">
+<meta property="og:title" content="MVP架构实现的Github客户端(2-搭建项目框架)">
+<meta property="og:url" content="http://blog.lmj.wiki/2016/07/22/mvp/mvp2/index.html">
+<meta property="og:site_name" content="ANLY&#39;S BLOG">
+<meta property="og:description" content="MVP架构实现的Github客户端(2-搭建项目框架)请先阅读MVP架构实现的Github客户端(1-准备工作). 本文承接上文, 主要介绍项目框架搭建. 废话少说, 放码过来">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="http://blog.lmj.wiki/img/22-40-58.jpg">
+<meta property="og:image" content="http://blog.lmj.wiki/img/22-11-30.jpg">
+<meta property="og:image" content="http://blog.lmj.wiki/img/21-54-41.jpg">
+<meta property="og:image" content="http://blog.lmj.wiki/img/14687667728182.jpg">
+<meta property="og:image" content="http://blog.lmj.wiki/img/14687668572564.png">
+<meta property="og:image" content="http://blog.lmj.wiki/img/14687689324568.jpg">
+<meta property="og:image" content="http://blog.lmj.wiki/img/14687689774004.jpg">
+<meta property="og:updated_time" content="2017-09-12T15:16:05.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="MVP架构实现的Github客户端(2-搭建项目框架)">
+<meta name="twitter:description" content="MVP架构实现的Github客户端(2-搭建项目框架)请先阅读MVP架构实现的Github客户端(1-准备工作). 本文承接上文, 主要介绍项目框架搭建. 废话少说, 放码过来">
+<meta name="twitter:image" content="http://blog.lmj.wiki/img/22-40-58.jpg">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Gemini',
+    version: '5.1.2',
+    sidebar: {"position":"right","display":"post","offset":12,"offset_float":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://blog.lmj.wiki/2016/07/22/mvp/mvp2/"/>
+
+
+
+
+
+  <title>MVP架构实现的Github客户端(2-搭建项目框架) | ANLY'S BLOG</title>
+  
+
+
+
+
+
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?3e4bf02bc6c59d846f194a8afc04ecfc";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-right page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">ANLY'S BLOG</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">看看书, 写写字; 捣鼓捣鼓小技术.</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            关于
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://blog.lmj.wiki/2016/07/22/mvp/mvp2/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="anly_jun">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/img/avatar.jpeg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="ANLY'S BLOG">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">MVP架构实现的Github客户端(2-搭建项目框架)</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2016-07-22T22:10:00+08:00">
+                2016-07-22
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Android/" itemprop="url" rel="index">
+                    <span itemprop="name">Android</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2016/07/22/mvp/mvp2/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count ds-thread-count" data-thread-key="2016/07/22/mvp/mvp2/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h1 id="MVP架构实现的Github客户端-2-搭建项目框架"><a href="#MVP架构实现的Github客户端-2-搭建项目框架" class="headerlink" title="MVP架构实现的Github客户端(2-搭建项目框架)"></a>MVP架构实现的Github客户端(2-搭建项目框架)</h1><p>请先阅读<a href="">MVP架构实现的Github客户端(1-准备工作)</a>. 本文承接上文, 主要介绍项目框架搭建.</p>
+<p><strong>废话少说, 放码过来</strong></p>
+<a id="more"></a>
+<h2 id="1-提取一个mvp模块"><a href="#1-提取一个mvp模块" class="headerlink" title="1, 提取一个mvp模块"></a>1, 提取一个mvp模块</h2><p>提取MVP中View/Presenter相关接口到一个独立的mvp模块(可复用):</p>
+<h3 id="包结构"><a href="#包结构" class="headerlink" title="包结构"></a>包结构</h3><p><img src="/img/22-40-58.jpg" alt="22-40-58"></p>
+<h3 id="类图"><a href="#类图" class="headerlink" title="类图"></a>类图</h3><p><img src="/img/22-11-30.jpg" alt="22-11-30"></p>
+<h3 id="简单说明"><a href="#简单说明" class="headerlink" title="简单说明"></a>简单说明</h3><p>一个MvpView接口来约束View组件:</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">interface</span> <span class="title">MvpView</span> </span>&#123;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>MvpPresenter接口中关联MvpView:</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">interface</span> <span class="title">MvpPresenter</span>&lt;<span class="title">V</span> <span class="keyword">extends</span> <span class="title">MvpView</span>&gt; </span>&#123;</div><div class="line"></div><div class="line"></div><div class="line">    <span class="comment">/**</span></div><div class="line"><span class="comment">     * Set or attach the view to this presenter</span></div><div class="line"><span class="comment">     */</span></div><div class="line">    <span class="meta">@UiThread</span></div><div class="line">    <span class="function"><span class="keyword">void</span> <span class="title">attachView</span><span class="params">(V view)</span></span>;</div><div class="line"></div><div class="line"></div><div class="line">    <span class="comment">/**</span></div><div class="line"><span class="comment">     * Will be called if the view has been destroyed. Typically this method will be invoked from</span></div><div class="line"><span class="comment">     * &lt;code&gt;Activity.detachView()&lt;/code&gt; or &lt;code&gt;Fragment.onDestroyView()&lt;/code&gt;</span></div><div class="line"><span class="comment">     */</span></div><div class="line">    <span class="meta">@UiThread</span></div><div class="line">    <span class="function"><span class="keyword">void</span> <span class="title">detachView</span><span class="params">()</span></span>;</div><div class="line"></div><div class="line"></div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>另外, 由于现在App的内容展示大部分是基于网络数据, 在此扩展了一个通用的LceView, Lce取Loading, Content, Error之意:</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">interface</span> <span class="title">LceView</span>&lt;<span class="title">M</span>&gt; <span class="keyword">extends</span> <span class="title">MvpView</span> </span>&#123;</div><div class="line"></div><div class="line"></div><div class="line">    <span class="meta">@UiThread</span></div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">showLoading</span><span class="params">()</span></span>;</div><div class="line"></div><div class="line"></div><div class="line">    <span class="meta">@UiThread</span></div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">dismissLoading</span><span class="params">()</span></span>;</div><div class="line"></div><div class="line"></div><div class="line">    <span class="meta">@UiThread</span></div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">showContent</span><span class="params">(M data)</span></span>;</div><div class="line"></div><div class="line"></div><div class="line">    <span class="meta">@UiThread</span></div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">showError</span><span class="params">(Throwable e)</span></span>;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<h2 id="2-搭建app框架"><a href="#2-搭建app框架" class="headerlink" title="2, 搭建app框架"></a>2, 搭建app框架</h2><h3 id="包结构-1"><a href="#包结构-1" class="headerlink" title="包结构"></a>包结构</h3><p>app框架方面, 个人主张是先基于MVP架构分包 然后根据业务功能划分模块的, 如下:<br><img src="/img/21-54-41.jpg" alt="21-54-41"></p>
+<p>其中:</p>
+<ul>
+<li>common<ul>
+<li>包含util, config, constant等通用包和类.</li>
+</ul>
+</li>
+<li>data<ul>
+<li>包含model, api, db, pref, 网络接口实现等.</li>
+<li>其中对外公开一个DataRepository提供业务接口相关数据.</li>
+</ul>
+</li>
+<li>di<ul>
+<li>依赖注入相关的类.</li>
+<li>根据dagger2的风格, 一般有module和component模块.</li>
+</ul>
+</li>
+<li>presenter<ul>
+<li>里面根据业务模块划分.</li>
+</ul>
+</li>
+<li>ui<ul>
+<li>包含UI层的所有东东. activity, fragment, widget, dialog, adapter等, 根据需求不同分包方式有出入.</li>
+</ul>
+</li>
+</ul>
+<h3 id="层次结构"><a href="#层次结构" class="headerlink" title="层次结构"></a>层次结构</h3><p>层次结构相对与业务需求而言, 例如账户相关的登录注册, repo模块相关的repo列表, 详情等…<br>大体上每个业务模块都会由以下几个部分构成, 整体的项目层次也是如此:<br><img src="/img/14687667728182.jpg" alt="14687667728182"></p>
+<h2 id="3-完善基础工程"><a href="#3-完善基础工程" class="headerlink" title="3, 完善基础工程"></a>3, 完善基础工程</h2><p>根据上述两步, 一个项目的基本架构已经完成, 但是并不完整, 我们还需要添加一些通用类, 基础类来完善下. 其实这些基类也相当于是一个编码规范, 特别是多人合作项目中, 提前根据项目需求写一些通用类, 工具类, 基类等, 能够避免后续大家编码上各自一套. 所以个人认为这些类的编写也属于搭建框架的一部分.</p>
+<h3 id="添加相关Base类"><a href="#添加相关Base类" class="headerlink" title="添加相关Base类"></a>添加相关Base类</h3><p>为了便于统一处理, 惯例, 我们需要为Activity, Fragment创建一个BaseActivity, BaseFragment. 可以在ui包里创建一个base子包放置.<br><img src="/img/14687668572564.png" alt="14687668572564"></p>
+<p>这个基类好处多多, 例如我们对界面的统一处理, 生命周期的日志打印, 添加统计工具等, 都能很方便的再基类里面处理.</p>
+<h3 id="封装相关工具类"><a href="#封装相关工具类" class="headerlink" title="封装相关工具类"></a>封装相关工具类</h3><p>如<a href="">上文</a>所说, 个人习惯对第三方开源库再做一层封装, 以便后续灵活替换.<br>使用过程中, 也只需调用封装后的接口即可, 无需关注具体的依赖包. 也利于大家协作统一.<br>例如:</p>
+<ol>
+<li>Logger封装<br>创建一个AppLog类来包装Logger:</li>
+</ol>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">AppLog</span> </span>&#123;</div><div class="line"></div><div class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> String TAG = <span class="string">"GithubApp"</span>;</div><div class="line"></div><div class="line">    <span class="comment">/**</span></div><div class="line"><span class="comment">     * initialize the logger.</span></div><div class="line"><span class="comment">     */</span></div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">init</span><span class="params">()</span> </span>&#123;</div><div class="line">        Logger.init(TAG);</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="comment">/**</span></div><div class="line"><span class="comment">     * log.i</span></div><div class="line"><span class="comment">     * <span class="doctag">@param</span> msg</span></div><div class="line"><span class="comment">     */</span></div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">i</span><span class="params">(String msg)</span> </span>&#123;</div><div class="line">        <span class="keyword">if</span> (BuildConfig.DEBUG) &#123;</div><div class="line">            Logger.i(msg);</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="comment">/**</span></div><div class="line"><span class="comment">     * log.d</span></div><div class="line"><span class="comment">     * <span class="doctag">@param</span> msg</span></div><div class="line"><span class="comment">     */</span></div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">d</span><span class="params">(String msg)</span> </span>&#123;</div><div class="line">        <span class="keyword">if</span> (BuildConfig.DEBUG) &#123;</div><div class="line">            Logger.d(msg);</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="comment">/**</span></div><div class="line"><span class="comment">     * log.w</span></div><div class="line"><span class="comment">     * <span class="doctag">@param</span> msg</span></div><div class="line"><span class="comment">     */</span></div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">w</span><span class="params">(String msg)</span> </span>&#123;</div><div class="line">        <span class="keyword">if</span> (BuildConfig.DEBUG) &#123;</div><div class="line">            Logger.w(msg);</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="comment">/**</span></div><div class="line"><span class="comment">     * log.e</span></div><div class="line"><span class="comment">     * <span class="doctag">@param</span> msg</span></div><div class="line"><span class="comment">     */</span></div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">e</span><span class="params">(String msg)</span> </span>&#123;</div><div class="line">        Logger.e(msg);</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<ol>
+<li>图片加载库封装<br>封装一个ImageLoader工具类来对外提供接口加载图片:</li>
+</ol>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">ImageLoader</span> </span>&#123;</div><div class="line"></div><div class="line">    <span class="comment">/**</span></div><div class="line"><span class="comment">     * Load image from source and set it into the imageView. Use Glide now.</span></div><div class="line"><span class="comment">     * <span class="doctag">@param</span> context context.</span></div><div class="line"><span class="comment">     * <span class="doctag">@param</span> source could be Uri/String/File/ResourceId.</span></div><div class="line"><span class="comment">     * <span class="doctag">@param</span> view the imageView.</span></div><div class="line"><span class="comment">     */</span></div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">load</span><span class="params">(Context context, Object source, ImageView view)</span> </span>&#123;</div><div class="line">        Glide.with(context)</div><div class="line">                .load(source)</div><div class="line">                .centerCrop()</div><div class="line">                .into(view);</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<h3 id="Dagger相关基础类"><a href="#Dagger相关基础类" class="headerlink" title="Dagger相关基础类"></a>Dagger相关基础类</h3><p>因为我们使用的Dagger2来做依赖注入, 因为Activity和Application的Context是比较常用的, 我们会构建Activity, Application相关的component/module来提供对应的Context.<br>具体代码参看<a href="https://github.com/mingjunli/GithubApp" target="_blank" rel="external">github工程源码</a>.</p>
+<h2 id="4-整体结构"><a href="#4-整体结构" class="headerlink" title="4, 整体结构"></a>4, 整体结构</h2><p>假设我们的产品需要是迭代式的, 至此, 我们的基础框架已经差不多了(不建议做过多过早设计).<br>回顾下, 大体结构现在基本如下:</p>
+<h3 id="app"><a href="#app" class="headerlink" title="app"></a>app</h3><p><img src="/img/14687689324568.jpg" alt="14687689324568"></p>
+<h3 id="mvp"><a href="#mvp" class="headerlink" title="mvp"></a>mvp</h3><p><img src="/img/14687689774004.jpg" alt="14687689774004"></p>
+<p>具体代码请参看<a href="https://github.com/mingjunli/GithubApp" target="_blank" rel="external">https://github.com/mingjunli/GithubApp</a></p>
+<p>目前代码只是一个基础的框架, 心急的同学可以参看<a href="https://github.com/mingjunli/NewsApp-MVP" target="_blank" rel="external">这个工程</a>, 架构类似. 一个简单的新闻客户端, 用来做MVP demo的.</p>
+<blockquote>
+<p>转载请注明出处, 欢迎大家分享到朋友圈, 微博~</p>
+</blockquote>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/Android/" rel="tag"># Android</a>
+          
+            <a href="/tags/架构/" rel="tag"># 架构</a>
+          
+            <a href="/tags/MVP/" rel="tag"># MVP</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2016/07/22/mvp/mvp1/" rel="next" title="MVP架构实现的Github客户端(1-准备工作)">
+                <i class="fa fa-chevron-left"></i> MVP架构实现的Github客户端(1-准备工作)
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2016/07/22/mvp/mvp3/" rel="prev" title="MVP架构实现的Github客户端(3-功能实现)">
+                MVP架构实现的Github客户端(3-功能实现) <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+        <div class="ds-share flat" data-thread-key="2016/07/22/mvp/mvp2/"
+     data-title="MVP架构实现的Github客户端(2-搭建项目框架)"
+     data-content=""
+     data-url="http://blog.lmj.wiki/2016/07/22/mvp/mvp2/">
+  <div class="ds-share-inline">
+    <ul  class="ds-share-icons-16">
+
+      <li data-toggle="ds-share-icons-more"><a class="ds-more" href="javascript:void(0);">分享到：</a></li>
+      <li><a class="ds-weibo" href="javascript:void(0);" data-service="weibo">微博</a></li>
+      <li><a class="ds-qzone" href="javascript:void(0);" data-service="qzone">QQ空间</a></li>
+      <li><a class="ds-qqt" href="javascript:void(0);" data-service="qqt">腾讯微博</a></li>
+      <li><a class="ds-wechat" href="javascript:void(0);" data-service="wechat">微信</a></li>
+
+    </ul>
+    <div class="ds-share-icons-more">
+    </div>
+  </div>
+</div>
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+      <div class="ds-thread" data-thread-key="2016/07/22/mvp/mvp2/"
+           data-title="MVP架构实现的Github客户端(2-搭建项目框架)" data-url="http://blog.lmj.wiki/2016/07/22/mvp/mvp2/">
+      </div>
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          
+            <img class="site-author-image" itemprop="image"
+              src="/img/avatar.jpeg"
+              alt="anly_jun" />
+          
+            <p class="site-author-name" itemprop="name">anly_jun</p>
+            <p class="site-description motion-element" itemprop="description">Android, iOS, Mobile Dev/Test, Web, Python</p>
+        </div>
+
+        <nav class="site-state motion-element">
+
+          
+            <div class="site-state-item site-state-posts">
+            
+              <a href="/archives">
+            
+                <span class="site-state-item-count">55</span>
+                <span class="site-state-item-name">日志</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-categories">
+              <a href="/categories/index.html">
+                <span class="site-state-item-count">6</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-tags">
+              <a href="/tags/index.html">
+                <span class="site-state-item-count">20</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+          <div class="feed-link motion-element">
+            <a href="/atom.xml" rel="alternate">
+              <i class="fa fa-rss"></i>
+              RSS
+            </a>
+          </div>
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#MVP架构实现的Github客户端-2-搭建项目框架"><span class="nav-number">1.</span> <span class="nav-text">MVP架构实现的Github客户端(2-搭建项目框架)</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#1-提取一个mvp模块"><span class="nav-number">1.1.</span> <span class="nav-text">1, 提取一个mvp模块</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#包结构"><span class="nav-number">1.1.1.</span> <span class="nav-text">包结构</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#类图"><span class="nav-number">1.1.2.</span> <span class="nav-text">类图</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#简单说明"><span class="nav-number">1.1.3.</span> <span class="nav-text">简单说明</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-搭建app框架"><span class="nav-number">1.2.</span> <span class="nav-text">2, 搭建app框架</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#包结构-1"><span class="nav-number">1.2.1.</span> <span class="nav-text">包结构</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#层次结构"><span class="nav-number">1.2.2.</span> <span class="nav-text">层次结构</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-完善基础工程"><span class="nav-number">1.3.</span> <span class="nav-text">3, 完善基础工程</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#添加相关Base类"><span class="nav-number">1.3.1.</span> <span class="nav-text">添加相关Base类</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#封装相关工具类"><span class="nav-number">1.3.2.</span> <span class="nav-text">封装相关工具类</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Dagger相关基础类"><span class="nav-number">1.3.3.</span> <span class="nav-text">Dagger相关基础类</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#4-整体结构"><span class="nav-number">1.4.</span> <span class="nav-text">4, 整体结构</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#app"><span class="nav-number">1.4.1.</span> <span class="nav-text">app</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#mvp"><span class="nav-number">1.4.2.</span> <span class="nav-text">mvp</span></a></li></ol></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2017</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">anly_jun</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+  <span class="post-meta-divider">|</span>
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">NexT.Gemini</a> v5.1.2</div>
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.2"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.2"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.2"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.2"></script>
+
+
+
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.2"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.2"></script>
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.2"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.2"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.2"></script>
+
+
+
+  
+
+  
+    
+  
+
+  <script type="text/javascript">
+    var duoshuoQuery = {short_name:"anlyjun"};
+    (function() {
+      var ds = document.createElement('script');
+      ds.type = 'text/javascript';ds.async = true;
+      ds.id = 'duoshuo-script';
+      ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+      ds.charset = 'UTF-8';
+      (document.getElementsByTagName('head')[0]
+      || document.getElementsByTagName('body')[0]).appendChild(ds);
+    })();
+  </script>
+
+  
+    
+    
+    <script src="/lib/ua-parser-js/dist/ua-parser.min.js?v=0.7.9"></script>
+    <script src="/js/src/hook-duoshuo.js"></script>
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
